@@ -1,0 +1,39 @@
+{
+  "name": "fzi-iota-showcase",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "iota",
+    "dlt",
+    "tangle",
+    "crypto",
+    "javascript",
+    "nodejs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RaphaelManke/fzi-iota-showcase"
+  },
+  "contributors": [
+    "Robin Lamberti <lamberti.robin@gmail.com> (https://github.com/cr0ssing/)",
+    "Raphael Manke <> (https://github.com/RaphaelManke/)"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "test": "tsc && node .\\out\\test\\simple.js"
+  },
+  "dependencies": {
+    "@iota/core": "^1.0.0-beta.5",
+    "@iota/signing": "^1.0.0-beta.5",
+    "@iota/validators": "^1.0.0-beta.5",
+    "eventemitter2": "^5.0.1",
+    "express": "^4.16.4",
+    "zeromq": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "@types/node": "7.0.22",
+    "jsdoc-to-markdown": "^4.0.1",
+    "mocha": "^5.2.0"
+  }
+}
