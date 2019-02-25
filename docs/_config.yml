@@ -5,3 +5,5 @@ relative_links:
   collections: true
 include:
   - showcase.md
+
+theme: jekyll-theme-cayman
