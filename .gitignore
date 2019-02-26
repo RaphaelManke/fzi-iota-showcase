@@ -62,3 +62,6 @@ out/
 
 # next.js build output
 .next
+
+# unix file system
+.DS_store
