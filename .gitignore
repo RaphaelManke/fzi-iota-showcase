@@ -42,6 +42,9 @@ typings/
 # Transpiled JavaScript files
 out/
 
+# built webpack files
+dist/
+
 # Optional npm cache directory
 .npm
 

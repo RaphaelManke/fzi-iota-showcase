@@ -1,9 +1,9 @@
 export default interface Vehicle {
-    start(): void
+  start(): void;
 
-    stop(): void
+  stop(): void;
 
-    setSpeed(speed: number): void
+  setSpeed(speed: number): void;
 
-    getSpeed(): number
+  getSpeed(): number;
 }

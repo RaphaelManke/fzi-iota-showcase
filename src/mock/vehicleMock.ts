@@ -1,46 +1,46 @@
-import Vehicle from '../vehicle'
-import Mock from './mock'
-import {EventEmitter2} from 'eventemitter2'
-
+import Vehicle from '../vehicle';
+import Mock from './mock';
+import { EventEmitter2 } from 'eventemitter2';
 
 export default class VehicleMock implements Vehicle, Mock {
-    private id: string
-    private started = false
-    private speed = 1 
-    private events: EventEmitter2
+  private id: string;
+  private started = false;
+  private speed = 1;
+  private events: EventEmitter2;
 
-    constructor(id: string, events: EventEmitter2) {
-        this.id = id
-        this.events = events
-        
+  constructor(id: string, events: EventEmitter2) {
+    this.id = id;
+    this.events = events;
+  }
+
+  public getId = () => this.id;
+
+  public start() {
+    if (!this.started) {
+      this.events.emit('started', { id: this.id });
+      this.started = true;
     }
+  }
 
-    getId = () => this.id
-
-    start() {
-        if (!this.started) {
-            this.events.emit('started', {id: this.id})
-            this.started = true
-        }
+  public stop() {
+    if (this.started) {
+      this.events.emit('stopped', { id: this.id });
+      this.started = false;
     }
+  }
 
-    stop() {
-        if (this.started) {
-            this.events.emit('stopped', {id: this.id})
-            this.started = false
-        }
-    }
+  public setSpeed(speed: number) {
+    this.speed = speed;
+    this.events.emit('speedSet', { id: this.id, speed: this.speed });
+  }
 
-    setSpeed(speed: number) {
-        this.speed = speed
-        this.events.emit('speedSet', {id: this.id, speed: this.speed})
-    } 
+  public getSpeed = () => this.speed;
 
-    getSpeed = () => this.speed
+  public markerDetected = (id: string) =>
+    this.events.emit('markerDetected', { id: this.id, markerId: id })
 
-    markerDetected = (id: string) => this.events.emit('markerDetected', {id: this.id, markerId: id})
+  public rfidDetected = (id: string) =>
+    this.events.emit('rfidDetected', { id: this.id, rfid: id })
 
-    rfidDetected = (id: string) => this.events.emit('rfidDetected', {id: this.id, rfid: id})
-
-    rfidRemoved = () => this.events.emit('rfidRemoved', {id: this.id})
+  public rfidRemoved = () => this.events.emit('rfidRemoved', { id: this.id });
 }
