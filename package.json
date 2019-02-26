@@ -20,7 +20,8 @@
   ],
   "license": "ISC",
   "scripts": {
-    "test": "tsc && node .\\out\\test\\simple.js"
+    "test": "tsc && node .\\out\\test\\simple.js",
+    "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
     "@iota/core": "^1.0.0-beta.5",
@@ -28,12 +29,16 @@
     "@iota/validators": "^1.0.0-beta.5",
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
+    "socket.io": "^2.2.0",
     "zeromq": "^5.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
     "@types/node": "7.0.22",
     "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
   }
 }
