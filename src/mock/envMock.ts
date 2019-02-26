@@ -19,7 +19,7 @@ export default class EnvironmentMock implements Environment {
             if (v) {
                 const m = this.vehicles.get(v)
                 if (m) {
-                    m.interval = setInterval(m.worker, 1000)
+                    m.interval = global.setInterval(m.worker, 1000)
                 }
             }
         })
@@ -27,7 +27,7 @@ export default class EnvironmentMock implements Environment {
             const v = Array.from(this.vehicles.keys()).find(v => v.getId() == data.id)
             if (v) {
                 const m = this.vehicles.get(v)
-                if (m) {
+                if (m != undefined && m.interval != undefined) {
                     clearInterval(m.interval)
                 }
             }
@@ -38,7 +38,7 @@ export default class EnvironmentMock implements Environment {
         const worker = () => {
             this.updatePos(v, v.getSpeed(), 0)
         }
-        this.vehicles.set(v, {pos:{x, y}, worker, interval: 0})
+        this.vehicles.set(v, {pos:{x, y}, worker, interval: undefined})
         this.events.emit('vehicleAdded', {id: v.getId(), x, y})
         this.checkForMarkers(v, x, y)
         // send marker detected even if position doesn't change
@@ -92,7 +92,7 @@ type Position = {
 }
 
 type Mover = {
-    worker: Function,
+    worker: () => void,
     pos: Position,
-    interval: number
+    interval: NodeJS.Timer | undefined
 }
