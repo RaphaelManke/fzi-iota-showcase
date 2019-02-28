@@ -3,10 +3,12 @@ import { EventEmitter2 } from 'eventemitter2';
 import { enableLogging } from '../src/logger';
 import Controller from '../src/controller';
 import EnvironmentMock from '../src/mock/envMock';
+import startWebsocket from '../src/websocket';
 
 (async () => {
   const events = new EventEmitter2();
   enableLogging(events);
+  startWebsocket(events);
 
   const env = new EnvironmentMock(events);
   const con = new Controller(events, env);

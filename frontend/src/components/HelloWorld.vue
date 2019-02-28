@@ -64,15 +64,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { Component, Watch, Prop, Vue } from 'vue-property-decorator';
 
-@Component({sockets: {
-  connect() {
-    window.console.log('Connected to websocket server.');
-  },
+@Component({
+  sockets: {
+    connect() {
+      window.console.log('Connected to websocket server.');
+      this.$emit('websocketConnected');
+    },
 }})
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
+
+  private created() {
+    this.$on('websocketConnected', () => {
+      ['started', 'stopped', 'vehicleAdded', 'markerAdded',
+        'updatedPos', 'markerDetected', 'rfidDetected', 'rfidRemoved']
+        .forEach((e) => this.sockets.subscribe(e, (data: any) => {
+          // logic goes here
+      }));
+    });
+  }
 }
 </script>
 

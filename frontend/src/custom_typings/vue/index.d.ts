@@ -12,7 +12,11 @@ declare module "vue/types/options" {
 
 declare module "vue/types/vue" {
   export interface Vue {
-    $socket: SocketIOClient.Socket;
+    $socket: SocketIOClient.Socket
+    sockets: {
+      subscribe: (event: any, data: any) => void;
+      unsubscribe: (event: any) => void;
+    }
     $vueSocketIo: VueSocketIO
   }
 }
