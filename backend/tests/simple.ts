@@ -13,6 +13,7 @@ import startWebsocket from '../src/websocket';
   const env = new EnvironmentMock(events);
   const con = new Controller(events, env);
   con.setupEnv();
+
   env.addMarker('START', 0, 0);
   env.addMarker('HALF', 3, 0);
 
