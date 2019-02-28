@@ -35,11 +35,11 @@ export default class Controller {
           v.stop();
         }
       }
-      this.lastTimeDetected.set(data.markerId, Date.now());
+      this .lastTimeDetected.set(data.markerId, Date.now());
     });
 
     this.events.on('rfidDetected', (data) => {
-      const v = this.env.getVehicle(data.id);
+      const v = this .env.getVehicle(data.id);
       if (v) {
         v.start();
       }
