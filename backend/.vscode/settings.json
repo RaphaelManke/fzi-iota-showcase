@@ -4,5 +4,6 @@
   "prettier.tabWidth": 2,
   "prettier.trailingComma": "es5",
   "prettier.jsxSingleQuote": true,
-  "prettier.tslintIntegration": true
+  "prettier.tslintIntegration": true,
+  "files.eol": "\n"
 }
