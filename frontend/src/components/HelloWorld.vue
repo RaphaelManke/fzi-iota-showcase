@@ -64,30 +64,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
 
-@Component
+@Component({sockets: {
+  connect() {
+    window.console.log('Connected to websocket server.');
+  },
+}})
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
-
-  constructor() {
-    super({
-      sockets: {
-        connect() {
-          console.log('socket connected');
-        },
-        customEmit(data: any) {
-          console.log('this method was fired by the socket server.');
-        },
-      },
-      methods: {
-        clickButton(data: any) {
-          // $socket is socket.io-client instance
-          this.$socket.emit('emit_method', data);
-        },
-      },
-    });
-  }
 }
 </script>
 

@@ -1,10 +1,10 @@
-import * as socketio from 'socket.io';
+import * as socketio from "socket.io";
 
 (async () => {
-    const io = socketio();
-    io.on('connection', (client: any) => {
-        console.log('it works!');
-     });
-    io.listen(3000);
-    console.log('Listening on port 3000');
+  const io = socketio();
+  io.on('connection', (client: SocketIO.Socket) => {
+    console.log('Connected to websocket client.');
+  });
+  io.listen(3000);
+  console.log('Listening on port 3000');
 })();

@@ -1,10 +1,10 @@
 declare module "vue-socket.io" {
-  import {PluginFunction, PluginObject} from 'vue';
+  import _Vue, {PluginFunction, PluginObject} from 'vue';
   import {Store} from 'vuex';
-  import SocketIOClientStatic from 'socket.io-client';
+  import * as SocketIOClient from 'socket.io-client';
 
-  export default class VueSocketIO implements PluginObject<any> {
-    constructor(options: Options);
+  export default class VueSocketIO implements PluginObject<Options> {
+    constructor(options?: Options);
 
     install: PluginFunction<any>;
   }
@@ -16,6 +16,6 @@ declare module "vue-socket.io" {
       actionPrefix: string,
       mutationPrefix: string
     }
-    connection: string | SocketIOClientStatic
+    connection: string | SocketIOClient.Socket
   }
 }
