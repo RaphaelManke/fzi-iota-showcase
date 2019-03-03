@@ -68,3 +68,6 @@ dist/
 
 # unix file system
 .DS_store
+
+# webstorm
+**/.idea/
