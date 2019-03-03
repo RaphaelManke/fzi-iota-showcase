@@ -1,0 +1,33 @@
+# Node.js with Vue
+# Build a Node.js project that uses Vue.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+variables:
+  app_path: frontend-showcase-vis
+  app_name: Frontend showcase visulization
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - $(app_path)/*
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install
+      npm run build
+    workingDirectory: $(app_path)
+    displayName: 'npm install and build'
