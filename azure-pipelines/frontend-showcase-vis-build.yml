@@ -9,10 +9,11 @@ variables:
 
 trigger:
   branches:
+    include:
     - master
   paths:
     include:
-      - $(app_path)/*
+    - $(app_path)/*
 
 pool:
   vmImage: 'Ubuntu-16.04'
