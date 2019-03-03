@@ -2,7 +2,7 @@
   <div class="hello">
     <button v-on:click="start()">Start</button>
     <ul id="example-1">
-      <li v-for="event in events">
+      <li v-for="event in events" :key="event">
         {{ event }}
       </li>
     </ul>
