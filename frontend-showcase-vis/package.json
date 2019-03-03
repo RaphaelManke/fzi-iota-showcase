@@ -17,7 +17,8 @@
   },
   "contributors": [
     "Robin Lamberti <lamberti.robin@gmail.com> (https://github.com/cr0ssing/)",
-    "Raphael Manke <> (https://github.com/RaphaelManke/)"
+    "Raphael Manke <> (https://github.com/RaphaelManke/)",
+    "Christian Fries <> (https://github.com/F-Node-Karlsruhe/)"
   ],
   "license": "ISC",
   "scripts": {

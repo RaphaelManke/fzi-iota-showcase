@@ -13,8 +13,30 @@ import HelloWorld from './components/HelloWorld.vue';
   components: {
     HelloWorld,
   },
+  sockets: {
+    connect() {
+      window.console.log('Connected to websocket server.');
+    },
+}
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+
+private events: string[] = [];
+
+  public start() {
+    this.$socket.emit('start');
+  }
+
+  private created() {
+    ['vehicleAdded',
+      'updatedPos',]
+      .forEach((e) => this.sockets.subscribe(e, (data: any) => {
+        // logic goes here
+        this.events.push(JSON.stringify({[e]: data}));
+    }));
+  }
+
+}
 </script>
 
 <style>
