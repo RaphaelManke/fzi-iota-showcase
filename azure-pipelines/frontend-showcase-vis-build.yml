@@ -13,7 +13,7 @@ trigger:
     - master
   paths:
     include:
-    - $(app_path)/*
+    - frontend-showcase-vis/*
 
 pool:
   vmImage: 'Ubuntu-16.04'
