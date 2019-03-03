@@ -20,9 +20,9 @@
     "Raphael Manke <> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
+    "fzi-iota-showcase-vehicle-mock": "file:../vehicle-client"
   },
   "devDependencies": {
     "@types/node": "7.0.22",
