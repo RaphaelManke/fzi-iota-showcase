@@ -1,0 +1,45 @@
+{
+  "name": "fzi-iota-showcase-user-interface",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "keywords": [
+    "iota",
+    "dlt",
+    "tangle",
+    "crypto",
+    "javascript",
+    "nodejs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RaphaelManke/fzi-iota-showcase"
+  },
+  "contributors": [
+    "Robin Lamberti <lamberti.robin@gmail.com> (https://github.com/cr0ssing/)",
+    "Raphael Manke <> (https://github.com/RaphaelManke/)"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "socket.io-client": "^2.2.0",
+    "vue": "^2.6.6",
+    "vue-class-component": "^6.0.0",
+    "vue-property-decorator": "^7.0.0",
+    "vue-socket.io": "^3.0.5",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
+    "@vue/cli-plugin-typescript": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "tslint": "^5.13.0",
+    "typescript": "^3.3.3333",
+    "vue-template-compiler": "^2.5.21",
+    "webpack": "^4.29.5"
+  }
+}

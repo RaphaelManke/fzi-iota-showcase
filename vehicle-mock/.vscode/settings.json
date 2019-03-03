@@ -1,0 +1,10 @@
+{
+  "prettier.endOfLine": "lf",
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "es5",
+  "prettier.jsxSingleQuote": true,
+  "prettier.tslintIntegration": true,
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
