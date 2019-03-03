@@ -13,8 +13,9 @@ trigger:
     - master
   paths:
     include:
-    - *
     - frontend-showcase-vis/*
+    exclude:
+    - docs/*
 
 pool:
   vmImage: 'Ubuntu-16.04'
