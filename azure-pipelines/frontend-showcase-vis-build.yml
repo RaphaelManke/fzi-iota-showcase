@@ -9,7 +9,7 @@ variables:
 
 trigger:
   branches:
-  - master
+    - master
   paths:
     include:
       - $(app_path)/*
