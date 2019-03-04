@@ -3,10 +3,12 @@
 #
 
 variables:
-  app_path: frontend-showcase-vis
-  app_name: Frontend showcase visulization
-  azureSubscriptionEndpoint: ARMconnection
-  azureContainerRegistry: fziiota.azurecr.io
+- group: my-variable-group
+- name: app_path
+  value: frontend-showcase-vis
+- name: app_name
+  value: Frontend showcase visulization
+
 
 trigger:
   branches:
