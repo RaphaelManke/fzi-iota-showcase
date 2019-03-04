@@ -1,11 +1,11 @@
 # build definition
 parameters:
-  app_name: ''
+  appName: ''
   pool: ''
 
 
 jobs:
-- job: ${{ parameters.app_name }}
+- job: Build 
   pool: ${{ parameters.pool }}
   steps:
   - task: NodeTool@0
