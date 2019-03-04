@@ -13,7 +13,7 @@ trigger:
     - master
   paths:
     include:
-    - 'frontend-showcase-vis/*'
+    - '$(app_path)/*'
     - '$(app_name)-build.yml'
 
 
