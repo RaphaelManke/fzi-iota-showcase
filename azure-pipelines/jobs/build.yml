@@ -1,7 +1,13 @@
+# build definition
 parameters:
-  app_name: ""
+  app_name: ''
+  pool: ''
 
-steps:
+
+jobs:
+- job: ${{ parameters.app_name }}
+  pool: ${{ parameters.pool }}
+  steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '8.x'
