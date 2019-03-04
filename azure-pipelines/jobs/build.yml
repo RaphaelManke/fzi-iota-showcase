@@ -33,19 +33,18 @@ jobs:
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: canisterDocker
       dockerFile: $(app_path)/Dockerfile
-      imageName: raphaelmanke/$(app_name)
-      qualifyImageName: true
+      imageName: $(dockerRegistryUrl)/$(app_path)
+      qualifyImageName: false
   
-  #- script: |
-  #    docker push cloud.canister.io:5000/raphaelmanke/frontendshowcasevisulization:latest
+
   - task: Docker@1
     displayName: Push image
     inputs:
       command: push
       containerregistrytype: Container Registry
-      dockerRegistryEndpoint: canisterDocker
-      imageName: raphaelmanke/$(app_name):latest
-      qualifyImageName: true
+      dockerRegistryEndpoint: $(dockerRegistryName)
+      imageName: $(dockerRegistryUrl)/$(app_path):latest
+      qualifyImageName: false
   
   - task: Docker@1
     displayName: Docker logout
@@ -53,4 +52,4 @@ jobs:
     inputs:
       command: logout
       containerregistrytype: Container Registry
-      dockerRegistryEndpoint: canisterDocker
+      dockerRegistryEndpoint: $(dockerRegistryName)
