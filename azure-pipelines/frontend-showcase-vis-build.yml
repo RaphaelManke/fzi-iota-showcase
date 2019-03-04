@@ -1,7 +1,6 @@
-# Node.js with Vue
-# Build a Node.js project that uses Vue.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+#
+#
+#
 
 variables:
   app_path: frontend-showcase-vis
@@ -13,8 +12,8 @@ trigger:
     - master
   paths:
     include:
-    - 'frontend-showcase-vis/*'
-    - 'azure-pipelines/frontend-showcase-vis-build.yml'
+    - '$(app_name)/*'
+    - 'azure-pipelines/$(app_name)-build.yml'
 
 
 jobs:
