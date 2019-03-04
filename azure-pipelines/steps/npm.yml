@@ -9,7 +9,7 @@ steps:
       #verbose: # Optional
       #customCommand: # Required when command == Custom
       customRegistry: useFeed
-      customFeed: {{ parameters.npmFeed }}   
+      customFeed: ${{ parameters.npmFeed }}   
       #customEndpoint: # Optional
       #publishRegistry: 'useExternalRegistry' # Optional. Options: useExternalRegistry, useFeed
       #publishFeed: # Required when publishRegistry == UseFeed
