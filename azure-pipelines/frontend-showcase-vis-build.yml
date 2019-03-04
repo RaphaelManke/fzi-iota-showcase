@@ -14,7 +14,7 @@ trigger:
   paths:
     include:
     - 'frontend-showcase-vis/*'
-    - '$frontend-showcase-vis-build.yml'
+    - 'azure-pipelines/frontend-showcase-vis-build.yml'
 
 
 jobs:
