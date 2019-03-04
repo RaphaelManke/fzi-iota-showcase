@@ -4,7 +4,7 @@
 
 variables:
   app_path: frontend-showcase-vis
-  app_name: Frontend_showcase_visulization
+  app_name: Frontend showcase visulization
 
 trigger:
   branches:
