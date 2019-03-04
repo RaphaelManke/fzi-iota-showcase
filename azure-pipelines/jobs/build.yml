@@ -8,8 +8,6 @@ jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
   steps:
-  - script: |
-      echo $(dockerRegistryUrl)
   - task: NodeTool@0
     inputs:
       versionSpec: '8.x'
@@ -38,14 +36,14 @@ jobs:
       imageName: raphaelmanke/$(app_name)
       qualifyImageName: true
   
-  - script: |
-      docker push cloud.canister.io:5000/raphaelmanke/frontendshowcasevisulization:latest
-  #- task: Docker@1
-  #  displayName: Push image
-  #  inputs:
-  #    command: push
-  #    containerregistrytype: Container Registry
-  #    dockerRegistryEndpoint: canisterDocker
-  #    imageName: $(app_name):latest
-  #    qualifyImageName: true
+  #- script: |
+  #    docker push cloud.canister.io:5000/raphaelmanke/frontendshowcasevisulization:latest
+  - task: Docker@1
+    displayName: Push image
+    inputs:
+      command: push
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: canisterDocker
+      imageName: raphaelmanke/$(app_name):latest
+      qualifyImageName: true
 
