@@ -33,15 +33,17 @@ jobs:
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: canisterDocker
       dockerFile: $(app_path)/Dockerfile
-      imageName: $(app_name)
+      imageName: raphaelmanke/$(app_name)
       qualifyImageName: true
   
-  - task: Docker@1
-    displayName: Push image
-    inputs:
-      command: push
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: canisterDocker
-      imageName: $(app_name):latest
-      qualifyImageName: true
+  - script: |
+      docker push cloud.canister.io:5000/raphaelmanke/frontendshowcasevisulization:latest
+  #- task: Docker@1
+  #  displayName: Push image
+  #  inputs:
+  #    command: push
+  #    containerregistrytype: Container Registry
+  #    dockerRegistryEndpoint: canisterDocker
+  #    imageName: $(app_name):latest
+  #    qualifyImageName: true
 
