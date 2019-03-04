@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 variables:
-  app_path: showcase-user-interface-build
+  app_path: showcase-user-interface
   app_name: Showcase user-interface
 
 trigger:
