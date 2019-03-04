@@ -17,7 +17,7 @@
 
 ## Use-Case: Reservierung
 	1) Siehe Fahrt 1 + 2
-	2) Nutzer bezahlt Reservierungsgebühr + Message zur Authentifizierung
+	2) Nutzer bezahlt Reservierungsgebühr + encryptedNonce zur Authentifizierung
 	3) Fahrzeug beobachtet Adresse für Reservierung
 	4) Fahrzeug speichert und veröffentlicht Reservierung
 

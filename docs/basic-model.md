@@ -1,32 +1,31 @@
 # Models
 
 ## tripChannel:
-	- Länge = 4
-		a. Welcome message
-		b. Reservations-reference
-		c. Goodbye message
-		d. puffer
+- Länge = 4
+- Props:
+  - Welcome message
+  - Reservations-reference
+  - Goodbye message
+  - puffer
 
 ## welcomeMessage:
-	- Object
-		a. Addresse zum bezahlen
-		b. Preis
-		c. Nonce for authentication
-		d. Reservierungsgebühr/min
-	- 
+- Props:
+  - Addresse zum bezahlen
+  - Preis
+  - Nonce for authentication
+  - Reservierungsgebühr/min
 
 ## goodbyeMessage:
-	- Object
-		○ 
+- Object
 
 ## reservationReference:
-	- Object
-		○ Root zum reservationChannel
+- Props:
+  - Root zum reservationChannel
 
 ## reservationChannel:
-	- Type: MAM
+- Type: MAM
 
 ## reservationChannelMessage:
-	- Object
-		○ dueTimestamp
-		○ encryptedNonce
+- Object
+  - dueTimestamp
+  - hash(encryptedNonce)
