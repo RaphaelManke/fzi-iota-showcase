@@ -18,3 +18,11 @@ jobs:
       npm run build
     workingDirectory: $(app_path)
     displayName: 'npm install and build'
+  
+  - task: Docker@1
+    displayName: Container registry login
+    inputs:
+      command: login
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: canisterDocker
+
