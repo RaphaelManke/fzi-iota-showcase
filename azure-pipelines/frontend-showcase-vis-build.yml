@@ -12,8 +12,8 @@ trigger:
     - master
   paths:
     include:
-    - '$(app_name)/*'
-    - 'azure-pipelines/$(app_name)-build.yml'
+    - 'frontend-showcase-vis/*'
+    - 'azure-pipelines/frontend-showcase-vis-build.yml'
 
 
 jobs:

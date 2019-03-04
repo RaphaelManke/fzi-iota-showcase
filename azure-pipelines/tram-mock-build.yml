@@ -13,8 +13,7 @@ trigger:
     - master
   paths:
     include:
-    - '$(app_path)/*'
-    - '$(app_name)-build.yml'
+    - 'tram-mock/*'
 
 
 jobs:
