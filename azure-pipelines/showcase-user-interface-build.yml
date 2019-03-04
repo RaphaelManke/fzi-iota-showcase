@@ -13,8 +13,8 @@ trigger:
     - master
   paths:
     include:
-    - '$(app_path)/*'
-    - '$(app_name)-build.yml'
+    - 'showcase-user-interface/*'
+    - 'showcase-user-interface-build.yml'
 
 
 jobs:
