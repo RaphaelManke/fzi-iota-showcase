@@ -5,6 +5,8 @@
 variables:
   app_path: frontend-showcase-vis
   app_name: Frontend showcase visulization
+  azureSubscriptionEndpoint: ARMconnection
+  azureContainerRegistry: fziiota.azurecr.io
 
 trigger:
   branches:

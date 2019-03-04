@@ -8,48 +8,47 @@ jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
   steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '8.x'
-    displayName: 'Install Node.js'
+  # - task: NodeTool@0
+  #   inputs:
+  #     versionSpec: '8.x'
+  #   displayName: 'Install Node.js'
 
-  - script: |
-      npm install
-      npm run build
-    workingDirectory: $(app_path)
-    displayName: 'npm install and build'
+  # - script: |
+  #     npm install
+  #     npm run build
+  #   workingDirectory: $(app_path)
+  #   displayName: 'npm install and build'
   
   - task: Docker@1
     displayName: Container registry login
     inputs:
       command: login
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: $(dockerRegistryName)
-  
+      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+      azureContainerRegistry: $(azureContainerRegistry)  
   - task: Docker@1
     displayName: Build image
     inputs:
       command: build
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: $(dockerRegistryName)
+      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+      azureContainerRegistry: $(azureContainerRegistry)  
       dockerFile: $(app_path)/Dockerfile
-      imageName: $(dockerRegistryUrl)/$(app_path)
-      qualifyImageName: false
+      imageName: $(app_path)
+      qualifyImageName: true
   
 
   - task: Docker@1
     displayName: Push image
     inputs:
       command: push
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: $(dockerRegistryName)
-      imageName: $(dockerRegistryUrl)/$(app_path):latest
-      qualifyImageName: false
+      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+      azureContainerRegistry: $(azureContainerRegistry)  
+      imageName: $(app_path)
+      qualifyImageName: true
   
   - task: Docker@1
     displayName: Docker logout
     condition: always()
     inputs:
       command: logout
-      containerregistrytype: Container Registry
-      dockerRegistryEndpoint: $(dockerRegistryName)
+      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+      azureContainerRegistry: $(azureContainerRegistry)  
