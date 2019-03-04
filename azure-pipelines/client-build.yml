@@ -4,8 +4,8 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 variables:
-  app_path: frontend-showcase-vis
-  app_name: Frontend showcase visulization
+  app_path: client
+  app_name: Client
 
 trigger:
   branches:
