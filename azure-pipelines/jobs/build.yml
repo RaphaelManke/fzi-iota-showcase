@@ -25,4 +25,16 @@ jobs:
       command: login
       containerregistrytype: Container Registry
       dockerRegistryEndpoint: canisterDocker
+  
+  - task: Docker@1
+    displayName: Build image
+    inputs:
+      command: build
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: canisterDocker
+      dockerFile: $(app_path)/Dockerfile
+      imageName: $(app_name)
+      qualifyImageName: true
+  - script: |
+      docker build -t 
 
