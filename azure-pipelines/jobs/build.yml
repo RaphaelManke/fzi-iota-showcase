@@ -25,7 +25,7 @@ jobs:
       #verbose: # Optional
       #customCommand: # Required when command == Custom
       customRegistry: useFeed
-      customFeed: 'b6097a2a-c209-462c-8e46-1c2c8851a60c'      
+      customFeed: 'FZI-IOTA-NPM'      
       #customEndpoint: # Optional
       #publishRegistry: 'useExternalRegistry' # Optional. Options: useExternalRegistry, useFeed
       #publishFeed: # Required when publishRegistry == UseFeed
