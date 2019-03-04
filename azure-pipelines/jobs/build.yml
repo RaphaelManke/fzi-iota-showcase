@@ -8,6 +8,8 @@ jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
   steps:
+  - script: |
+      echo $(dockerRegistryUrl)
   - task: NodeTool@0
     inputs:
       versionSpec: '8.x'
