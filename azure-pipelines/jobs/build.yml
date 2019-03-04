@@ -46,4 +46,11 @@ jobs:
       dockerRegistryEndpoint: canisterDocker
       imageName: raphaelmanke/$(app_name):latest
       qualifyImageName: true
-
+  
+  - task: Docker@1
+    displayName: Docker logout
+    condition: always()
+    inputs:
+      command: logout
+      containerregistrytype: Container Registry
+      dockerRegistryEndpoint: canisterDocker
