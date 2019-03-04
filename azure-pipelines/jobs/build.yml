@@ -18,7 +18,19 @@ jobs:
   #     npm run build
   #   workingDirectory: $(app_path)
   #   displayName: 'npm install and build'
-  
+  - task: Npm@1
+    inputs:
+      command: 'install' # Options: install, publish, custom
+      workingDir: $(app_path) # Optional
+      #verbose: # Optional
+      #customCommand: # Required when command == Custom
+      customRegistry: useFeed
+      customFeed: 'b6097a2a-c209-462c-8e46-1c2c8851a60c'      
+      #customEndpoint: # Optional
+      #publishRegistry: 'useExternalRegistry' # Optional. Options: useExternalRegistry, useFeed
+      #publishFeed: # Required when publishRegistry == UseFeed
+      #publishPackageMetadata: true # Optional
+      #publishEndpoint: # Required when publishRegistry == UseExternalRegistry
   - task: Docker@1
     displayName: Container registry login
     inputs:
