@@ -6,7 +6,7 @@
         {{ event }}
       </li>
     </ul>
-    <p>Hello to IOTA</p>
+    
   </div>
 </template>
 
