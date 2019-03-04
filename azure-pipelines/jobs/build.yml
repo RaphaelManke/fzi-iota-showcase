@@ -1,0 +1,14 @@
+parameters:
+  app_name: ""
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install
+      npm run build
+    workingDirectory: $(app_path)
+    displayName: 'npm install and build'
