@@ -3,7 +3,6 @@ parameters:
   appName: ''
   pool: ''
 
-
 jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
@@ -12,55 +11,6 @@ jobs:
   #   inputs:
   #     versionSpec: '8.x'
   #   displayName: 'Install Node.js'
-
-  # - script: |
-  #     npm install
-  #     npm run build
-  #   workingDirectory: $(app_path)
-  #   displayName: 'npm install and build'
-  - task: Npm@1
-    inputs:
-      command: 'install' # Options: install, publish, custom
-      workingDir: $(app_path) # Optional
-      #verbose: # Optional
-      #customCommand: # Required when command == Custom
-      customRegistry: useFeed
-      customFeed: 'FZI-IOTA-NPM'      
-      #customEndpoint: # Optional
-      #publishRegistry: 'useExternalRegistry' # Optional. Options: useExternalRegistry, useFeed
-      #publishFeed: # Required when publishRegistry == UseFeed
-      #publishPackageMetadata: true # Optional
-      #publishEndpoint: # Required when publishRegistry == UseExternalRegistry
-  - task: Docker@1
-    displayName: Container registry login
-    inputs:
-      command: login
-      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-      azureContainerRegistry: $(azureContainerRegistry)  
-  - task: Docker@1
-    displayName: Build image
-    inputs:
-      command: build
-      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-      azureContainerRegistry: $(azureContainerRegistry)  
-      dockerFile: $(app_path)/Dockerfile
-      imageName: $(app_path)
-      qualifyImageName: true
+  - template: ../steps/npm.yml
   
-
-  - task: Docker@1
-    displayName: Push image
-    inputs:
-      command: push
-      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-      azureContainerRegistry: $(azureContainerRegistry)  
-      imageName: $(app_path)
-      qualifyImageName: true
-  
-  - task: Docker@1
-    displayName: Docker logout
-    condition: always()
-    inputs:
-      command: logout
-      azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-      azureContainerRegistry: $(azureContainerRegistry)  
+  - template: ../steps/docker.yml

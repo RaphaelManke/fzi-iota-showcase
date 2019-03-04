@@ -1,0 +1,17 @@
+parameters:
+  npmFeed: 'FZI-IOTA-NPM'
+steps:
+  - task: Npm@1
+    displayName: NPM install
+    inputs:
+      command: 'install' # Options: install, publish, custom
+      workingDir: $(app_path) # Optional
+      #verbose: # Optional
+      #customCommand: # Required when command == Custom
+      customRegistry: useFeed
+      customFeed: {{ parameters.npmFeed }}   
+      #customEndpoint: # Optional
+      #publishRegistry: 'useExternalRegistry' # Optional. Options: useExternalRegistry, useFeed
+      #publishFeed: # Required when publishRegistry == UseFeed
+      #publishPackageMetadata: true # Optional
+      #publishEndpoint: # Required when publishRegistry == UseExternalRegistry
