@@ -15,7 +15,6 @@ trigger:
   paths:
     include:
     - 'showcase-user-interface/*'
-    - 'showcase-user-interface-build.yml'
 
 
 jobs:
