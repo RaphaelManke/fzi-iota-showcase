@@ -3,7 +3,7 @@
 #
 
 variables:
-- group: my-variable-group
+- group: dockerRegistry
 - name: app_path
   value: frontend-showcase-vis
 - name: app_name
