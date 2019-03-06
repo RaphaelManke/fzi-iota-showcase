@@ -1,0 +1,2 @@
+import Trip from './trip';
+
