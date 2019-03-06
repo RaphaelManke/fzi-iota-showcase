@@ -1,4 +1,4 @@
-export default class Reservation {
+export class Reservation {
   constructor(public readonly hashedNonce: string, public readonly expireDate: Date) {
   }
 

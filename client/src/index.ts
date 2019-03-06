@@ -1,2 +1,1 @@
-import Trip from './trip';
-
+export {Trip} from './trip';

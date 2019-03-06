@@ -1,6 +1,6 @@
-import Trip from './trip';
+import {Trip} from './trip';
 
-export default class Vehicle {
+export class Vehicle {
   constructor(public readonly info: VehicleInfo, public readonly trips: Trip[]) {
   }
 }
