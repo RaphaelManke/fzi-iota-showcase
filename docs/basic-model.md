@@ -12,7 +12,6 @@
 - Props:
   - Addresse zum bezahlen
   - Preis
-  - Nonce for authentication
   - Reservierungsgebühr/min
 
 ## goodbyeMessage:
@@ -28,4 +27,4 @@
 ## reservationChannelMessage:
 - Object
   - dueTimestamp
-  - hash(encryptedNonce)
+  - hash(nonce)

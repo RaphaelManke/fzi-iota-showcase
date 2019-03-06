@@ -1,42 +1,47 @@
 # Use Cases
 
 ## Use-Case: publishFahrzeug
-	1) Lege vehicleChannel(RAAM) an -> Pubn
-	2) Erste Nachricht (Index=0) mit Addresse zu metainfoChannel(MAM) über das Fahrzeug
+1. Fahrzeug legt vehicleChannel (RAAM) an -> Pub<sub>n</sub>
+2. Fahrzeug erzeugt Root von metaInfoChannel (MAM) für das Fahrzeug
+3. Fahrzeug schreibt erste Nachricht (Index=0) mit Root zu metainfoChannel in vehicleChannel
 
 ## Use-Case: fahrzeugAnPositionEinloggen/Registrieren
-	1) fahrtChannel anlegen
-		a. Root tripChanneli(RAAM)
-		b. Welcome Message an Index 0:
-			i. Addresse zum bezahlen
-			ii. Preis
-			iii. Nonce for authentication
-			iv. Reservierungsgebühr/min
-		c. Root von tripChanneli in  vehicleChannel an nächsten freien Indexi
-		d. Schreibe Pubn + Indexi
-
-## Use-Case: Reservierung
-	1) Siehe Fahrt 1 + 2
-	2) Nutzer bezahlt Reservierungsgebühr + encryptedNonce zur Authentifizierung
-	3) Fahrzeug beobachtet Adresse für Reservierung
-	4) Fahrzeug speichert und veröffentlicht Reservierung
+- Fahrzeug legt tripChannel i an
+   1. Ereugt Root von tripChannel<sub>i</sub> (RAAM)
+   2. Schreibt WelcomeMessage an Index 0 in tripChannel<sub>i</sub>:
+		- Addresse zum Bezahlen
+		- Preis
+        - Reservierungsgebühr/min
+   3. Beobachtet Adresse für Reservierung
+   4. Schreibt Root von tripChannel<sub>i</sub> in vehicleChannel an nächsten freien Index i
+   5. Schreibt Pub<sub>n</sub> + Index i an Adresse von Position
 
 ## Use-Case: Fahrt
-	1) Nutzer sucht Adresse von Abfahrtsort
-	2) Nutzer prüft Verfügbare Fahrzeuge 
-		a. Bekommt Metainfo aus welcome message
-		b. Ist Fahrzeug abgefahren, ja -> breche ab
-		c. Ist Fahrzeug reseviert?
-			i. Ja -> Fahrzeug verlangt Authentifizierung: secret das nonce verschlüsselt hat
-			ii. Nein -> öffne Tür
-	3) Nutzer steigt in Fahrzeug und tätigt Bezahlung 
-		a. Nutzer sendet Fahrzeug gewünschtes ziel
-		b. Fahrzeug sendet maximalen preis
-		c. Nutzer und Fahrzeug öffnen bezahlungschannel
-			i. Erstellen multisig adresse
-			ii. Zahlen maximalen preis auf multisig adresse ein
-			iii. Nutzer sendet erste Microtransaction für Fahrt
-	4) Fahrzeug registriert Abfahrt
-	5) Fahrzeug beendet Fahrt
-    6) Fahrzeug meldet sich bei Ankunftsort an
+1. Nutzer sucht Adresse von Abfahrtsort
+2. Nutzer prüft Verfügbare Fahrzeuge 
+	1. Liest Metainfo aus welcome message der tripChannels
+	2. Ist Fahrzeug abgefahren? ja -> breche ab
+	3. Ist Fahrzeug reseviert?
+		1. Ja -> Fahrzeug verlangt Authentifizierung: Nutzer sendet nonce
+		2. Nein -> öffne Tür
+3. Nutzer steigt in Fahrzeug und tätigt Bezahlung 
+	1. Nutzer sendet Fahrzeug gewünschtes ziel
+	2. Fahrzeug sendet maximalen preis
+	3. Nutzer und Fahrzeug öffnen bezahlungschannel
+		1. Erstellen multisig adresse
+		2. Zahlen maximalen preis auf multisig adresse ein
+		3. Nutzer sendet erste Microtransaction für Fahrt
+4. Fahrzeug registriert Abfahrt in tripChannel
+5. Microtransactions (3.3.3) werden solange wiederholt, bis Fahrt beendet ist
+6. Fahrzeug beendet Fahrt
+7. Fahrzeug meldet sich bei Ankunftsort an
     
+## Use-Case: Reservierung
+1. Siehe Fahrt 1.-2.3.
+   - ist Fahrzeug reserviert/ausgebucht? ja -> breche ab
+2. Nutzer bezahlt Reservierungsgebühr
+   - Transaktion enthält Nachricht:
+     - hash(nonce) zur Authentifizierung
+     - Zeitpunkt, bis zu dem reserviert werden soll
+3. Fahrzeug empfängt Reservierung auf beobachteter Adresse
+4. Fahrzeug speichert und veröffentlicht Reservierung
