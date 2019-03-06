@@ -31,7 +31,8 @@
   "dependencies": {
     "@iota/core": "^1.0.0-beta.11",
     "@iota/mam": "^0.5.0",
-    "raam.client.js": "^0.7.1"
+    "mam.ts": "^0.1.6",
+    "raam.client.js": "^0.7.2"
   },
   "devDependencies": {
     "@types/node": "7.0.22",

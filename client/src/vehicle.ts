@@ -1,7 +1,7 @@
 import {Trip} from './trip';
 
 export class Vehicle {
-  constructor(public readonly info: VehicleInfo, public readonly trips: Trip[]) {
+  constructor(public readonly info: VehicleInfo, public readonly trips: Trip[] = []) {
   }
 }
 
