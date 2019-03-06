@@ -5,6 +5,8 @@
   "publishConfig": {
     "registry": "https://pkgs.dev.azure.com/FZI-IOTA-showcase/_packaging/FZI-IOTA-NPM/npm/registry/"
   },
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
   "description": "",
   "keywords": [
     "iota",
@@ -23,7 +25,9 @@
     "Raphael Manke <> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@iota/core": "^1.0.0-beta.11",
     "@iota/signing": "^1.0.0-beta.11",
