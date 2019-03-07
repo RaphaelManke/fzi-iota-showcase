@@ -13,6 +13,7 @@
   - Addresse zum bezahlen
   - Preis
   - Reservierungsgebühr/min
+  - Haltestellen-Id
 
 ## goodbyeMessage:
 - Object
