@@ -23,9 +23,13 @@
     "Raphael Manke <> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "fzi-iota-showcase-client": "^0.0.1",
+    "mam.ts": "^0.1.6",
+    "raam.client.js": "^0.7.2",
     "zeromq": "^5.1.0"
   },
   "devDependencies": {

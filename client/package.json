@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "private": false,
   "publishConfig": {
-    "registry":"https://pkgs.dev.azure.com/FZI-IOTA-showcase/_packaging/FZI-IOTA-NPM/npm/registry/"
+    "registry": "https://pkgs.dev.azure.com/FZI-IOTA-showcase/_packaging/FZI-IOTA-NPM/npm/registry/"
   },
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
   "description": "",
   "keywords": [
     "iota",
@@ -23,11 +25,14 @@
     "Raphael Manke <> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
-    "@iota/core": "^1.0.0-beta.5",
-    "@iota/signing": "^1.0.0-beta.5",
-    "@iota/validators": "^1.0.0-beta.5"
+    "@iota/core": "^1.0.0-beta.11",
+    "@iota/mam": "^0.5.0",
+    "mam.ts": "^0.1.6",
+    "raam.client.js": "^0.7.2"
   },
   "devDependencies": {
     "@types/node": "7.0.22",
