@@ -19,13 +19,10 @@ steps:
   
 - ${{ if eq(parameters.publish, 'true') }}:
   - task: Npm@1
-    displayName: NPM publish
+    displayName: 'npm publish'
     inputs:
-      command: 'publish' # Options: install, publish, custom
-      workingDir: $(app_path) # Optional
-      #verbose: # Optional
-      #customCommand: # Required when command == Custom
-      customRegistry: useFeed
-      customFeed: ${{ parameters.npmFeed }}   
+      command: publish
+      workingDir: '$(System.DefaultWorkingDirectory)/$(app_path)'
+      verbose: true
       publishRegistry: useFeed
-      publishFeed: ${{ parameters.npmFeed }}   
+      publishFeed: ${{ parameters.npmFeed }}  
