@@ -4,3 +4,8 @@ export {Reservation} from './reservation';
 export {Trip} from './trip';
 export {Vehicle, VehicleInfo} from './vehicle';
 export {createAttachToTangle} from './userPowSrv';
+import * as Logger from './logger';
+export {Logger};
+import * as ChainedMessageBuilder from './chainedMessageBuilder';
+export {ChainedMessageBuilder};
+export {readVehicle, readVehicleInfo} from './vehicleReader';
