@@ -25,5 +25,7 @@ steps:
       workingDir: $(app_path) # Optional
       #verbose: # Optional
       #customCommand: # Required when command == Custom
+      customRegistry: useFeed
+      customFeed: ${{ parameters.npmFeed }}   
       publishRegistry: useFeed
       publishFeed: ${{ parameters.npmFeed }}   
