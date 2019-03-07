@@ -2,26 +2,32 @@ import { trytes } from '@iota/converter';
 import {publishVehicle} from '../src/vehiclePublisher';
 import { Logger, readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
 const {log} = Logger;
+import { expect } from 'chai';
+import 'mocha';
 
-(async () => {
-  try {
+describe('VehiclePublisher', () => {
+  it('should publish vehicleData and read it from the tangle', async function() {
+    this.timeout(60000); // timeout 1 minute
+    let a: Chai.Assertion; // suppress tslint errors
+
     const seed = generateSeed();
     log.info('Seed: %s', seed);
     const provider = 'https://nodes.devnet.iota.org';
     const {raam, root} = await publishVehicle(provider, seed, 4, {type: 'car'});
+    a = expect(raam).to.exist;
+    a = expect(root).to.exist;
     log.info('Channel id: %s', trytes(raam.channelRoot));
     log.info('MetaInfo channel root: %s', root);
     const vehicle = await readVehicle(provider, raam.channelRoot);
     log.info('%O', vehicle);
+    a = expect(vehicle).to.exist;
     const info = await readVehicleInfo(provider, raam.channelRoot);
+    a = expect(info).to.exist;
     if (vehicle) {
-      log.info('readVehicle info equal to readVehicleInfo: %s',
-        JSON.stringify(vehicle.info) === JSON.stringify(info));
+      expect(info).to.deep.equal(vehicle.info);
     }
-  } catch (e) {
-    log.error(e);
-  }
-})();
+  });
+});
 
 function generateSeed(length = 81) {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';

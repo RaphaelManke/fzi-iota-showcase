@@ -1,6 +1,5 @@
 import { VehicleInfo, createAttachToTangle, Logger, ChainedMessageBuilder} from 'fzi-iota-showcase-client';
 const {log} = Logger;
-const {buildObject} = ChainedMessageBuilder;
 import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';
