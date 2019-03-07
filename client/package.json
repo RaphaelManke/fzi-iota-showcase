@@ -2,7 +2,6 @@
   "name": "fzi-iota-showcase-client",
   "version": "0.0.1",
   "private": false,
-  
   "main": "out/index.js",
   "types": "out/index.d.ts",
   "description": "",
