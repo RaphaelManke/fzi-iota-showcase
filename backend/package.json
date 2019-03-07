@@ -28,8 +28,8 @@
     "@iota/core": "^1.0.0-beta.5",
     "@iota/signing": "^1.0.0-beta.5",
     "@iota/validators": "^1.0.0-beta.5",
-    "fzi-iota-showcase-vehicle-mock": "file:../vehicle-mock",
-    "fzi-iota-showcase-tram-mock": "file:../tram-mock",
+    "fzi-iota-showcase-vehicle-mock": "^0.0.1",
+    "fzi-iota-showcase-tram-mock": "^0.0.1",
     "eventemitter2": "^5.0.1",
     "socket.io": "^2.2.0",
     "zeromq": "^5.1.0"
