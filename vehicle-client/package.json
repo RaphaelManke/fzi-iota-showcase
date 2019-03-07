@@ -30,6 +30,8 @@
     "fzi-iota-showcase-client": "^0.0.1",
     "mam.ts": "^0.1.6",
     "raam.client.js": "^0.7.2",
+    "supports-color": "^6.1.0",
+    "winston": "^3.2.1",
     "zeromq": "^5.1.0"
   },
   "devDependencies": {

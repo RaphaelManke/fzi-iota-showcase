@@ -1,18 +1,18 @@
-import { VehicleInfo, createAttachToTangle} from 'fzi-iota-showcase-client';
+import { VehicleInfo, createAttachToTangle, log} from 'fzi-iota-showcase-client';
 import { RAAM, RAAMReader } from 'raam.client.js';
 import { trytes } from '@iota/converter';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE, MamReader } from 'mam.ts';
 
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
-    const raam = await RAAM.fromSeed(seed, {amount: capacity, iota})
-    console.log('Vehicle channel created');
-    return raam;
+  const raam = await RAAM.fromSeed(seed, {amount: capacity, iota});
+  log.debug('Vehicle channel created');
+  return raam;
 }
 
 async function publishMetaInfoRoot(raam: RAAM, root: string) {
   const hash = await raam.publish(root);
-  console.log('Published metaInfo root');
+  log.debug('Published metaInfo root');
   return {hash, raam};
 }
 
@@ -25,7 +25,7 @@ async function readMetaInfo(provider: string, root: string) {
 
 async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
   const tx = await writer.createAndAttach(JSON.stringify(info));
-  console.log('Published metaInfo');
+  log.debug('Published metaInfo');
   return tx;
 }
 
@@ -49,12 +49,12 @@ export async function publishVehicle(provider: string, seed: string, capacity: n
 (async () => {
   try {
     const seed = generateSeed();
-    console.log('Seed:', seed);
+    log.info('Seed: %s', seed);
     const {raam, root} = await publishVehicle('https://nodes.devnet.iota.org', seed, 4, {type: 'car'});
-    console.log('Channel id:', trytes(raam.channelRoot));
-    console.log('MetaInfo channel root:', root);
+    log.info('Channel id: %s', trytes(raam.channelRoot));
+    log.info('MetaInfo channel root: %s', root);
   } catch (e) {
-    console.error('Error:', e);
+    log.error(e);
   }
 })();
 
