@@ -27,6 +27,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "extend": "^3.0.2",
     "fzi-iota-showcase-client": "^0.0.1",
     "mam.ts": "^0.1.6",
     "raam.client.js": "^0.7.2",
@@ -35,6 +36,7 @@
     "zeromq": "^5.1.0"
   },
   "devDependencies": {
+    "@types/extend": "^3.0.1",
     "@types/node": "7.0.22",
     "mocha": "^5.2.0",
     "ts-node": "^8.0.2",
