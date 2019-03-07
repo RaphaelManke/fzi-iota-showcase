@@ -21,7 +21,7 @@ trigger:
 
 
 jobs:
-- template: jobs/build.yml  # Template reference
+- template: jobs/build-lib.yml  # Template reference
   parameters:
     app_name: $(app_name)
     pool:

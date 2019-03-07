@@ -1,0 +1,18 @@
+# build definition
+parameters:
+  appName: ''
+  pool: ''
+
+jobs:
+- job: Build 
+  pool: ${{ parameters.pool }}
+  steps:
+  # - task: NodeTool@0
+  #   inputs:
+  #     versionSpec: '8.x'
+  #   displayName: 'Install Node.js'
+  - template: ../steps/npm.yml
+    parameters:
+      publish: true
+  
+  #- template: ../steps/docker.yml
