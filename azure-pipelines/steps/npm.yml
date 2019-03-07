@@ -25,4 +25,4 @@ steps:
       workingDir: '$(System.DefaultWorkingDirectory)/$(app_path)'
       verbose: true
       publishRegistry: useFeed
-      publishFeed: ${{ parameters.npmFeed }}  
+      publishFeed: '4514e926-6705-718c-8ddc-5af4f55dfbfe'  
