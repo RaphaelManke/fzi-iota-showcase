@@ -4,9 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 variables:
-  groups: dockerRegistry
-  app_path: showcase-user-interface
-  app_name: Showcase user-interface
+- group: dockerRegistry
+- name: app_path
+  value: showcase-user-interface
+- name: app_name
+  value: Showcase user-interface
+
 
 trigger:
   branches:
