@@ -30,3 +30,8 @@ jobs:
       customCommand: test
       workingDir: $(app_path) 
   
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Build Artifact
+    inputs:
+      ArtifactName: package
+      PathtoPublish: $(app_path)
