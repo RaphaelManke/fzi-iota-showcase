@@ -3,9 +3,14 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+
 variables:
-  app_path: backend
-  app_name: Backend
+- group: dockerRegistry
+- name: app_path
+  value: backend
+- name: app_name
+  value: Backend
+
 
 trigger:
   branches:

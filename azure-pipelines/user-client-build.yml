@@ -4,8 +4,11 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 variables:
-  app_path: user-client
-  app_name: User Client
+- group: dockerRegistry
+- name: app_path
+  value: user-client
+- name: app_name
+  value: User Client
 
 trigger:
   branches:
