@@ -1,6 +1,7 @@
 import { trytes } from '@iota/converter';
 import { Logger } from 'fzi-iota-showcase-client';
-import {publishVehicle, readMetaInfo} from '../src/vehiclePublisher';
+import {publishVehicle} from '../src/vehiclePublisher';
+import {readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
 const {log} = Logger;
 
 (async () => {
@@ -11,8 +12,13 @@ const {log} = Logger;
     const {raam, root} = await publishVehicle(provider, seed, 4, {type: 'car'});
     log.info('Channel id: %s', trytes(raam.channelRoot));
     log.info('MetaInfo channel root: %s', root);
-    const info = await readMetaInfo(provider, root);
-    log.info('MetaInfo: %o', info);
+    const vehicle = await readVehicle(provider, raam.channelRoot);
+    log.info('%O', vehicle);
+    const info = await readVehicleInfo(provider, raam.channelRoot);
+    if (vehicle) {
+      log.info('readVehicle info equal to readVehicleInfo: %s',
+        JSON.stringify(vehicle.info) === JSON.stringify(info));
+    }
   } catch (e) {
     log.error(e);
   }

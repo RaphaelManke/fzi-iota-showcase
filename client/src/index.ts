@@ -8,3 +8,4 @@ import * as Logger from './logger';
 export {Logger};
 import * as ChainedMessageBuilder from './chainedMessageBuilder';
 export {ChainedMessageBuilder};
+export {readVehicle, readVehicleInfo} from './vehicleReader';
