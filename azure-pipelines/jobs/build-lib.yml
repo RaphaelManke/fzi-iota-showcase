@@ -2,17 +2,31 @@
 parameters:
   appName: ''
   pool: ''
+  npmFeed: 'FZI-IOTA-NPM'
 
 jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
   steps:
-  # - task: NodeTool@0
-  #   inputs:
-  #     versionSpec: '8.x'
-  #   displayName: 'Install Node.js'
-  - template: ../steps/npm.yml
-    parameters:
-      publish: true
   
-  #- template: ../steps/docker.yml
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  
+  - task: Npm@1
+  displayName: NPM install
+  inputs:
+    command: 'install' 
+    workingDir: $(app_path) 
+    customRegistry: useFeed
+    customFeed: ${{ parameters.npmFeed }}   
+
+  - task: Npm@1
+    continueOnError: true
+    displayName: NPM test
+    inputs:
+      command: 'custom' 
+      customCommand: test
+      workingDir: $(app_path) 
+  
