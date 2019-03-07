@@ -8,19 +8,19 @@ jobs:
 - job: Build 
   pool: ${{ parameters.pool }}
   steps:
-  
+
   - task: NodeTool@0
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
   
   - task: Npm@1
-  displayName: NPM install
-  inputs:
-    command: 'install' 
-    workingDir: $(app_path) 
-    customRegistry: useFeed
-    customFeed: ${{ parameters.npmFeed }}   
+    displayName: NPM install
+    inputs:
+      command: 'install' 
+      workingDir: $(app_path) 
+      customRegistry: useFeed
+      customFeed: ${{ parameters.npmFeed }}   
 
   - task: Npm@1
     continueOnError: true
