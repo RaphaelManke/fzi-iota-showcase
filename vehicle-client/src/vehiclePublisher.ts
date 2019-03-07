@@ -24,11 +24,11 @@ async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
 }
 
 export async function publishVehicle(
-  provider: string, seed: string, capacity: number, vehicleInfo: VehicleInfo,
-  iota: API = composeAPI({
-    provider,
-    attachToTangle: createAttachToTangle(),
-  })) {
+    provider: string, seed: string, capacity: number, vehicleInfo: VehicleInfo,
+    iota: API = composeAPI({
+      provider,
+      attachToTangle: createAttachToTangle(),
+    })) {
   const infoChannel = new MamWriter(provider, seed, MAM_MODE.PUBLIC);
   infoChannel.EnablePowSrv(true);
   const root = infoChannel.getNextRoot();

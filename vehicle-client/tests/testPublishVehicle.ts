@@ -1,7 +1,6 @@
 import { trytes } from '@iota/converter';
-import { Logger } from 'fzi-iota-showcase-client';
 import {publishVehicle} from '../src/vehiclePublisher';
-import {readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
+import { Logger, readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
 const {log} = Logger;
 
 (async () => {
