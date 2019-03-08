@@ -33,7 +33,7 @@ export async function readVehicle(provider: string, vehicleId: Int8Array, iota: 
       await masterChannel.syncChannel(),
     ]);
     // TODO read trips
-    return new Vehicle(vehicleInfo);
+    return new Vehicle(vehicleId, vehicleInfo);
   } else {
     return undefined;
   }

@@ -38,10 +38,9 @@
 
 ### ReservationReference:
   - Root zum reservationChannel (MAM)
-  - Referenz zu WelcomeMessage (vehicleId, Index j)
   
 ### GoodbyeMessage:
-- Referenz zu WelcomeMessage (vehicleId, Index j)
+- Object
 
 ## ReservationChannel:
 - Type: MAM

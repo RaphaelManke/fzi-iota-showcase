@@ -57,5 +57,6 @@
    - Transaktion enthält Nachricht:
      - hash(nonce) zur Authentifizierung
      - Zeitpunkt, bis zu dem reserviert werden soll
+     - repaymentAddress falls Reservierung nicht angenommen wird
 3. Fahrzeug empfängt Reservierung auf beobachteter Adresse
 4. Fahrzeug speichert und veröffentlicht Reservierung
