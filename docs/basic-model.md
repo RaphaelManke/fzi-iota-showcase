@@ -1,31 +1,52 @@
 # Models
 
-## tripChannel:
-- Länge = 4
-- Props:
-  - Welcome message
-  - Reservations-reference
-  - Goodbye message
-  - puffer
+## VehicleChannel
+ - RAAM channel mit beliebiger Höhe
+ - channelId = vehicleId
+ - Index 0: MetaInfoReference
+ - Index 1-n: WelcomeMessages
+  
+### MetaInfoReference
+ - Root zu MetaInfoChannel
 
-## welcomeMessage:
+### WelcomeMessage:
 - Props:
-  - Addresse zum bezahlen
+  - Root von tripChannel<sub>i</sub> (in nextRoot)
+  - txHash
+- optional verschlüsselt mit Passwort, wenn es nicht möglich sein soll, diese Fahrt zu lesen, wenn man die CheckInMessage nicht kennt -> Fahrzeug kann seinen Fahrtverlauf geheim halten
+- Nachricht dient dazu Assoziation zwischen CheckInMessage und vehicle zu verifizieren
+
+## Haltestellen-Adresse
+  - Transaktionen: CheckInMessages
+
+### CheckInMessage
+- Props:
+  - vehicleId
+  - Verweis auf WelcomeMessage für tripChannel<sub>i</sub> (Index j)
+  - Bezahladresse
   - Preis
   - Reservierungsgebühr/min
-  - Haltestellen-Id
+  - optional: Selbstbeschreibung des Fahrzeugs
+  - optional: Passwort für WelcomeMessage
+- Message wird referenziert über txHash
 
-## goodbyeMessage:
-- Object
+## TripChannel:
+- Länge = 2
+- Messages:
+  - Index 0: Reservations-reference
+  - Index 1: Goodbye message
 
-## reservationReference:
-- Props:
-  - Root zum reservationChannel
+### ReservationReference:
+  - Root zum reservationChannel (MAM)
+  - Referenz zu WelcomeMessage (vehicleId, Index j)
+  
+### GoodbyeMessage:
+- Referenz zu WelcomeMessage (vehicleId, Index j)
 
-## reservationChannel:
+## ReservationChannel:
 - Type: MAM
 
-## reservationChannelMessage:
+### ReservationChannelMessage:
 - Object
   - dueTimestamp
   - hash(nonce)
