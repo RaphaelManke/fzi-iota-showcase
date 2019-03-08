@@ -17,22 +17,13 @@ steps:
     #publishPackageMetadata: true # Optional
     #publishEndpoint: # Required when publishRegistry == UseExternalRegistry
   
-- ${{ if eq(parameters.publish, 'true') }}:
-  - task: Npm@1
-    displayName: 'npm login'
-    inputs:
-      command: login
-      workingDir: '$(System.DefaultWorkingDirectory)/$(app_path)'
-      verbose: true
-      customRegistry: useFeed
-      customFeed: ${{ parameters.npmFeed }}   
-      publishRegistry: useFeed
-      publishFeed: ${{ parameters.npmFeed }}   
+
 - ${{ if eq(parameters.publish, 'true') }}:
   - task: Npm@1
     displayName: 'npm publish'
     inputs:
-      command: publish
+      command: custom
+      customCommand: publish --tag alpha
       workingDir: '$(System.DefaultWorkingDirectory)/$(app_path)'
       verbose: true
       publishRegistry: useFeed
