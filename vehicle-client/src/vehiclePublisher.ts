@@ -3,6 +3,7 @@ const {log} = Logger;
 import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';
+import { getMetaInfoSeed } from './seeds';
 
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
   const raam = await RAAM.fromSeed(seed, {amount: capacity, iota, security: 1});
@@ -28,11 +29,12 @@ export async function publishVehicle(
       provider,
       attachToTangle: createAttachToTangle(),
     })) {
-  const infoChannel = new MamWriter(provider, seed, MAM_MODE.PUBLIC);
+  const metaInfoSeed = getMetaInfoSeed(seed);
+  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
   infoChannel.EnablePowSrv(true);
   const root = infoChannel.getNextRoot();
 
-  const [{hash, raam}, tx] = await Promise.all([
+  const [{hash: txHash, raam}, tx] = await Promise.all([
     createMasterChannel(iota, seed, capacity).then((masterChannel) => publishMetaInfoRoot(masterChannel, root)),
     publishMetaInfo(infoChannel, vehicleInfo),
   ]);
