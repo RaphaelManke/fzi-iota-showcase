@@ -39,11 +39,13 @@
     "zeromq": "^5.1.0"
   },
   "devDependencies": {
+    "@types/chai-things": "0.0.33",
     "@types/chai": "^4.1.7",
     "@types/extend": "^3.0.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "7.0.22",
     "chai": "^4.2.0",
+    "chai-things": "^0.2.0",
     "mocha": "^5.2.0",
     "ts-node": "^8.0.3",
     "tslint": "^5.13.0",
