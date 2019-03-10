@@ -1,4 +1,4 @@
-import { VehicleInfo, createAttachToTangle, Logger, ChainedMessageBuilder} from 'fzi-iota-showcase-client';
+import { VehicleInfo, createAttachToTangle, Logger} from 'fzi-iota-showcase-client';
 const {log} = Logger;
 import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
@@ -21,6 +21,20 @@ async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
   const tx = await writer.createAndAttach(JSON.stringify({put: info}));
   log.debug('Published metaInfo');
   return tx;
+}
+
+async function createMetaInfoWriter(provider: string, seed: string) {
+  const metaInfoSeed = getMetaInfoSeed(seed);
+  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
+  infoChannel.EnablePowSrv(true);
+  await infoChannel.catchUpThroughNetwork();
+  return infoChannel;
+}
+
+export async function addMetaInfo(provider: string, seed: string, info: any) {
+  const infoChannel = await createMetaInfoWriter(provider, seed);
+  return await publishMetaInfo(infoChannel, info);
+
 }
 
 export async function publishVehicle(
