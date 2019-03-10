@@ -22,11 +22,16 @@ describe('Seed management', () => {
     seeds.push(getTripSeed(seed, 2));
     seeds.push(getReservationSeed(seed, 1));
     seeds.push(getReservationSeed(seed, 2));
+
     const set = new Set(seeds);
     log.info('Seeds:\n%O', seeds);
     expect(seeds.length).equals(set.size);
-    seeds.should.all.not.satisfy((e: string) => set.has(hash(e)));
-    seeds.should.all.not.satisfy((e: string) => set.has(hash(hash(e))));
+    const hashes = seeds.map((s) => hash(s));
+    hashes.forEach((h) => set.add(h));
+    expect(set.size).equals(seeds.length * 2);
+    const hashedHashes = hashes.map((h) => hash(h));
+    hashedHashes.forEach((h) => set.add(h));
+    expect(set.size).equals(seeds.length * 3);
   });
 });
 
