@@ -1,8 +1,6 @@
-export class Reservation {
-  constructor(public readonly hashedNonce: string, public readonly expireDate: Date) {
-  }
+import { Hash } from '@iota/core/typings/types';
 
-  public isExpired() {
-    return new Date() >= this.expireDate;
-  }
+export class Reservation {
+  constructor(public readonly hashedNonce: string, public readonly expireDate: Date,
+              public readonly repaymentAddress?: Hash) {}
 }

@@ -1,9 +1,9 @@
-export {ReservationMessage} from './reservationMessage';
-export {StopWelcomeMessage} from './stopWelcomeMessage';
+export {ReservationMessage} from './messages/reservationMessage';
+export {StopWelcomeMessage} from './messages/stopWelcomeMessage';
 export {Reservation} from './reservation';
 export {Trip} from './trip';
 export {Vehicle, VehicleInfo} from './vehicle';
-export {createAttachToTangle} from './userPowSrv';
+export {createAttachToTangle} from './usePowSrv';
 import * as Logger from './logger';
 export {Logger};
 import * as ChainedMessageBuilder from './chainedMessageBuilder';

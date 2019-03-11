@@ -1,23 +1,28 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld/>
+    <div id="top">
+    <mapVisu></mapVisu>
+    <h1 style="text-align: right;">Fancy Liste</h1>
+    </div>
+    <div id="down">
+      <h1>Fancy Liste</h1>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+import MapVisu from './components/MapVisu.vue';
 
 @Component({
   components: {
-    HelloWorld,
+    MapVisu,
   },
   sockets: {
     connect() {
       window.console.log('Connected to websocket server.');
     },
-}
+},
 })
 export default class App extends Vue {
 
@@ -29,7 +34,7 @@ private events: string[] = [];
 
   private created() {
     ['vehicleAdded',
-      'updatedPos',]
+      'updatedPos']
       .forEach((e) => this.sockets.subscribe(e, (data: any) => {
         // logic goes here
         this.events.push(JSON.stringify({[e]: data}));
@@ -40,12 +45,8 @@ private events: string[] = [];
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+#top {
+    display: grid;
+    grid-template-columns: auto 20%;
 }
 </style>
