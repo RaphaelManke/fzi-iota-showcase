@@ -5,6 +5,32 @@ import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 import { getMetaInfoSeed, getMasterSeed } from './seeds';
 
+export async function addMetaInfo(provider: string, seed: string, info: any) {
+  const infoChannel = await createMetaInfoWriter(provider, seed);
+  const root = infoChannel.getNextRoot();
+  return {root, tx: await publishMetaInfo(infoChannel, info)};
+
+}
+
+export async function publishVehicle(
+    provider: string, seed: string, capacity: number, vehicleInfo: VehicleInfo,
+    iota: API = composeAPI({
+      provider,
+      attachToTangle: createAttachToTangle(),
+    })) {
+
+  const metaInfoSeed = getMetaInfoSeed(seed);
+  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
+  infoChannel.EnablePowSrv(true);
+  const root = infoChannel.getNextRoot();
+
+  const [{hash: txHash, raam}, tx] = await Promise.all([
+    createMasterChannel(iota, seed, capacity).then((masterChannel) => publishMetaInfoRoot(masterChannel, root)),
+    publishMetaInfo(infoChannel, vehicleInfo),
+  ]);
+  return {raam, root, tx};
+}
+
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
   const raam = await RAAM.fromSeed(getMasterSeed(seed, capacity), {amount: capacity, iota, security: 1});
   log.debug('Vehicle channel created');
@@ -29,29 +55,4 @@ async function createMetaInfoWriter(provider: string, seed: string) {
   infoChannel.EnablePowSrv(true);
   await infoChannel.catchUpThroughNetwork();
   return infoChannel;
-}
-
-export async function addMetaInfo(provider: string, seed: string, info: any) {
-  const infoChannel = await createMetaInfoWriter(provider, seed);
-  return await publishMetaInfo(infoChannel, info);
-
-}
-
-export async function publishVehicle(
-    provider: string, seed: string, capacity: number, vehicleInfo: VehicleInfo,
-    iota: API = composeAPI({
-      provider,
-      attachToTangle: createAttachToTangle(),
-    })) {
-
-  const metaInfoSeed = getMetaInfoSeed(seed);
-  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
-  infoChannel.EnablePowSrv(true);
-  const root = infoChannel.getNextRoot();
-
-  const [{hash: txHash, raam}, tx] = await Promise.all([
-    createMasterChannel(iota, seed, capacity).then((masterChannel) => publishMetaInfoRoot(masterChannel, root)),
-    publishMetaInfo(infoChannel, vehicleInfo),
-  ]);
-  return {raam, root, tx};
 }
