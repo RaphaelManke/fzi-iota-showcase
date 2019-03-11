@@ -22,6 +22,15 @@ jobs:
       customRegistry: useFeed
       customFeed: ${{ parameters.npmFeed }}   
 
+
+  - task: Npm@1
+    continueOnError: true
+    displayName: NPM build
+    inputs:
+      command: 'custom' 
+      customCommand: run-script build
+      workingDir: $(app_path) 
+        
   - task: Npm@1
     continueOnError: true
     displayName: NPM test
