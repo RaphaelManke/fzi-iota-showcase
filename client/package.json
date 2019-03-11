@@ -30,7 +30,7 @@
     "@iota/mam": "^0.5.0",
     "extend": "^3.0.2",
     "mam.ts": "^0.1.6",
-    "raam.client.js": "^0.7.2",
+    "raam.client.js": "^0.7.3",
     "supports-color": "^5.5.0",
     "winston": "^3.2.1"
   },

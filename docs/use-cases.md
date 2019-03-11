@@ -10,17 +10,19 @@
 - Fahrzeug legt tripChannel i an
   1. Ereugt channelId von tripChannel<sub>i</sub> (RAAM)
   2. Findet nächsten freien Index j in vehicleChannel
-  3. Legt nächste Bezahladresse fest
-  4. Startet Beobachtung für Bezahladresse
-  5. Schreibt CheckInMessage an Adresse von Haltestelle: -> txHash
+  3. berechnet Root zum reservationChannel
+  4. Legt nächste Bezahladresse fest
+  5. Startet Beobachtung für Bezahladresse
+  6. Schreibt CheckInMessage an Adresse von Haltestelle: -> txHash
        - vehicleId
        - Verweis auf WelcomeMessage für tripChannel<sub>i</sub> (Index j)
        - Bezahladresse
        - Preis
        - Reservierungsgebühr/min
+       - Root zum reservationChannel (MAM)
        - optional: Selbstbeschreibung des Fahrzeugs
        - optional: Passwort für WelcomeMessage
-  6. Schreibt WelcomeMessage  in vehicleChannel an Index j:
+  7. Schreibt WelcomeMessage in vehicleChannel an Index j:
        - channelId von tripChannel<sub>i</sub> (in nextRoot)
        - txHash
 

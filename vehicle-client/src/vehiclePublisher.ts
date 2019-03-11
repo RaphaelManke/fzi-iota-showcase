@@ -1,11 +1,12 @@
-import { VehicleInfo, createAttachToTangle, Logger, ChainedMessageBuilder} from 'fzi-iota-showcase-client';
+import { VehicleInfo, createAttachToTangle, Logger} from 'fzi-iota-showcase-client';
 const {log} = Logger;
 import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';
+import { getMetaInfoSeed, getMasterSeed } from './seeds';
 
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
-  const raam = await RAAM.fromSeed(seed, {amount: capacity, iota, security: 1});
+  const raam = await RAAM.fromSeed(getMasterSeed(seed, capacity), {amount: capacity, iota, security: 1});
   log.debug('Vehicle channel created');
   return raam;
 }
@@ -22,17 +23,33 @@ async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
   return tx;
 }
 
+async function createMetaInfoWriter(provider: string, seed: string) {
+  const metaInfoSeed = getMetaInfoSeed(seed);
+  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
+  infoChannel.EnablePowSrv(true);
+  await infoChannel.catchUpThroughNetwork();
+  return infoChannel;
+}
+
+export async function addMetaInfo(provider: string, seed: string, info: any) {
+  const infoChannel = await createMetaInfoWriter(provider, seed);
+  return await publishMetaInfo(infoChannel, info);
+
+}
+
 export async function publishVehicle(
     provider: string, seed: string, capacity: number, vehicleInfo: VehicleInfo,
     iota: API = composeAPI({
       provider,
       attachToTangle: createAttachToTangle(),
     })) {
-  const infoChannel = new MamWriter(provider, seed, MAM_MODE.PUBLIC);
+
+  const metaInfoSeed = getMetaInfoSeed(seed);
+  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
   infoChannel.EnablePowSrv(true);
   const root = infoChannel.getNextRoot();
 
-  const [{hash, raam}, tx] = await Promise.all([
+  const [{hash: txHash, raam}, tx] = await Promise.all([
     createMasterChannel(iota, seed, capacity).then((masterChannel) => publishMetaInfoRoot(masterChannel, root)),
     publishMetaInfo(infoChannel, vehicleInfo),
   ]);

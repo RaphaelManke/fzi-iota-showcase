@@ -26,6 +26,7 @@
   - Bezahladresse
   - Preis
   - Reservierungsgebühr/min
+  - Root zum reservationChannel (MAM)
   - optional: Selbstbeschreibung des Fahrzeugs
   - optional: Passwort für WelcomeMessage
 - Message wird referenziert über txHash
@@ -33,11 +34,8 @@
 ## TripChannel:
 - Länge = 2
 - Messages:
-  - Index 0: Reservations-reference
-  - Index 1: Goodbye message
-
-### ReservationReference:
-  - Root zum reservationChannel (MAM)
+  - Index 0: Goodbye message
+  - Index 1: ungenutzt, Puffer
   
 ### GoodbyeMessage:
 - Object
