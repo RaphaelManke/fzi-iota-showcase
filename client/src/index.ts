@@ -3,7 +3,7 @@ export {StopWelcomeMessage} from './messages/stopWelcomeMessage';
 export {Reservation} from './reservation';
 export {Trip} from './trip';
 export {Vehicle, VehicleInfo} from './vehicle';
-export {createAttachToTangle} from './userPowSrv';
+export {createAttachToTangle} from './usePowSrv';
 import * as Logger from './logger';
 export {Logger};
 import * as ChainedMessageBuilder from './chainedMessageBuilder';
