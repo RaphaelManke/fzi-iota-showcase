@@ -16,8 +16,7 @@ import { eventBus } from './../events.ts';
 export default{
   data() {
       return {
-          top: 0,
-          left: 0,
+
       };
   },
   components: {

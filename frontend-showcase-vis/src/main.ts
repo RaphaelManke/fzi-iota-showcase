@@ -17,7 +17,6 @@ Vue.use(
   }),
 );
 
-export const eventBus = new Vue();
 
 new Vue({
   store,
