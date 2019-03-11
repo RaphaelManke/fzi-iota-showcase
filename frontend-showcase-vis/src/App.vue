@@ -2,9 +2,9 @@
   <div id="app">
     <div id="top">
     <mapVisu></mapVisu>
-    <h1 style="text-align: right;">Fancy Liste</h1>
-    </div>
     <eventList></eventList>
+    </div>
+    <h1>Fancy Info Box</h1>
   </div>
 </template>
 

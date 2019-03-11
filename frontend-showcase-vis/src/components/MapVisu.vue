@@ -4,9 +4,7 @@
 
         <div id="mapGrid">
 
-        <basicPanel v-for="entry in matrix" :key="entry" 
-            :location="entry">
-        </basicPanel>
+        <basicPanel v-for="entry in matrix" :location="entry"></basicPanel>
 
         </div>
 
@@ -39,6 +37,7 @@ export default{
 </script>
 
 <style scoped>
+
 #mapVisu {
     position: relative;
     border: 10px solid gray;

@@ -1,12 +1,12 @@
 <template>
 
-  <div class="eventList">
-
-      <ul>
+  <div id="eventList">
+           
+    <ul>
 
           <li v-for="event in events">{{event}}</li>
 
-      </ul>
+    </ul>
 
   </div>
   
@@ -26,6 +26,9 @@ export default {
         this.events.push(eventBus.event + ': ' + JSON.stringify(data));
       });
   },
+  updated() {
+  this.$el.scrollTop = this.$el.scrollHeight;
+  },
 };
 
 </script>
@@ -33,5 +36,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
+#eventList {
+    max-height: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
 
 </style>
