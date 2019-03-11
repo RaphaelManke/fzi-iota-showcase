@@ -10,48 +10,31 @@
 
         </div>
 
-        <div id="vehicleSpace" v-on:mousemove="moveCar">
-            
-            <vehicle v-bind:style="{top: getTop + 'px', left: getLeft + 'px'}"></vehicle>
-
-        </div>
+        <vehicleSpace></vehicleSpace>
 
     </div>
     
 </template>
 
 <script>
-import { Component, Watch, Prop, Vue } from 'vue-property-decorator';
+
 import BasicPanel from './BasicPanel';
-import Vehicle from './Vehicle';
+import VehicleSpace from './VehicleSpace';
+import { eventBus } from './../events.ts';
 
 
 export default{
   data() {
       return {
           matrix: ['1', '2', '3', '4', '5', '6', '7', '8'],
-          top: 100,
-          left: 100,
       };
   },
   components: {
       BasicPanel,
-      Vehicle,
+      VehicleSpace,
   },
-  methods: {
-      moveCar(event) {
-          this.top = event.offsetY;
-          this.left = event.offsetX;
-      },
-  },
-  computed: {
-        getTop() {
-            return this.top;
-        },
-        getLeft() {
-            return this.left;
-        },
-  },
+  methods: {},
+  computed: {},
 };
 </script>
 
@@ -66,15 +49,6 @@ export default{
 #mapGrid {
     display: grid;
     grid-template-columns: auto auto auto auto;
-}
-
-#vehicleSpace {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
 }
 
 </style>

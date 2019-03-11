@@ -4,19 +4,26 @@
     <mapVisu></mapVisu>
     <h1 style="text-align: right;">Fancy Liste</h1>
     </div>
-    <div id="down">
-      <h1>Fancy Liste</h1>
-    </div>
+    <eventList></eventList>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+
+// components
 import MapVisu from './components/MapVisu.vue';
+import EventList from './components/EventList.vue';
+
+// internal event bus
+import { eventBus } from './events';
+
+
 
 @Component({
   components: {
     MapVisu,
+    EventList,
   },
   sockets: {
     connect() {
@@ -26,19 +33,14 @@ import MapVisu from './components/MapVisu.vue';
 })
 export default class App extends Vue {
 
-private events: string[] = [];
-
-  public start() {
-    this.$socket.emit('start');
-  }
-
   private created() {
-    ['vehicleAdded',
+    // passing on each socket event to the internal event bus
+    ['vehicleAdded', 'markerDetected',
       'updatedPos']
       .forEach((e) => this.sockets.subscribe(e, (data: any) => {
-        // logic goes here
-        this.events.push(JSON.stringify({[e]: data}));
+        eventBus.emit(e, data);
     }));
+    this.$socket.emit('start');
   }
 
 }
