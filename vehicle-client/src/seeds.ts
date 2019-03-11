@@ -5,9 +5,10 @@ import Kerl from '@iota/kerl';
 import {BigNumber} from 'bignumber.js';
 
 const MAX_VALUE = new BigNumber(value(trits('M'.repeat(81))));
+const DEFAULT_MAM_TREE_SIZE = 1;
 export const TRIP_CHANNEL_CAPACITY = 2;
-export let checkedMetaInfoCapacity = 500;
-export let checkedReservationCapacity = 1000;
+export let checkedMetaInfoCapacity = DEFAULT_MAM_TREE_SIZE * 500;
+export let checkedReservationCapacity = DEFAULT_MAM_TREE_SIZE * 1000;
 
 export function getTripSeed(seed: string, index: number) {
   return trytes(getTripSeedTrits(seed, index));

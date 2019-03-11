@@ -33,6 +33,19 @@ describe('Seed management', () => {
     hashedHashes.forEach((h) => set.add(h));
     expect(set.size).equals(seeds.length * 3);
   });
+
+  it('should create non colliding subseed when seed has equal parts', () => {
+    const seed = '9'.repeat(81);
+    const collisions = [seed, hash(seed), hash(hash(seed))];
+    const set = new Set(collisions);
+    const meta = getMetaInfoSeed(seed);
+    set.add(meta);
+    expect(set.size).to.equal(4);
+    set.add(hash(meta));
+    expect(set.size).to.equal(5);
+    set.add(hash(hash(meta)));
+    expect(set.size).to.equal(6);
+  });
 });
 
 function hash(x: string) {
