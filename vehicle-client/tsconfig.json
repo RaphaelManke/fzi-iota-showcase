@@ -7,6 +7,6 @@
     "sourceMap": true
   },
   "files": ["./node_modules/@types/node/index.d.ts"],
-  "include": ["src", "test"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
