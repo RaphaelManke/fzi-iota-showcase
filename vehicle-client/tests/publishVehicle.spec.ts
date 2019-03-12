@@ -13,15 +13,18 @@ describe('VehiclePublisher', () => {
     const seed = generateSeed();
     log.info('Seed: %s', seed);
     const provider = 'https://nodes.devnet.iota.org';
-    const {raam, root} = await publishVehicle(provider, seed, 4, {type: 'car'});
-    a = expect(raam).to.exist;
-    a = expect(root).to.exist;
-    log.info('Channel id: %s', trytes(raam.channelRoot));
-    log.info('MetaInfo channel root: %s', root);
-    const vehicle = await readVehicle(provider, raam.channelRoot);
-    log.info('%O', vehicle);
+    const {masterChannel, metaInfoChannelRoot} = await publishVehicle(provider, seed, 4, {type: 'car'});
+    a = expect(masterChannel).to.exist;
+    a = expect(metaInfoChannelRoot).to.exist;
+    log.info('Channel id: %s', trytes(masterChannel.channelRoot));
+    log.info('MetaInfo channel root: %s', metaInfoChannelRoot);
+    const vehicle = await readVehicle(provider, masterChannel.channelRoot);
+    log.info('Vehicle\n%O', {
+      ...vehicle,
+      vehicleId: vehicle ? trytes(vehicle.vehicleId) : '',
+    });
     a = expect(vehicle).to.exist;
-    const info = await readVehicleInfo(provider, raam.channelRoot);
+    const info = await readVehicleInfo(provider, masterChannel.channelRoot);
     a = expect(info).to.exist;
     if (vehicle) {
       expect(info).to.deep.equal(vehicle.info);

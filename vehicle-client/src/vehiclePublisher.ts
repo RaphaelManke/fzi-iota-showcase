@@ -19,27 +19,27 @@ export async function publishVehicle(
     })) {
 
   const metaInfoSeed = getMetaInfoSeed(seed);
-  const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
-  infoChannel.EnablePowSrv(true);
-  const root = infoChannel.getNextRoot();
+  const metaInfoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
+  metaInfoChannel.EnablePowSrv(true);
+  const metaInfoChannelRoot = metaInfoChannel.getNextRoot();
 
-  const [{hash: txHash, raam}, tx] = await Promise.all([
-    createMasterChannel(iota, seed, capacity).then((masterChannel) => publishMetaInfoRoot(masterChannel, root)),
-    publishMetaInfo(infoChannel, vehicleInfo),
+  const [{hash: txHash, masterChannel}, tx] = await Promise.all([
+    createMasterChannel(iota, seed, capacity).then((channel) => publishMetaInfoRoot(channel, metaInfoChannelRoot)),
+    publishMetaInfo(metaInfoChannel, vehicleInfo),
   ]);
-  return {raam, root, tx};
+  return {masterChannel, metaInfoChannelRoot, metaInfoChannel};
 }
 
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
-  const raam = await RAAM.fromSeed(getMasterSeed(seed, capacity), {amount: capacity, iota, security: 1});
+  const masterChannel = await RAAM.fromSeed(getMasterSeed(seed, capacity), {amount: capacity, iota, security: 1});
   log.debug('Vehicle channel created');
-  return raam;
+  return masterChannel;
 }
 
-async function publishMetaInfoRoot(raam: RAAM, root: string) {
-  const hash = await raam.publish(root);
+async function publishMetaInfoRoot(masterChannel: RAAM, root: string) {
+  const hash = await masterChannel.publish(root);
   log.debug('Published metaInfo root');
-  return {hash, raam};
+  return {hash, masterChannel};
 }
 
 async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
