@@ -23,7 +23,8 @@
   ],
   "license": "ISC",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts"
   },
   "dependencies": {
     "@iota/core": "^1.0.0-beta.11",

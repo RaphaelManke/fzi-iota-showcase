@@ -31,7 +31,7 @@
     "big-number": "^2.0.0",
     "bignumber.js": "^8.1.1",
     "extend": "^3.0.2",
-    "fzi-iota-showcase-client": "^0.0.1",
+    "fzi-iota-showcase-client": "^0.0.2-alpha",
     "mam.ts": "^0.1.6",
     "raam.client.js": "^0.7.3",
     "supports-color": "^6.1.0",
