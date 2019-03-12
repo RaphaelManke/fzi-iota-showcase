@@ -24,7 +24,25 @@
   "license": "ISC",
   "scripts": {
     "build": "tsc",
-    "test": "mocha -r ts-node/register tests/**/*.spec.ts"
+    "test": "mocha --reporter mocha-junit-reporter",
+    "coverage": "nyc --reporter html --reporter text mocha"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": false
   },
   "dependencies": {
     "@iota/core": "^1.0.0-beta.11",
@@ -42,6 +60,9 @@
     "@types/node": "7.0.22",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.18.0",
+    "nyc": "^13.3.0",
+    "source-map-support": "^0.5.11",
     "ts-node": "^8.0.2",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333"
