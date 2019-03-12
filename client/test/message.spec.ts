@@ -1,6 +1,6 @@
 import { CheckInMessage } from '../src/messages/checkInMessage';
 import { trits, trytesToAscii } from '@iota/converter';
-import {log} from '../src/logger';
+import { log } from '../src/logger';
 import { toTrytes } from '../src/messages/converter';
 import {expect} from 'chai';
 import { ReservationMessage, StopWelcomeMessage, Reservation } from '../src';
@@ -9,20 +9,25 @@ import { Trytes } from '@iota/core/typings/types';
 describe('message formatting', () => {
   it('should convert CheckInMessage to and from trytes', () => {
     const m: CheckInMessage = {
-      vehicleId: trits('WERGGFD'),
-      paymentAddress: 'ASDFGD',
-      price: 3.5,
-      reservationRate: 2.5,
-      tripChannelIndex: 2,
+      vehicleId: trits('M'.repeat(81)),
+      paymentAddress: 'N'.repeat(81),
+      price: 40000000,
+      reservationRate: 400000,
+      tripChannelIndex: 245,
+      reservationRoot: 'Q'.repeat(81),
+      password: 'MYFANCYPASSWORD',
+      vehicleInfo: {
+        type: 'car',
+      },
     };
-    
+
     convert(m, CheckInMessage.fromTrytes);
   });
 
   it('should convert ReservationMessage to and from trytes', () => {
     const m: ReservationMessage = {
       expireDate: new Date('2019-02-03'),
-      hashedNonce: 'HASH'
+      hashedNonce: 'HASH',
     };
 
     convert(m, ReservationMessage.fromTrytes);
@@ -31,8 +36,8 @@ describe('message formatting', () => {
   it('should convert StopWelcomeMessage to and from trytes', () => {
     const m: StopWelcomeMessage = {
       checkInMessageRef: 'TX',
-      tripChannelId: trits('ASDFG')
-    }
+      tripChannelId: trits('ASDFG'),
+    };
 
     convert(m, StopWelcomeMessage.fromTrytes);
   });
@@ -41,8 +46,8 @@ describe('message formatting', () => {
     const m: Reservation = {
       expireDate: new Date('2019-02-02'),
       hashedNonce: 'HAS',
-      repaymentAddress: 'SF'
-    }
+      repaymentAddress: 'SF',
+    };
 
     convert(m, Reservation.fromTrytes);
   });
@@ -53,6 +58,6 @@ function convert<T>(m: T, fromTrytes: (trytes: Trytes) => T) {
   log.info('Trytes: %s', trytes);
   log.info('Ascii: %O', trytesToAscii(trytes));
   const retrieved = fromTrytes(trytes);
-  log.info('Object: %O', retrieved);
+  // log.info('Object: %O', retrieved);
   expect(retrieved).to.deep.equal(m);
 }
