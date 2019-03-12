@@ -14,6 +14,11 @@ jobs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
   
+  - script: |
+      cp ../azure-pipelines/scripts/process-coverage-report.js ./
+    workingDirectory: $(app_path)
+    displayName: Copy code coverage scrip
+  
   - task: Npm@1
     displayName: NPM install
     inputs:
