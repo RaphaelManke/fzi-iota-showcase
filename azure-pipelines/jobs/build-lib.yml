@@ -51,7 +51,7 @@ jobs:
       #searchFolder: $(app_path) # Optional
       #mergeTestResults: false # Optional
       #failTaskOnFailedTests: false # Optional
-      #testRunTitle: # Optional
+      testRunTitle: $(app_path) Unit Tests # Optional
       #buildPlatform: # Optional
       #buildConfiguration: # Optional
       #publishRunAttachments: true # Optional
