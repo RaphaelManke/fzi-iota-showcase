@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsc",
     "test": "mocha ",
-    "coverage": "nyc mocha"
+    "coverage": "nyc mocha && node process-coverage-report.js "
   },
   "nyc": {
     "include": [
