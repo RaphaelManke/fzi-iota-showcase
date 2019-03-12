@@ -27,7 +27,7 @@ export async function publishVehicle(
     createMasterChannel(iota, seed, capacity).then((channel) => publishMetaInfoRoot(channel, metaInfoChannelRoot)),
     publishMetaInfo(metaInfoChannel, vehicleInfo),
   ]);
-  return {masterChannel, metaInfoChannelRoot, metaInfoChannel};
+  return {masterChannel, metaInfoChannelRoot, metaInfoChannel, iota};
 }
 
 async function createMasterChannel(iota: API, seed: string, capacity: number) {
