@@ -1,8 +1,15 @@
+import { fromTrytes } from './converter';
+import { Trytes, Hash } from '@iota/core/typings/types';
+
 export abstract class ReservationMessage {
-  constructor(public readonly hashedNonce: string, public readonly expireDate: Date) {
+  public static fromTrytes(input: Trytes): ReservationMessage {
+    return fromTrytes(input, ['expireDate', 'date']);
   }
 
-  public isExpired(): boolean {
-    return new Date() >= this.expireDate;
+  public static isExpired(reservation: ReservationMessage): boolean {
+    return new Date() >= reservation.expireDate;
+  }
+
+  constructor(public readonly hashedNonce: Hash, public readonly expireDate: Date) {
   }
 }

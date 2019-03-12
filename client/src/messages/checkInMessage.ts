@@ -4,7 +4,7 @@ import { fromTrytes } from './converter';
 
 export class CheckInMessage {
   public static fromTrytes(input: Trytes): CheckInMessage {
-    return fromTrytes(input, 'vehicleId');
+    return fromTrytes(input, ['vehicleId', 'trits']);
   }
 
   constructor(public readonly vehicleId: Int8Array, public readonly tripChannelIndex: number,

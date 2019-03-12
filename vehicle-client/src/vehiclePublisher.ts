@@ -9,7 +9,6 @@ export async function addMetaInfo(provider: string, seed: string, info: any) {
   const infoChannel = await createMetaInfoWriter(provider, seed);
   const root = infoChannel.getNextRoot();
   return {root, tx: await publishMetaInfo(infoChannel, info)};
-
 }
 
 export async function publishVehicle(
