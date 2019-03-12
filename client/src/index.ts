@@ -1,5 +1,6 @@
 export {ReservationMessage} from './messages/reservationMessage';
 export {StopWelcomeMessage} from './messages/stopWelcomeMessage';
+export {CheckInMessage} from './messages/checkInMessage';
 export {Reservation} from './reservation';
 export {Trip} from './trip';
 export {Vehicle, VehicleInfo} from './vehicle';
