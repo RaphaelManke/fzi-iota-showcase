@@ -28,6 +28,24 @@
     "test": "mocha ",
     "coverage": "nyc mocha"
   },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "cobertura"
+    ],
+    "all": false
+  },
   "dependencies": {
     "big-number": "^2.0.0",
     "bignumber.js": "^8.1.1",
