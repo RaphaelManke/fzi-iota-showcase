@@ -11,9 +11,7 @@
 <script>
 
 
-export default {
-  name: 'vehicle',
-};
+export default {};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
