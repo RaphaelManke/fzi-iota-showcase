@@ -43,7 +43,7 @@ jobs:
     inputs:
       testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
       testResultsFiles: '**/test-results.xml' 
-      searchFolder: $(app_path) # Optional
+      #searchFolder: $(app_path) # Optional
       #mergeTestResults: false # Optional
       #failTaskOnFailedTests: false # Optional
       #testRunTitle: # Optional
