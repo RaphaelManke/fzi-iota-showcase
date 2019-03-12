@@ -24,8 +24,8 @@
   "license": "ISC",
   "scripts": {
     "build": "tsc",
-    "test": "mocha --reporter mocha-junit-reporter",
-    "coverage": "nyc --reporter html --reporter text mocha"
+    "test": "mocha ",
+    "coverage": "nyc mocha"
   },
   "nyc": {
     "include": [
@@ -40,7 +40,8 @@
       "**/*.d.ts"
     ],
     "reporter": [
-      "html"
+      "html",
+      "cobertura"
     ],
     "all": false
   },

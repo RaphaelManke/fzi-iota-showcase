@@ -36,9 +36,30 @@ jobs:
     displayName: NPM test
     inputs:
       command: 'custom' 
-      customCommand: test
+      customCommand: run-script coverage
       workingDir: $(app_path)   
   
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+      testResultsFiles: '**/test-results.xml' 
+      searchFolder: $(app_path) # Optional
+      #mergeTestResults: false # Optional
+      #failTaskOnFailedTests: false # Optional
+      #testRunTitle: # Optional
+      #buildPlatform: # Optional
+      #buildConfiguration: # Optional
+      #publishRunAttachments: true # Optional
+
+      # Publish Code Coverage Results
+# Publish Cobertura or JaCoCo code coverage results from a build
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'Cobertura' # Options: cobertura, jaCoCo
+      summaryFileLocation: $(app_path)/coverage/cobertura-coverage.xml
+      reportDirectory: $(app_path)/coverage # Optional
+      #additionalCodeCoverageFiles: # Optional
+      #failIfCoverageEmpty: false # Optional
   - task: Npm@1
     continueOnError: true
     displayName: NPM package
@@ -46,6 +67,8 @@ jobs:
       command: 'custom' 
       customCommand: pack
       workingDir: $(app_path) 
+  
+
   
   - script: |
       mkdir publish
