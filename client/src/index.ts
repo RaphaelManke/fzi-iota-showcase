@@ -2,6 +2,7 @@ export {ReservationMessage} from './messages/reservationMessage';
 export {StopWelcomeMessage} from './messages/stopWelcomeMessage';
 export {CheckInMessage} from './messages/checkInMessage';
 export {toTrytes} from './messages/converter';
+export {getDateTag} from './dateTagger';
 export {Reservation} from './reservation';
 export {Trip} from './trip';
 export {Vehicle, VehicleInfo} from './vehicle';
