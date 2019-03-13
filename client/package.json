@@ -5,6 +5,10 @@
   "main": "out/index.js",
   "types": "out/index.d.ts",
   "description": "",
+  "files": [
+    "out",
+    "src"
+  ],
   "keywords": [
     "iota",
     "dlt",
