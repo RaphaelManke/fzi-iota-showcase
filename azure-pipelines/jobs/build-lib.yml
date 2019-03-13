@@ -16,6 +16,7 @@ jobs:
   
   - script: |
       cp ../azure-pipelines/scripts/process-coverage-report.js ./
+      rm package-lock.js
     workingDirectory: $(app_path)
     displayName: Copy code coverage scrip
   
