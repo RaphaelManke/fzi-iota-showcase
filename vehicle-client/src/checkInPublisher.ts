@@ -1,5 +1,5 @@
 import { getTripSeed, getReservationSeed } from './seeds';
-import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag } from 'fzi-iota-showcase-client';
+import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { Hash } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
@@ -41,10 +41,14 @@ async function publishCheckInMessage(iota: API, address: Hash, checkInMessage: C
       tag: getDateTag(),
       value: 0,
     }];
-    const trytes = await iota.prepareTransfers('9'.repeat(81), transfers);
-    const result = await iota.sendTrytes(trytes, depth, mwm);
-    log.debug('Published CheckInMessage');
-    return result;
+    try {
+      const trytes = await iota.prepareTransfers('9'.repeat(81), transfers);
+      const result = await iota.sendTrytes(trytes, depth, mwm);
+      log.debug('Published CheckInMessage');
+      return result;
+    } catch (e) {
+      throw new Exception('Publishing CheckInMessage failed', e);
+    }
   } else {
     throw new Error('CheckInMessage is too long. It must fit into one transaction.');
   }

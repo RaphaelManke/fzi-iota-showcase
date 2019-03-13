@@ -1,22 +1,27 @@
 import { publishCheckIn } from '../src/checkInPublisher';
-import { log, createAttachToTangle, CheckInMessage } from 'fzi-iota-showcase-client';
-import { composeAPI } from '@iota/core';
+import { log, CheckInMessage } from 'fzi-iota-showcase-client';
+import { composeAPIOrSkip } from './iota';
+import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
 import { RAAM } from 'raam.client.js';
 import { expect } from 'chai';
 import 'mocha';
 
 describe('CheckInPublisher', () => {
+  let iota: API;
+  const provider = 'https://nodes.devnet.iota.org';
+
+  before(async function() {
+    iota = await composeAPIOrSkip(this, provider);
+  });
+
   it('should publish a check in on the tangle', async function() {
     this.timeout(60000); // timeout 1 minute
 
     const provider = 'https://nodes.devnet.iota.org';
     const seed = generateSeed();
     log.info('Seed: %s', seed);
-    const raam = await RAAM.fromSeed(seed, {amount: 2, iota: composeAPI({
-      provider,
-      attachToTangle: createAttachToTangle(),
-    })});
+    const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
     log.info('MasterChannel id: %s', trytes(raam.channelRoot));
     const address = generateSeed();
     const message: CheckInMessage = {

@@ -11,3 +11,4 @@ export {log, setTimestamp as setLogTimestamp} from './logger';
 import * as ChainedMessageBuilder from './chainedMessageBuilder';
 export { ChainedMessageBuilder };
 export { readVehicle, readVehicleInfo } from './vehicleReader';
+export { Exception } from './exception';

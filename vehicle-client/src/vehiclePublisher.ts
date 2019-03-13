@@ -1,4 +1,4 @@
-import { VehicleInfo, createAttachToTangle, log} from 'fzi-iota-showcase-client';
+import { VehicleInfo, createAttachToTangle, log } from 'fzi-iota-showcase-client';
 import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';

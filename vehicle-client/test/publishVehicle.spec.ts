@@ -1,18 +1,26 @@
 import { trytes } from '@iota/converter';
 import {publishVehicle } from '../src/vehiclePublisher';
+import { API } from '@iota/core';
 import { log, readVehicle, readVehicleInfo } from 'fzi-iota-showcase-client';
+import { composeAPIOrSkip } from './iota';
 import { expect } from 'chai';
 import 'mocha';
 
 describe('VehiclePublisher', () => {
+  let iota: API;
+  const provider = 'https://nodes.devnet.iota.org';
+
+  before(async function() {
+    iota = await composeAPIOrSkip(this, provider);
+  });
+
   it('should publish vehicleData and read it from the tangle', async function() {
     this.timeout(60000); // timeout 1 minute
     let a: Chai.Assertion; // suppress tslint errors
 
     const seed = generateSeed();
     log.info('Seed: %s', seed);
-    const provider = 'https://nodes.devnet.iota.org';
-    const {masterChannel, metaInfoChannelRoot} = await publishVehicle(provider, seed, 4, {type: 'car'});
+    const {masterChannel, metaInfoChannelRoot} = await publishVehicle(provider, seed, 4, {type: 'car'}, iota);
     a = expect(masterChannel).to.exist;
     a = expect(metaInfoChannelRoot).to.exist;
     log.info('Channel id: %s', trytes(masterChannel.channelRoot));
