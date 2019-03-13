@@ -8,10 +8,11 @@ import 'mocha';
 
 describe('VehiclePublisher', () => {
   let iota: API;
-  const provider = 'https://nodes.devnet.iota.org';
+  let provider: string;
 
   before(async function() {
-    iota = await composeAPIOrSkip(this, provider);
+    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
+      'https://nodes.thetangle.org:443'));
   });
 
   it('should publish vehicleData and read it from the tangle', async function() {

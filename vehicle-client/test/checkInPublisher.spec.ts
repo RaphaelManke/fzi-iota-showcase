@@ -9,10 +9,11 @@ import 'mocha';
 
 describe('CheckInPublisher', () => {
   let iota: API;
-  const provider = 'https://nodes.devnet.iota.org';
+  let provider: string;
 
   before(async function() {
-    iota = await composeAPIOrSkip(this, provider);
+    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
+      'https://nodes.thetangle.org:443'));
   });
 
   it('should publish a check in on the tangle', async function() {
