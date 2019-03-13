@@ -1,6 +1,5 @@
 import {getMasterSeed, getMetaInfoSeed, getReservationSeed, getTripSeed} from '../src/seeds';
-import {Logger} from 'fzi-iota-showcase-client';
-const {log} = Logger;
+import {log} from 'fzi-iota-showcase-client';
 import Kerl from '@iota/kerl';
 import { trits, trytes } from '@iota/converter';
 

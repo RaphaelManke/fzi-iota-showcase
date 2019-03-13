@@ -1,7 +1,6 @@
 import { trytes } from '@iota/converter';
 import {publishVehicle} from '../src/vehiclePublisher';
-import { Logger, readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
-const {log} = Logger;
+import { log, readVehicle, readVehicleInfo} from 'fzi-iota-showcase-client';
 import { expect } from 'chai';
 import 'mocha';
 

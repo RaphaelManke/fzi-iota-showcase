@@ -14,7 +14,7 @@ export function setTimestamp(enable: boolean) {
     log.format = getFormat(enable);
 }
 
-export const log = winston.createLogger({
+export const log: winston.Logger = winston.createLogger({
   format: getFormat(true),
   level: 'debug',
   transports: [

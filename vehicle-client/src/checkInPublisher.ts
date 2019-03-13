@@ -33,7 +33,7 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
 async function publishCheckInMessage(iota: API, address: Hash, checkInMessage: CheckInMessage,
                                      {depth = 3, mwm = 14}: {depth: number, mwm: number}) {
   const message = toTrytes(checkInMessage);
-  if (message.length > 2187) {
+  if (message.length <= 2187) {
     const transfers = [{
       address,
       message,
