@@ -64,7 +64,7 @@
     "@types/node": "7.0.22",
     "chai": "^4.2.0",
     "chai-things": "^0.2.0",
-    "fzi-iota-showcase-client": "^0.0.2-alpha.0",
+    "fzi-iota-showcase-client": "alpha",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "nyc": "^13.3.0",
