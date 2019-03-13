@@ -25,7 +25,8 @@
   "license": "ISC",
   "scripts": {
     "build": "tsc",
-    "test": "mocha ",
+    "test": "mocha",
+    "localTest": "mocha --reporter spec",
     "coverage": "nyc mocha && node process-coverage-report.js "
   },
   "nyc": {

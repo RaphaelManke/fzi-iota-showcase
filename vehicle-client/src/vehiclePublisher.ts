@@ -6,6 +6,7 @@ import { getMetaInfoSeed, getMasterSeed } from './seeds';
 
 export async function addMetaInfo(provider: string, seed: string, info: any) {
   const infoChannel = await createMetaInfoWriter(provider, seed);
+  await infoChannel.catchUpThroughNetwork();
   const root = infoChannel.getNextRoot();
   return {root, tx: await publishMetaInfo(infoChannel, info)};
 }
@@ -17,9 +18,7 @@ export async function publishVehicle(
       attachToTangle: createAttachToTangle(),
     })) {
 
-  const metaInfoSeed = getMetaInfoSeed(seed);
-  const metaInfoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
-  metaInfoChannel.EnablePowSrv(true);
+  const metaInfoChannel = createMetaInfoWriter(provider, seed);
   const metaInfoChannelRoot = metaInfoChannel.getNextRoot();
 
   const [{hash: txHash, masterChannel}, tx] = await Promise.all([
@@ -47,10 +46,9 @@ async function publishMetaInfo(writer: MamWriter, info: VehicleInfo) {
   return tx;
 }
 
-async function createMetaInfoWriter(provider: string, seed: string) {
+function createMetaInfoWriter(provider: string, seed: string) {
   const metaInfoSeed = getMetaInfoSeed(seed);
   const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
   infoChannel.EnablePowSrv(true);
-  await infoChannel.catchUpThroughNetwork();
   return infoChannel;
 }
