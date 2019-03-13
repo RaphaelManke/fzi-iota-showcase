@@ -41,6 +41,7 @@
     "@types/socket.io-client": "^1.4.32",
     "@vue/cli-plugin-typescript": "^3.4.0",
     "@vue/cli-service": "^3.4.0",
+    "eventemitter2": "^5.0.1",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333",
     "vue-template-compiler": "^2.5.21",
