@@ -19,7 +19,6 @@ describe('CheckInPublisher', () => {
   it('should publish a check in on the tangle', async function() {
     this.timeout(60000); // timeout 1 minute
 
-    const provider = 'https://nodes.devnet.iota.org';
     const seed = generateSeed();
     log.info('Seed: %s', seed);
     const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
