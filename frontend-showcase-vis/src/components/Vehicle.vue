@@ -32,6 +32,7 @@ export default {
     text-align: center;
     height: 8%;
     width: 8%;
+    transition: 1s linear;
 }
 
 img {
