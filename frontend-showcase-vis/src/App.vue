@@ -36,7 +36,7 @@ export default class App extends Vue {
 
   private created() {
     // passing on each socket event to the internal event bus
-    ['vehicleAdded', 'markerDetected',
+    ['vehicleAdded', 'markerDetected', 'rfidDetected',
       'updatedPos']
       .forEach((e) => this.sockets.subscribe(e, (data: any) => {
         eventBus.emit(e, data);

@@ -2,7 +2,7 @@
 
     <div id="vehicleSpace">
             
-            <vehicle v-bind:style="{top: getTop + 'px', left: getLeft + 'px'}"></vehicle>
+            <vehicle v-for="vehicle in vehicles" v-bind:specs="vehicle"></vehicle>
 
     </div>
     
@@ -16,26 +16,20 @@ import { eventBus } from './../events.ts';
 export default{
   data() {
       return {
-
+        vehicles: [],
+        clients: {},
       };
   },
   components: {
       Vehicle,
   },
-  methods: {
-      moveCar(event) {
-          this.top = event.offsetY;
-          this.left = event.offsetX;
-      },
+  created() {
+      eventBus.on('vehicleAdded', (data) => {
+        this.vehicles.push(data);
+      });
   },
-  computed: {
-        getTop() {
-            return this.top;
-        },
-        getLeft() {
-            return this.left;
-        },
-  },
+  methods: {},
+  computed: {},
 };
 </script>
 
