@@ -1,6 +1,6 @@
 
-import {log} from './logger';
-import {buildObject} from './chainedMessageBuilder';
+import { log } from './logger';
+import { buildObject } from './chainedMessageBuilder';
 import { MamReader } from 'mam.ts';
 import {RAAMReader} from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
