@@ -24,10 +24,11 @@ export default {
   created() {
       eventBus.on('**', (data) => {
         this.events.push(eventBus.event + ': ' + JSON.stringify(data));
+        if (this.events.length > 11) { this.events.shift(); }
       });
   },
   updated() {
-  this.$el.scrollTop = this.$el.scrollHeight;
+      this.$el.scrollTop = this.$el.scrollHeight;
   },
 };
 
@@ -44,7 +45,12 @@ export default {
     overflow-y: scroll;
     overflow-x: hidden;
     border: solid 2px black;
-    margin-left: 10px;
+    margin-left: 7%;
 }
+
+ul {
+  margin-left: -8%;
+}
+
 
 </style>
