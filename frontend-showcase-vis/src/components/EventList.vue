@@ -37,10 +37,14 @@ export default {
 <style scoped>
 
 #eventList {
-    max-height: 100%;
-    height: 100%;
+    position: relative;
+    max-height: 90%;
+    height: 90%;
+    margin-top: 16%;
     overflow-y: scroll;
     overflow-x: hidden;
+    border: solid 2px black;
+    margin-left: 10px;
 }
 
 </style>
