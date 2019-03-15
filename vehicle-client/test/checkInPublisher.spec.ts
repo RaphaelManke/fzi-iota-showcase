@@ -1,5 +1,8 @@
 import { publishCheckIn } from '../src/checkInPublisher';
-import { log, CheckInMessage, readCheckIns, readTripFromMasterChannel, readDeparted } from 'fzi-iota-showcase-client';
+import { publishReservation } from '../src/reservationPublisher';
+import { publishCheckOutMessage } from '../src/checkOutPublisher';
+import { log, CheckInMessage, readCheckIns, readTripFromMasterChannel, readDeparted,
+  readReservations } from 'fzi-iota-showcase-client';
 import { composeAPIOrSkip } from './iota';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
@@ -21,20 +24,7 @@ describe('CheckInPublisher', () => {
   it('should publish a check in on the tangle', async function() {
     this.timeout(60000); // timeout 1 minute
 
-    const seed = generateSeed();
-    log.info('Seed: %s', seed);
-    const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
-    log.info('MasterChannel id: %s', trytes(raam.channelRoot));
-    const address = generateSeed();
-    const message: CheckInMessage = {
-      paymentAddress: '9'.repeat(81),
-      price: 4000000,
-      reservationRate: 400000,
-      tripChannelIndex: 1,
-      vehicleId: raam.channelRoot,
-    };
-    const {reservationChannel, tripChannel, welcomeMessage}
-     = await publishCheckIn(provider, seed, raam, address, message);
+    const {message, address, raam, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
 
     let a: Chai.Assertion;
     a = expect(reservationChannel).to.exist;
@@ -70,6 +60,53 @@ describe('CheckInPublisher', () => {
     a = expect(departed).to.exist;
     a = expect(departed).to.be.false;
   });
+
+  it('should publish a reservation and read it from the tangle', async function() {
+    this.timeout(60000);
+
+    const {message: checkInMessage, reservationChannel} = await checkIn();
+
+    const message = {
+      expireDate: new Date(),
+      hashedNonce: '9',
+    };
+    await publishReservation(reservationChannel, message);
+
+    const a = expect(checkInMessage.reservationRoot).to.exist;
+    if (checkInMessage.reservationRoot) {
+      const reservations = await readReservations(provider, checkInMessage!.reservationRoot);
+      expect(reservations).to.deep.equal([message]);
+    }
+  });
+
+  it('should publish the goodbye message and read it from the tangle', async function() {
+    this.timeout(60000);
+
+    const {message: checkInMessage, address, raam, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
+
+    await publishCheckOutMessage(tripChannel);
+
+    const departed = await readDeparted(welcomeMessage, iota);
+    let a = expect(departed).to.exist;
+    a = expect(departed).to.be.true;
+  });
+
+  async function checkIn() {
+    const seed = generateSeed();
+    log.info('Seed: %s', seed);
+    const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
+    log.info('MasterChannel id: %s', trytes(raam.channelRoot));
+    const address = generateSeed();
+    const message: CheckInMessage = {
+      paymentAddress: '9'.repeat(81),
+      price: 4000000,
+      reservationRate: 400000,
+      tripChannelIndex: 1,
+      vehicleId: raam.channelRoot,
+    };
+    return {message, address, raam,
+      ...await publishCheckIn(provider, seed, raam, address, message)};
+  }
 });
 
 function generateSeed(length = 81) {
