@@ -12,6 +12,9 @@ export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]) {
   });
 
   return txs.filter((tx) => tx.currentIndex === 0).filter((tx) => tx.lastIndex === 0)
-    .map((tx) => tx.signatureMessageFragment)
-    .map((trytes) => CheckInMessage.fromTrytes(trytes));
+    .map((tx) => [tx.hash, tx.signatureMessageFragment])
+    .map(([txHash, trytes]) => ({
+      txHash,
+      message: CheckInMessage.fromTrytes(trytes)
+    }));
 }
