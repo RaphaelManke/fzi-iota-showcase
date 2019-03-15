@@ -22,7 +22,8 @@
   "license": "ISC",
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./tests/simple.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "tsc"
   },
   "dependencies": {
     "eventemitter2": "^5.0.1",
