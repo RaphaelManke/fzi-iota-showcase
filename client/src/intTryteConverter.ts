@@ -2,6 +2,16 @@ import { Trytes } from '@iota/core/typings/types';
 
 const alphabet = '9ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+export function pad(t: string, size: number) { 
+  return new Array(size).fill('9')
+    .map((e, i) => size - i > t.length ? e : t.charAt(i - (size - t.length)))
+    .join('');
+}
+
+export function intToPaddedTrytes(input: number, length: number) {
+  return pad(intToTrytes(input), length);
+}
+
 export function intToTrytes(input: number) {
   if (input === 0) {
     return alphabet[0];
