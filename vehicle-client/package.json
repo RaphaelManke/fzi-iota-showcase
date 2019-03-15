@@ -1,7 +1,6 @@
 {
   "name": "fzi-iota-showcase-vehicle-client",
   "version": "0.0.1",
-  "private": false,
   "description": "",
   "files": [
     "out",
@@ -21,7 +20,7 @@
   },
   "contributors": [
     "Robin Lamberti <lamberti.robin@gmail.com> (https://github.com/cr0ssing/)",
-    "Raphael Manke <> (https://github.com/RaphaelManke/)"
+    "Raphael Manke <raphaz110@gmail.com> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
   "scripts": {

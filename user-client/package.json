@@ -1,10 +1,10 @@
 {
   "name": "fzi-iota-showcase-user-client",
   "version": "0.0.1",
-  "private": false,
-  "publishConfig": {
-    "registry":"https://pkgs.dev.azure.com/FZI-IOTA-showcase/_packaging/FZI-IOTA-NPM/npm/registry/"
-  },
+  "files": [
+    "out",
+    "src"
+  ],
   "description": "",
   "keywords": [
     "iota",
@@ -20,12 +20,35 @@
   },
   "contributors": [
     "Robin Lamberti <lamberti.robin@gmail.com> (https://github.com/cr0ssing/)",
-    "Raphael Manke <> (https://github.com/RaphaelManke/)"
+    "Raphael Manke <raphaz110@gmail.com> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha",
+    "localTest": "mocha --reporter spec",
+    "coverage": "nyc mocha && node process-coverage-report.js "
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "cobertura"
+    ],
+    "all": false
+  },
   "dependencies": {
-    "fzi-iota-showcase-client": "^0.0.1"
+    "fzi-iota-showcase-client": "alpha"
   },
   "devDependencies": {
     "@types/node": "7.0.22",
