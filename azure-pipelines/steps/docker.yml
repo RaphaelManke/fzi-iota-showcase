@@ -6,6 +6,9 @@
       command: login
       azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
       azureContainerRegistry: $(azureContainerRegistry)  
+  - task: npmAuthenticate@0
+    inputs:
+      customEndpoint: ${{ parameters.npmFeed }}
   - task: Docker@1
     displayName: Build Docker image
     inputs:

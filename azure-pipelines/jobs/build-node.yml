@@ -2,6 +2,7 @@
 parameters:
   appName: ''
   pool: ''
+  npmFeed: 'FZI-IOTA-NPM'
 
 jobs:
 - job: Build 
