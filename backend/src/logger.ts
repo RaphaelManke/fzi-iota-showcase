@@ -1,4 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
+import { log } from 'fzi-iota-showcase-client';
 
 export function enableLogging(events: EventEmitter2) {
   const prettify = (type: string, data: any) => {
@@ -29,5 +30,5 @@ export function enableLogging(events: EventEmitter2) {
     }
   };
 
-  events.onAny((type: any, data: any) => console.log(prettify(type, data)));
+  events.onAny((type: any, data: any) => log.debug(prettify(type, data)));
 }

@@ -1,5 +1,6 @@
 import { EventEmitter2 } from 'eventemitter2';
 import Environment from './env';
+import { log } from 'fzi-iota-showcase-client';
 
 export default class Controller {
   // assume that exacly 1 vehicle can enter a specific marker, because roadways are seperated
@@ -21,7 +22,7 @@ export default class Controller {
         // longer than period of sent marker events
         if (v !== undefined && Date.now() - v > 1500) {
           this.lastTimeDetected.delete(e);
-          console.log('cleared last time updated');
+          log.debug('cleared last time updated');
         }
       });
     }, 1000);
