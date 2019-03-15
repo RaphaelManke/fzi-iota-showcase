@@ -7,12 +7,13 @@ import Controller from './controller';
 export class Server {
   private io: SocketIO.Server;
   private con: Controller;
+  private app: express.Application;
   private server: http.Server;
 
   constructor(con: Controller) {
     this.con = con;
-    const app = express();
-    this.server = http.createServer(app);
+    this.app = express();
+    this.server = http.createServer(this.app);
     this.io = socketio(this.server);
   }
 
@@ -23,6 +24,10 @@ export class Server {
       client.on('start', () => {
         this.con.events.emit('start');
       });
+    });
+
+    this.app.get('/env', (req, res) => {
+      res.json(this.con.env.info);
     });
 
     this.server.listen(3000);

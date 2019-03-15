@@ -1,19 +1,21 @@
 import VehicleMock from './vehicleMock';
 import { EventEmitter2 } from 'eventemitter2';
-import Environment from '../env';
+import { Environment, EnvironmentInfo } from '../env';
 
 export default class EnvironmentMock implements Environment {
   public static EPS = 0.9;
   public static MARKER_RESEND_TIMEOUT = 1500;
   public static SIZE = 10;
 
+  public info: EnvironmentInfo;
   private markers = new Array<Marker>();
   private vehicles = new Map<VehicleMock, Mover>();
 
   private events: EventEmitter2;
 
-  constructor(events: EventEmitter2) {
+  constructor(info: EnvironmentInfo, events: EventEmitter2) {
     this.events = events;
+    this.info = info;
     events.on('started', (data) => {
       const v = Array.from(this.vehicles.keys()).find(
         (e) => e.getId() === data.id,
@@ -63,7 +65,7 @@ export default class EnvironmentMock implements Environment {
     return Array.from(this.vehicles.keys()).find((v) => v.getId() === id);
   }
 
-  public updatePos(v: VehicleMock, x: number, y: number) {
+  private updatePos(v: VehicleMock, x: number, y: number) {
     const m = this.vehicles.get(v);
     if (m === undefined) {
       throw new Error(v.getId() + ' is not part of environment');

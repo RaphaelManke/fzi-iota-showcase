@@ -1,5 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
-import Environment from './env';
+import { Environment } from './env';
 import { log } from 'fzi-iota-showcase-client';
 
 export default class Controller {
