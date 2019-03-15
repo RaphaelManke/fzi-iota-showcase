@@ -1,5 +1,5 @@
 import { publishCheckIn } from '../src/checkInPublisher';
-import { log, CheckInMessage, readCheckIns } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage, readCheckIns, readTripFromMasterChannel, readDeparted } from 'fzi-iota-showcase-client';
 import { composeAPIOrSkip } from './iota';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
@@ -53,9 +53,22 @@ describe('CheckInPublisher', () => {
     }});
     const txs = await readCheckIns(iota, address, new Date());
     log.info('Found: %O', txs);
+    a = expect(txs).to.exist;
+    expect(txs.length).gte(1);
     txs.should.contain.an.item.deep.equals(expected);
 
+    const result = await readTripFromMasterChannel(raam, expected.message.tripChannelIndex);
+    a = expect(result).to.exist;
+    a = expect(result.departed).to.exist;
+    a = expect(result.welcomeMessage).to.exist;
+    a = expect(result.departed).to.be.false;
+    expect(result.welcomeMessage).to.deep.equal(welcomeMessage);
+    expect(result.welcomeMessage.checkInMessageRef).to.equal(expected.txHash);
+    expect(result.welcomeMessage.tripChannelId).to.deep.equal(tripChannel.channelRoot);
 
+    const departed = await readDeparted(welcomeMessage, iota);
+    a = expect(departed).to.exist;
+    a = expect(departed).to.be.false;
   });
 });
 

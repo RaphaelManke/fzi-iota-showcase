@@ -12,5 +12,7 @@ import * as ChainedMessageBuilder from './chainedMessageBuilder';
 export { ChainedMessageBuilder };
 export { readVehicle, readVehicleInfo } from './vehicleReader';
 export { readCheckIns } from './checkInReader';
+export { readDeparted, readTripFromMasterChannel, readTripFromVehicle,
+    readWelcomeMessage, readWelcomeMessageFromVehicle } from './tripReader';
 export { Exception } from './exception';
 export { intToTrytes, intToPaddedTrytes, trytesToInt } from './intTryteConverter';
