@@ -1,11 +1,13 @@
 import { publishCheckIn } from '../src/checkInPublisher';
-import { log, CheckInMessage } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage, readCheckIns } from 'fzi-iota-showcase-client';
 import { composeAPIOrSkip } from './iota';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
 import { RAAM } from 'raam.client.js';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import * as chaiThings from 'chai-things';
 import 'mocha';
+use(chaiThings);
 
 describe('CheckInPublisher', () => {
   let iota: API;
@@ -33,6 +35,27 @@ describe('CheckInPublisher', () => {
     };
     const {reservationChannel, tripChannel, welcomeMessage}
      = await publishCheckIn(provider, seed, raam, address, message);
+
+    let a: Chai.Assertion;
+    a = expect(reservationChannel).to.exist;
+    a = expect(tripChannel).to.exist;
+    a = expect(welcomeMessage.checkInMessageRef).to.exist;
+
+    const expected = {
+      txHash: welcomeMessage.checkInMessageRef,
+      message,
+    };
+    log.info('Expected: %O', {
+      txHash: expected.txHash,
+      message: {
+        ...expected.message,
+        vehicleId: trytes(expected.message.vehicleId),
+    }});
+    const txs = await readCheckIns(iota, address, new Date());
+    log.info('Found: %O', txs);
+    txs.should.contain.an.item.deep.equals(expected);
+
+
   });
 });
 

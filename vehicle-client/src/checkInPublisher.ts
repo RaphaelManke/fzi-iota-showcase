@@ -1,5 +1,7 @@
 import { getTripSeed, getReservationSeed } from './seeds';
-import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception } from 'fzi-iota-showcase-client';
+import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception,
+  intToPaddedTrytes, 
+  trytesToInt} from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { Hash } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
@@ -33,7 +35,8 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
 
 async function publishCheckInMessage(iota: API, address: Hash, checkInMessage: CheckInMessage,
                                      {depth = 3, mwm = 14}: {depth: number, mwm: number}) {
-  const message = toTrytes(checkInMessage);
+  const trytesMessage = toTrytes(checkInMessage);
+  const message = intToPaddedTrytes(trytesMessage.length, 3) + trytesMessage;
   if (message.length <= 2187) {
     const transfers = [{
       address,
