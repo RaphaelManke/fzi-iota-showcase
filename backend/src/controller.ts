@@ -5,9 +5,9 @@ import { log } from 'fzi-iota-showcase-client';
 export default class Controller {
   // assume that exacly 1 vehicle can enter a specific marker, because roadways are seperated
   // thus markerid implicates vehicle
-  public lastTimeDetected = new Map<string, number>();
-  public events: EventEmitter2;
   public env: Environment;
+  public events: EventEmitter2;
+  private lastTimeDetected = new Map<string, number>();
 
   constructor(events: EventEmitter2, env: Environment) {
     this.events = events;

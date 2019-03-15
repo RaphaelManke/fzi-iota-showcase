@@ -3,16 +3,16 @@ import { EventEmitter2 } from 'eventemitter2';
 import { enableLogging } from '../src/logger';
 import Controller from '../src/controller';
 import EnvironmentMock from '../src/mock/envMock';
-import startWebsocket from '../src/websocket';
+import { Server } from '../src/server';
 
 (async () => {
   const events = new EventEmitter2();
+  const env = new EnvironmentMock(events);
+  const con = new Controller(events, env);
   enableLogging(events);
-  startWebsocket(events);
+  new Server(con).listen();
 
   events.on('start', () => {
-    const env = new EnvironmentMock(events);
-    const con = new Controller(events, env);
     con.setupEnv();
 
     env.addMarker('START', 0, 0);
