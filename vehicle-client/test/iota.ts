@@ -1,5 +1,6 @@
-import { composeAPI, API } from '@iota/core';
+import { composeAPI } from '@iota/core';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
+import 'mocha';
 
 export async function composeAPIOrSkip(hook: Mocha.Context, ...providers: string[]) {
   for (const provider of providers) {

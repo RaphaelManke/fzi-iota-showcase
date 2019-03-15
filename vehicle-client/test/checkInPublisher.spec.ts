@@ -45,7 +45,7 @@ describe('CheckInPublisher', () => {
     log.info('Found: %O', txs);
     a = expect(txs).to.exist;
     expect(txs.length).gte(1);
-    txs.should.contain.an.item.deep.equals(expected);
+    txs.map((tx) => ({txHash: tx.txHash, message: tx.message})).should.contain.an.item.that.deep.equals(expected);
 
     const result = await readTripFromMasterChannel(raam, expected.message.tripChannelIndex);
     a = expect(result).to.exist;
