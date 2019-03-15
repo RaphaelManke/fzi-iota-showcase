@@ -1,5 +1,5 @@
 import { RAAMReader } from 'raam.client.js';
-import { API, composeAPI } from '@iota/core';
+import { API } from '@iota/core';
 import { StopWelcomeMessage } from './messages/stopWelcomeMessage';
 
 export async function readTripFromVehicle(vehicleId: Int8Array, tripIndex: number, iota: API) {
