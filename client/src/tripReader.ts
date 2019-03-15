@@ -13,7 +13,7 @@ export async function readTripFromMasterChannel(masterChannel: RAAMReader, tripI
     return {
       welcomeMessage,
       departed,
-    }
+    };
   } else {
     throw new Error('Master channel must be initialized with an instance of IOTA API.');
   }
