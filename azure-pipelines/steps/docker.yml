@@ -7,8 +7,9 @@
       azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
       azureContainerRegistry: $(azureContainerRegistry)  
   - task: npmAuthenticate@0
+    displayName: Provide NPM Authentication
     inputs:
-      customEndpoint: ${{ parameters.npmFeed }}
+      workingFile: $(app_path)/.npmrc
   - task: Docker@1
     displayName: Build Docker image
     inputs:
