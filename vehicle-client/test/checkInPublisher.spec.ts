@@ -15,7 +15,7 @@ describe('CheckInPublisher', () => {
 
   before(async function() {
     ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
-      'https://nodes.thetangle.org:443'));
+      'https://nodes.thetangle.org'));
   });
 
   it('should publish a check in on the tangle', async function() {
