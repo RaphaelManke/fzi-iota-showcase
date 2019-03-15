@@ -19,5 +19,5 @@ export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]) {
     .map(([txHash, message]) => ({
       txHash,
       message: CheckInMessage.fromTrytes(message),
-    }));
+  }));
 }
