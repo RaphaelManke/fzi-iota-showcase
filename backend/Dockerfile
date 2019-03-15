@@ -1,12 +1,19 @@
 # build stage
 FROM node:lts-alpine as build-stage
+# install additional build dependecies
+RUN apk add --no-cache --virtual .gyp \
+        python \
+        make \
+        g++ 
+
 WORKDIR /app
-COPY package*.json ./
-COPY .npmrc ./
-RUN npm install
-COPY ./tsconfig.json ./
+
+COPY package*.json .npmrc ./tsconfig.json ./
 COPY ./src ./src
-RUN npm run build
+
+RUN npm install && \
+    npm run build
+
 
 # production stage
 FROM node:lts-alpine as production-stage
