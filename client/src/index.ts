@@ -13,3 +13,4 @@ export { ChainedMessageBuilder };
 export { readVehicle, readVehicleInfo } from './vehicleReader';
 export { readCheckIns } from './checkInReader';
 export { Exception } from './exception';
+export { intToTrytes, trytesToInt} from './intTryteConverter';
