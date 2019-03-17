@@ -11,7 +11,7 @@ describe('VehiclePublisher', () => {
   let provider: string;
 
   before(async function() {
-    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
+    ({iota, provider} = await composeAPIOrSkip(this, // 'https://nodes.devnet.iota.org',
       'https://nodes.thetangle.org'));
   });
 
