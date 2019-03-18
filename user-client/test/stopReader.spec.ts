@@ -30,13 +30,13 @@ describe('StopReader', () => {
     const {message, address, masterChannel, info, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
 
     let calledBack = false;
-    const offers = await queryStop(provider, iota, address, (o) => {
+    const offers = await queryStop(provider, iota, address, {callback: (o) => {
       log.info('%O', {
         ...o,
         vehicleId: o.vehicleId ? trytes(o.vehicleId) : undefined,
       });
       calledBack = true;
-    });
+    }});
 
     let a = expect(calledBack).to.be.true;
     expect(offers.length).to.be.gte(1);

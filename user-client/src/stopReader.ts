@@ -3,9 +3,10 @@ import { readCheckIns, readVehicleInfo, readTripFromVehicle, Trip,
   readReservations, VehicleInfo, CheckInMessage, log } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 
-export async function queryStop(provider: string, iota: API, stopId: Hash, callback?: (offer: Offer) => any):
-    Promise<Offer[]> {
-  const checkIns = await readCheckIns(iota, stopId);
+export async function queryStop(provider: string, iota: API, stopId: Hash, {callback, dates = []}:
+                                { callback?: ((offer: Offer) => any), dates?: Date[] } =
+                                { dates: [] }): Promise<Offer[]> {
+  const checkIns = await readCheckIns(iota, stopId, ...(dates ? dates : []));
   log.info('Read %s checkIns from stop address', checkIns.length);
   checkIns.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse(); // latest message first
 

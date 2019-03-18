@@ -7,12 +7,14 @@ import { log } from './logger';
 
 export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]):
     Promise<Array<{txHash: Hash, message: CheckInMessage , timestamp: Date}>> {
-  const txs = dates.length === 0 ? await iota.findTransactionObjects({
+  const query = dates.length === 0 ? {
     addresses: [stop],
-  }) : await iota.findTransactionObjects({
+  } : {
     addresses: [stop],
     tags: dates.map((d) => getDateTag(d)),
-  });
+  };
+  log.debug('Querying transactions with query: %O', query);
+  const txs = await iota.findTransactionObjects(query);
   log.debug('Read %s transactions from stop address', txs.length);
 
   return txs.filter((tx) => tx.currentIndex === 0).filter((tx) => tx.lastIndex === 0)
