@@ -2,6 +2,8 @@
   "name": "fzi-iota-showcase-vehicle-client",
   "version": "0.0.1",
   "description": "",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
   "files": [
     "out",
     "src"
