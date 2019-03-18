@@ -9,7 +9,7 @@ export async function queryStop(provider: string, iota: API, stopId: Hash, callb
   log.info('Read %s checkIns from stop address', checkIns.length);
   checkIns.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse(); // latest message first
 
-  log.debug('Verifying each checkIn...');
+  log.debug('Getting CheckIn Information...');
   const verifyCheckIn = verifyFunc(provider, iota, stopId, callback);
   return (await Promise.all(checkIns.map(verifyCheckIn)))
     // filter out checkIns where error occured
@@ -17,7 +17,9 @@ export async function queryStop(provider: string, iota: API, stopId: Hash, callb
 }
 
 function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer: Offer) => any) {
-  return async (tx: {txHash: string; message: CheckInMessage; timestamp: Date; }): Promise<Offer | undefined> => {
+  return async (tx: {txHash: string; message: CheckInMessage; timestamp: Date; }, index: number):
+      Promise<Offer | undefined> => {
+    log.debug('Get information of CheckIn %s...', index);
     const checkIn = tx.message;
     let vehicleId: Int8Array | undefined = checkIn.vehicleId;
     let vehicleInfo: VehicleInfo | undefined = checkIn.vehicleInfo;

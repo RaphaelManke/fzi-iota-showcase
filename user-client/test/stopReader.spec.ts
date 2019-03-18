@@ -1,16 +1,15 @@
 import { queryStop } from '../src/stopReader';
-import { publishCheckIn, publishReservation, publishCheckOutMessage } from 'fzi-iota-showcase-vehicle-client';
-import { log, CheckInMessage, readCheckIns, readTripFromMasterChannel, readDeparted,
-  readReservations } from 'fzi-iota-showcase-client';
-import { composeAPIOrSkip } from './iota';
+import { publishCheckIn, publishVehicle, publishReservation,
+  publishCheckOutMessage } from 'fzi-iota-showcase-vehicle-client';
+import { log, CheckInMessage } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
-import { RAAM } from 'raam.client.js';
+import { Trytes } from '@iota/core/typings/types';
+
+import { composeAPIOrSkip } from './iota';
 import { expect, use } from 'chai';
 import * as chaiThings from 'chai-things';
 import 'mocha';
-import { Trytes } from '@iota/core/typings/types';
-import { publishVehicle } from 'fzi-iota-showcase-vehicle-client';
 use(chaiThings);
 
 describe('StopReader', () => {
@@ -28,21 +27,42 @@ describe('StopReader', () => {
   it('should publish a check in on the tangle', async function() {
     this.timeout(TIMEOUT);
 
-    const {message, address, masterChannel, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
+    const {message, address, masterChannel, info, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
 
-    const offers = await queryStop(provider, iota, address, (offer) => {
+    let calledBack = false;
+    const offers = await queryStop(provider, iota, address, (o) => {
       log.info('%O', {
-        ...offer,
-        vehicleId: offer.vehicleId ? trytes(offer.vehicleId) : undefined,
+        ...o,
+        vehicleId: o.vehicleId ? trytes(o.vehicleId) : undefined,
       });
+      calledBack = true;
     });
+
+    let a = expect(calledBack).to.be.true;
+    expect(offers.length).to.be.gte(1);
+    const [offer] = offers;
+    a = expect(offer).to.exist;
+    a = expect(offer.vehicleId).to.exist;
+    a = expect(offer.vehicleInfo).to.exist;
+    expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
+    expect(offer.vehicleInfo).to.deep.equal(info);
+
+    a = expect(offer.trip).to.exist;
+    const {trip} = offer;
+    a = expect(trip.departed).to.be.false;
+    expect(trip.departsFrom).to.equal(address);
+    expect(trip.paymentAddress).to.equal(message.paymentAddress);
+    expect(trip.price).to.equal(message.price);
+    expect(trip.reservationRate).to.equal(message.reservationRate);
+    a = expect(trip.reservations).to.be.empty;
   });
 
   async function checkIn(password?: Trytes) {
     const seed = generateSeed();
     log.info('Seed: %s', seed);
     log.info('Creating vehicle...');
-    const {masterChannel} = await publishVehicle(provider, seed, 4, {type: 'car'}, iota);
+    const info = {type: 'car'};
+    const { masterChannel } = await publishVehicle(provider, seed, 4, info, iota);
     log.info('MasterChannel id: %s', trytes(masterChannel.channelRoot));
     const address = generateSeed();
     log.info('Stop address: %s', address);
@@ -54,7 +74,7 @@ describe('StopReader', () => {
       vehicleId: masterChannel.channelRoot,
     };
     log.info('Publishing checkIn...');
-    return {message, address, masterChannel,
+    return {message, address, masterChannel, info,
       ...await publishCheckIn(provider, seed, masterChannel, address, message)};
   }
 });
