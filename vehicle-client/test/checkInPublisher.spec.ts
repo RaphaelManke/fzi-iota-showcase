@@ -10,6 +10,7 @@ import { RAAM } from 'raam.client.js';
 import { expect, use } from 'chai';
 import * as chaiThings from 'chai-things';
 import 'mocha';
+import { Trytes } from '@iota/core/typings/types';
 use(chaiThings);
 
 describe('CheckInPublisher', () => {
@@ -24,7 +25,11 @@ describe('CheckInPublisher', () => {
   it('should publish a check in on the tangle', async function() {
     this.timeout(60000); // timeout 1 minute
 
-    const {message, address, raam, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
+    return testTrip();
+  });
+
+  async function testTrip(password?: Trytes) {
+    const {message, address, raam, reservationChannel, tripChannel, welcomeMessage} = await checkIn(password);
 
     let a: Chai.Assertion;
     a = expect(reservationChannel).to.exist;
@@ -59,7 +64,7 @@ describe('CheckInPublisher', () => {
     const departed = await readDeparted(welcomeMessage, iota);
     a = expect(departed).to.exist;
     a = expect(departed).to.be.false;
-  });
+  }
 
   it('should publish a reservation and read it from the tangle', async function() {
     this.timeout(60000);
@@ -82,7 +87,7 @@ describe('CheckInPublisher', () => {
   it('should publish the goodbye message and read it from the tangle', async function() {
     this.timeout(60000);
 
-    const {message: checkInMessage, address, raam, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
+    const {tripChannel, welcomeMessage} = await checkIn();
 
     await publishCheckOutMessage(tripChannel);
 
@@ -91,7 +96,13 @@ describe('CheckInPublisher', () => {
     a = expect(departed).to.be.true;
   });
 
-  async function checkIn() {
+  it('should publish a WelcomeMessage encrypted with a password given in the ceckInMessage', async function() {
+    this.timeout(60000);
+
+    return testTrip('MYPASSWORD');
+  });
+
+  async function checkIn(password?: Trytes) {
     const seed = generateSeed();
     log.info('Seed: %s', seed);
     const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
@@ -104,6 +115,9 @@ describe('CheckInPublisher', () => {
       tripChannelIndex: 1,
       vehicleId: raam.channelRoot,
     };
+    if (password) {
+      message.password = password;
+    }
     return {message, address, raam,
       ...await publishCheckIn(provider, seed, raam, address, message)};
   }

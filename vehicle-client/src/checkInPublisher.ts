@@ -1,9 +1,8 @@
 import { getTripSeed, getReservationSeed } from './seeds';
 import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception,
-  intToPaddedTrytes, 
-  trytesToInt} from 'fzi-iota-showcase-client';
+  intToPaddedTrytes } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
-import { Hash } from '@iota/core/typings/types';
+import { Hash, Trytes } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 
@@ -25,7 +24,8 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
       checkInMessageRef: txs[0].hash,
       tripChannelId: tripChannel.channelRoot,
     };
-    await publishWelcomeMessage(masterChannel, checkInMessage.tripChannelIndex, welcomeMessage, {depth, mwm});
+    await publishWelcomeMessage(masterChannel, checkInMessage.tripChannelIndex, welcomeMessage,
+      {password: checkInMessage.password, depth, mwm});
 
     return {reservationChannel, tripChannel, welcomeMessage};
   } else {
@@ -64,9 +64,9 @@ async function createTripChannel(seed: string, masterChannel: RAAM, index: numbe
 }
 
 async function publishWelcomeMessage(masterChannel: RAAM, index: number, welcomeMessage: StopWelcomeMessage,
-                                     {depth = 3, mwm = 14}: {depth: number, mwm: number}) {
+                                     {password, depth = 3, mwm = 14}: {password?: Trytes, depth: number, mwm: number}) {
   const result = await masterChannel.publish(welcomeMessage.checkInMessageRef,
-    {index, depth, mwm, nextRoot: welcomeMessage.tripChannelId});
+    {index, depth, mwm, nextRoot: welcomeMessage.tripChannelId, messagePassword: password});
   log.debug('Published WelcomeMessage');
   return result;
 }
