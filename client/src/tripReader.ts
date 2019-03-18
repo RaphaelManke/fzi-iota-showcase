@@ -1,6 +1,7 @@
 import { RAAMReader } from 'raam.client.js';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
+import { Trytes } from '@iota/core/typings/types';
 import { StopWelcomeMessage } from './messages/stopWelcomeMessage';
 import { log } from './logger';
 
@@ -26,9 +27,9 @@ export async function readWelcomeMessageFromVehicle(vehicleId: Int8Array, tripIn
   return await readWelcomeMessage(new RAAMReader(vehicleId, {iota}), tripIndex);
 }
 
-export async function readWelcomeMessage(masterChannel: RAAMReader, tripIndex: number) {
+export async function readWelcomeMessage(masterChannel: RAAMReader, tripIndex: number, password?: Trytes) {
   if (masterChannel.iota) {
-    const result = await masterChannel.fetch({index: tripIndex});
+    const result = await masterChannel.fetch({index: tripIndex, messagePassword: password});
     const welcomeMessage: StopWelcomeMessage = {
       checkInMessageRef: result.messages[0],
       tripChannelId: result.branches[0],

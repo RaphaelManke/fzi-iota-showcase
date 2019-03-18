@@ -10,6 +10,6 @@ export class CheckInMessage {
   constructor(public readonly vehicleId: Int8Array, public readonly tripChannelIndex: number,
               public readonly paymentAddress: Hash, public readonly price: number,
               public readonly reservationRate: number, public readonly validFrom?: Date, public reservationRoot?: Hash,
-              public readonly vehicleInfo?: VehicleInfo, public readonly password?: Trytes) {
+              public readonly vehicleInfo?: VehicleInfo, public password?: Trytes) {
   }
 }
