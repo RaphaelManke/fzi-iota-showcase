@@ -26,7 +26,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
       // read welcome from vehicle channel
       const {welcomeMessage, departed} = await readTripFromVehicle(checkIn.vehicleId, checkIn.tripChannelIndex, iota);
       // verify checkIn identity
-      if (tx.txHash === welcomeMessage.checkInMessageRef) {
+      if (tx.txHash !== welcomeMessage.checkInMessageRef) {
         // checkIn was not issued by given vehicle!
         vehicleId = undefined;
       }
@@ -38,10 +38,11 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
           await readReservations(provider, checkIn.reservationRoot),
           // no vehicleInfo? read from meta info
           await (async () => {
-            if (!vehicleInfo && vehicleId) { // don't read vehicle info from meta channel, if identity wasn't verified
+            // don't read vehicle info from meta channel, if identity wasn't verified
+            if (vehicleInfo === undefined && vehicleId !== undefined) {
               vehicleInfo = await readVehicleInfo(provider, vehicleId, iota);
             }
-          }),
+          })(),
         ]);
 
         trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, reservations, false);
@@ -64,7 +65,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
       }
       return {trip, vehicleInfo, vehicleId};
     } catch (e) {
-      log.warn('Reading checkIn %s failed. Skipping.', tx.txHash);
+      log.warn('Reading checkIn %s failed. Skipping. %s', tx.txHash, e);
       return undefined;
     }
   };
