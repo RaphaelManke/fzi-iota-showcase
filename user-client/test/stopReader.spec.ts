@@ -28,8 +28,8 @@ describe('StopReader', () => {
   it('should publish a check in on the tangle', async function() {
     this.timeout(TIMEOUT);
 
-    // const {message, address, masterChannel, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
-    const address = 'SHRJDHJPIXUTUZQNLQMTKFELADLRWFYOPUUYRYPJCMNORXJLUYLQMTLXNGXA9OM9LKHKGIEJKRPMXGNII';
+    const {message, address, masterChannel, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
+
     const offers = await queryStop(provider, iota, address, (offer) => {
       log.info('%O', {
         ...offer,
