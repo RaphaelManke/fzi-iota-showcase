@@ -111,6 +111,7 @@ describe('CheckInPublisher', () => {
     const raam = await RAAM.fromSeed(seed, {amount: 2, iota});
     log.info('MasterChannel id: %s', trytes(raam.channelRoot));
     const address = generateSeed();
+    log.info('Stop address: %s', address);
     const message: CheckInMessage = {
       paymentAddress: '9'.repeat(81),
       price: 4000000,

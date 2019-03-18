@@ -3,15 +3,17 @@ import { Hash } from '@iota/core/typings/types';
 import { getDateTag } from './dateTagger';
 import { CheckInMessage } from './messages/checkInMessage';
 import { trytesToInt } from './intTryteConverter';
+import { log } from './logger';
 
 export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]):
     Promise<Array<{txHash: Hash, message: CheckInMessage , timestamp: Date}>> {
-  const txs = dates.length > 0 ? await iota.findTransactionObjects({
+  const txs = dates.length === 0 ? await iota.findTransactionObjects({
     addresses: [stop],
   }) : await iota.findTransactionObjects({
     addresses: [stop],
     tags: dates.map((d) => getDateTag(d)),
   });
+  log.debug('Read %s transactions from stop address', txs.length);
 
   return txs.filter((tx) => tx.currentIndex === 0).filter((tx) => tx.lastIndex === 0)
     .map((tx) => ({ txHash: tx.hash, trytes: tx.signatureMessageFragment, timestamp: tx.attachmentTimestamp }))
