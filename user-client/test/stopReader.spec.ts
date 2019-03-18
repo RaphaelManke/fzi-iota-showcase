@@ -1,10 +1,11 @@
-import { queryStop } from '../src/stopReader';
+import { queryStop, Offer } from '../src/stopReader';
 import { publishCheckIn, publishVehicle, publishReservation,
   publishCheckOutMessage } from 'fzi-iota-showcase-vehicle-client';
-import { log, CheckInMessage } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage, VehicleInfo } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
+import { RAAM } from 'raam.client.js';
 
 import { composeAPIOrSkip } from './iota';
 import { expect, use } from 'chai';
@@ -24,7 +25,7 @@ describe('StopReader', () => {
       'https://nodes.thetangle.org'));
   });
 
-  it('should publish a check in on the tangle', async function() {
+  it('should read all checkIns from a stop', async function() {
     this.timeout(TIMEOUT);
 
     const {message, address, masterChannel, info, reservationChannel, tripChannel, welcomeMessage} = await checkIn();
@@ -41,7 +42,12 @@ describe('StopReader', () => {
     let a = expect(calledBack).to.be.true;
     expect(offers.length).to.be.gte(1);
     const [offer] = offers;
-    a = expect(offer).to.exist;
+    checkOffer(offer, masterChannel, info, address, message);
+    a = expect(offer.trip.reservations).to.be.empty;
+  });
+
+  function checkOffer(offer: Offer, masterChannel: RAAM, info: VehicleInfo, address: Hash, message: CheckInMessage) {
+    let a = expect(offer).to.exist;
     a = expect(offer.vehicleId).to.exist;
     a = expect(offer.vehicleInfo).to.exist;
     expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
@@ -54,7 +60,32 @@ describe('StopReader', () => {
     expect(trip.paymentAddress).to.equal(message.paymentAddress);
     expect(trip.price).to.equal(message.price);
     expect(trip.reservationRate).to.equal(message.reservationRate);
-    a = expect(trip.reservations).to.be.empty;
+  }
+
+  it('should read a reserved CheckIn from the tangle', async function() {
+    this.timeout(TIMEOUT);
+
+    const {message, address, masterChannel, info, reservationChannel} = await checkIn();
+
+    // reservation that's not expired
+    const reservation = { expireDate: new Date(Date.now() + 1000 * 60 * 60), hashedNonce: '9'.repeat(81) };
+    await publishReservation(reservationChannel, reservation);
+
+    let calledBack = false;
+    const offers = await queryStop(provider, iota, address, {callback: (o) => {
+      log.info('%O', {
+        ...o,
+        vehicleId: o.vehicleId ? trytes(o.vehicleId) : undefined,
+      });
+      calledBack = true;
+    }});
+
+    const a = expect(calledBack).to.be.true;
+    expect(offers.length).to.be.gte(1);
+    const [offer] = offers;
+    checkOffer(offer, masterChannel, info, address, message);
+    expect(offer.trip.reservations.length).to.equal(1);
+    expect(offer.trip.reservations[0]).to.deep.equal(reservation);
   });
 
   async function checkIn(password?: Trytes) {
