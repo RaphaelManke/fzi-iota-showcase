@@ -3,6 +3,7 @@ import { RAAM } from 'raam.client.js';
 import { API, composeAPI } from '@iota/core';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 import { getMetaInfoSeed, getMasterSeed } from './seeds';
+import * as Bluebird from 'bluebird';
 
 export async function addMetaInfo(provider: string, seed: string, info: any) {
   const infoChannel = await createMetaInfoWriter(provider, seed);
