@@ -10,7 +10,7 @@ import { expect, use } from 'chai';
 import * as chaiThings from 'chai-things';
 import 'mocha';
 import { Trytes } from '@iota/core/typings/types';
-import { publishVehicle } from 'fzi-iota-showcase-vehicle-client/src/vehiclePublisher';
+import { publishVehicle } from 'fzi-iota-showcase-vehicle-client';
 use(chaiThings);
 
 describe('StopReader', () => {
@@ -36,7 +36,6 @@ describe('StopReader', () => {
         vehicleId: offer.vehicleId ? trytes(offer.vehicleId) : undefined,
       });
     });
-
   });
 
   async function checkIn(password?: Trytes) {
