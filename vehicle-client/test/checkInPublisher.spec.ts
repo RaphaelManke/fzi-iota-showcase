@@ -17,13 +17,16 @@ describe('CheckInPublisher', () => {
   let iota: API;
   let provider: string;
 
+  // making several calls to a full node may take time
+  const TIMEOUT = 90000;
+
   before(async function() {
     ({iota, provider} = await composeAPIOrSkip(this, // 'https://nodes.devnet.iota.org',
       'https://nodes.thetangle.org'));
   });
 
   it('should publish a check in on the tangle', async function() {
-    this.timeout(60000); // timeout 1 minute
+    this.timeout(TIMEOUT);
 
     return testTrip();
   });
@@ -67,7 +70,7 @@ describe('CheckInPublisher', () => {
   }
 
   it('should publish a reservation and read it from the tangle', async function() {
-    this.timeout(60000);
+    this.timeout(TIMEOUT);
 
     const {message: checkInMessage, reservationChannel} = await checkIn();
 
@@ -85,7 +88,7 @@ describe('CheckInPublisher', () => {
   });
 
   it('should publish the goodbye message and read it from the tangle', async function() {
-    this.timeout(60000);
+    this.timeout(TIMEOUT);
 
     const {tripChannel, welcomeMessage} = await checkIn();
 
@@ -97,7 +100,7 @@ describe('CheckInPublisher', () => {
   });
 
   it('should publish a WelcomeMessage encrypted with a password given in the ceckInMessage', async function() {
-    this.timeout(60000);
+    this.timeout(TIMEOUT);
 
     return testTrip('MYPASSWORD');
   });
