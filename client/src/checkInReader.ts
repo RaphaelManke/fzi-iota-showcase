@@ -4,7 +4,8 @@ import { getDateTag } from './dateTagger';
 import { CheckInMessage } from './messages/checkInMessage';
 import { trytesToInt } from './intTryteConverter';
 
-export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]) {
+export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]):
+    Promise<Array<{txHash: Hash, message: CheckInMessage , timestamp: Date}>> {
   const txs = dates.length > 0 ? await iota.findTransactionObjects({
     addresses: [stop],
   }) : await iota.findTransactionObjects({
@@ -19,8 +20,16 @@ export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]) {
     .map(({txHash, trytes, length, timestamp}) => ({ txHash, message: trytes.slice(3, 3 + length), timestamp }))
     .map(({txHash, message, timestamp}) => ({
       txHash,
-      message: CheckInMessage.fromTrytes(message),
+      message: onErrorUndefined(() => CheckInMessage.fromTrytes(message)),
       timestamp: new Date(timestamp),
-  }));
+  // filter out undefined messages and tell the compiler that
+  })).filter((e) => e.message !== undefined).map((e) => ({...e, message: e.message!}));
+}
 
+function onErrorUndefined<T>(supplier: () => T) {
+  try {
+    return supplier();
+  } catch (e) {
+    return undefined;
+  }
 }

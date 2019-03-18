@@ -11,56 +11,62 @@ export async function queryStop(provider: string, iota: API, stopId: Hash, callb
 
   log.debug('Verifying each checkIn...');
   const verifyCheckIn = verifyFunc(provider, iota, stopId, callback);
-  return await Promise.all(checkIns.map(verifyCheckIn));
+  return (await Promise.all(checkIns.map(verifyCheckIn)))
+    // filter out checkIns where error occured
+    .filter((offer) => offer !== undefined).map((offer) => offer!);
 }
 
 function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer: Offer) => any) {
-  return async (tx: {txHash: string; message: CheckInMessage; timestamp: Date; }) => {
+  return async (tx: {txHash: string; message: CheckInMessage; timestamp: Date; }): Promise<Offer | undefined> => {
     const checkIn = tx.message;
-
-    let trip: Trip;
     let vehicleId: Int8Array | undefined = checkIn.vehicleId;
     let vehicleInfo: VehicleInfo | undefined = checkIn.vehicleInfo;
 
-    // read welcome from vehicle channel
-    const {welcomeMessage, departed} = await readTripFromVehicle(checkIn.vehicleId, checkIn.tripChannelIndex, iota);
-    // verify checkIn identity
-    if (tx.txHash === welcomeMessage.checkInMessageRef) {
-      // checkIn was not issued by given vehicle!
-      vehicleId = undefined;
-    }
-
-    if (!departed && checkIn.reservationRoot) { // reservationsRoot should normally be set
-      const [reservations] = await Promise.all([
-        // not departed, read reservations
-        await readReservations(provider, checkIn.reservationRoot),
-        // no vehicleInfo? read from meta info
-        await (async () => {
-          if (!vehicleInfo && vehicleId) { // don't read vehicle info from meta channel, if identity wasn't verified
-            vehicleInfo = await readVehicleInfo(provider, vehicleId, iota);
-          }
-        }),
-      ]);
-
-      trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, reservations, false);
-
-      // check reservations
-      if (
-          // not reserved
-          reservations.length === 0 ||
-          // likely reserved
-          !(vehicleInfo && vehicleInfo.maxReservations) ||
-          // not reserved
-          reservations.length < vehicleInfo.maxReservations) {
-        if (callback) {
-          callback({trip, vehicleInfo, vehicleId});
-        }
+    try {
+      // read welcome from vehicle channel
+      const {welcomeMessage, departed} = await readTripFromVehicle(checkIn.vehicleId, checkIn.tripChannelIndex, iota);
+      // verify checkIn identity
+      if (tx.txHash === welcomeMessage.checkInMessageRef) {
+        // checkIn was not issued by given vehicle!
+        vehicleId = undefined;
       }
-    } else {
-      // vehicle already departed
-      trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, undefined, true);
+
+      let trip: Trip;
+      if (!departed && checkIn.reservationRoot) { // reservationsRoot should normally be set
+        const [reservations] = await Promise.all([
+          // not departed, read reservations
+          await readReservations(provider, checkIn.reservationRoot),
+          // no vehicleInfo? read from meta info
+          await (async () => {
+            if (!vehicleInfo && vehicleId) { // don't read vehicle info from meta channel, if identity wasn't verified
+              vehicleInfo = await readVehicleInfo(provider, vehicleId, iota);
+            }
+          }),
+        ]);
+
+        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, reservations, false);
+
+        // check reservations
+        if (
+            // not reserved
+            reservations.length === 0 ||
+            // likely reserved
+            !(vehicleInfo && vehicleInfo.maxReservations) ||
+            // not reserved
+            reservations.length < vehicleInfo.maxReservations) {
+          if (callback) {
+            callback({trip, vehicleInfo, vehicleId});
+          }
+        }
+      } else {
+        // vehicle already departed
+        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, undefined, true);
+      }
+      return {trip, vehicleInfo, vehicleId};
+    } catch (e) {
+      log.warn('Reading checkIn %s failed. Skipping.', tx.txHash);
+      return undefined;
     }
-    return {trip, vehicleInfo, vehicleId};
   };
 }
 
