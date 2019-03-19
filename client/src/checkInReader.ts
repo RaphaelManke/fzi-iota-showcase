@@ -6,7 +6,7 @@ import { trytesToInt } from './intTryteConverter';
 import { log } from './logger';
 
 export async function readCheckIns(iota: API, stop: Hash, ...dates: Date[]):
-    Promise<Array<{txHash: Hash, message: CheckInMessage , timestamp: Date}>> {
+    Promise<Array<{txHash: Hash, message: CheckInMessage, timestamp: Date}>> {
   const query = dates.length === 0 ? {
     addresses: [stop],
   } : {

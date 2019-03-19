@@ -77,19 +77,6 @@ describe('StopReader', () => {
     a = expect(offer.trip.reservations).to.not.exist;
   });
 
-  function checkOffer(offer: Offer, masterChannel: RAAM, info: VehicleInfo, address: Hash, message: CheckInMessage) {
-    let a = expect(offer).to.exist;
-    a = expect(offer.vehicleId).to.exist;
-    expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
-
-    a = expect(offer.trip).to.exist;
-    const {trip} = offer;
-    expect(trip.departsFrom).to.equal(address);
-    expect(trip.paymentAddress).to.equal(message.paymentAddress);
-    expect(trip.price).to.equal(message.price);
-    expect(trip.reservationRate).to.equal(message.reservationRate);
-  }
-
   it('should read a reserved CheckIn from the tangle', async function() {
     this.timeout(TIMEOUT);
 
@@ -153,6 +140,48 @@ describe('StopReader', () => {
     expect(offer.trip.reservations!.length).to.equal(1);
     expect(offer.trip.reservations![0]).to.deep.equal(reservation);
   });
+
+  it('should read a CheckIn with an expired reservation from a stop', async function() {
+    this.timeout(TIMEOUT);
+
+    const {message, address, masterChannel, info, reservationChannel} = await checkIn();
+
+    // reservation that's expired
+    const reservation = { expireDate: new Date(), hashedNonce: '9'.repeat(81) };
+    await publishReservation(reservationChannel, reservation);
+    log.info('Published reservation');
+
+    let calledBack = false;
+    const offers = await queryStop(provider, iota, address, {callback: (o) => {
+      log.info('%O', {
+        ...o,
+        vehicleId: o.vehicleId ? trytes(o.vehicleId) : undefined,
+      });
+      calledBack = true;
+    }});
+
+    let a = expect(calledBack).to.be.true;
+    expect(offers.length).to.be.gte(1);
+    const [offer] = offers;
+    a = expect(offer.vehicleInfo).to.exist;
+    expect(offer.vehicleInfo).to.deep.equal(info);
+    checkOffer(offer, masterChannel, info, address, message);
+    a = expect(offer.trip.departed).to.be.false;
+    a = expect(offer.trip.reservations).to.be.empty;
+  });
+
+  function checkOffer(offer: Offer, masterChannel: RAAM, info: VehicleInfo, address: Hash, message: CheckInMessage) {
+    let a = expect(offer).to.exist;
+    a = expect(offer.vehicleId).to.exist;
+    expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
+
+    a = expect(offer.trip).to.exist;
+    const {trip} = offer;
+    expect(trip.departsFrom).to.equal(address);
+    expect(trip.paymentAddress).to.equal(message.paymentAddress);
+    expect(trip.price).to.equal(message.price);
+    expect(trip.reservationRate).to.equal(message.reservationRate);
+  }
 
   async function checkIn(password?: Trytes, info: VehicleInfo = {type: 'car'}) {
     const seed = generateSeed();

@@ -1,6 +1,6 @@
 import { Hash } from '@iota/core/typings/types';
 import { readCheckIns, readVehicleInfo, readTripFromVehicle, Trip,
-  readReservations, VehicleInfo, CheckInMessage, log } from 'fzi-iota-showcase-client';
+  readReservations, VehicleInfo, CheckInMessage, log, ReservationMessage } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 
 export async function queryStop(provider: string, iota: API, stopId: Hash, {callback, dates = []}:
@@ -38,7 +38,8 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
       if (!departed && checkIn.reservationRoot) { // reservationsRoot should normally be set
         const [reservations] = await Promise.all([
           // not departed, read reservations
-          await readReservations(provider, checkIn.reservationRoot),
+          await readReservations(provider, checkIn.reservationRoot)
+            .then((set) => set.filter((r) => !ReservationMessage.isExpired(r))),
           // no vehicleInfo? read from meta info
           await (async () => {
             // don't read vehicle info from meta channel, if identity wasn't verified
