@@ -19,7 +19,7 @@ describe('StopReader', () => {
   let provider: string;
 
   // making several calls to a full node may take time
-  const TIMEOUT = 90000;
+  const TIMEOUT = 120000;
 
   before(async function() {
     ({iota, provider} = await composeAPIOrSkip(this, // 'https://nodes.devnet.iota.org',
