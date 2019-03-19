@@ -12,9 +12,14 @@ export async function queryStop(provider: string, iota: API, stopId: Hash, {call
 
   log.debug('Getting CheckIn Information...');
   const verifyCheckIn = verifyFunc(provider, iota, stopId, callback);
-  return (await Promise.all(checkIns.map(verifyCheckIn)))
+  return (await Promise.all(checkIns.filter(checkInValid).map(verifyCheckIn)))
     // filter out checkIns where error occured
     .filter((offer) => offer !== undefined).map((offer) => offer!);
+}
+
+function checkInValid({message}: {txHash: string; message: CheckInMessage; timestamp: Date; }) {
+  const now = new Date();
+  return (!message.validFrom || message.validFrom <= now) && (!message.validUntil || message.validUntil >= now);
 }
 
 function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer: Offer) => any) {
