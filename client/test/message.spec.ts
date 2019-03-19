@@ -19,6 +19,8 @@ describe('message formatting', () => {
       vehicleInfo: {
         type: 'car',
       },
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 1000 * 60 * 60),
     };
 
     convert(m, CheckInMessage.fromTrytes);
