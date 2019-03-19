@@ -1,17 +1,16 @@
 import { queryStop, Offer } from '../src/stopReader';
 import { publishCheckIn, publishVehicle, publishReservation,
   publishCheckOutMessage } from 'fzi-iota-showcase-vehicle-client';
-import { log, CheckInMessage, VehicleInfo, readCheckIns } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage, VehicleInfo } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
-import { Trytes, Hash } from '@iota/core/typings/types';
+import { Hash } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
 
 import { composeAPIOrSkip } from './iota';
 import { expect, use } from 'chai';
 import * as chaiThings from 'chai-things';
 import 'mocha';
-import { fail } from 'assert';
 use(chaiThings);
 
 describe('StopReader', () => {
