@@ -14,7 +14,8 @@ export async function queryStop(provider: string, iota: API, stopId: Hash, {call
   const verifyCheckIn = verifyFunc(provider, iota, stopId, callback);
   return (await Promise.all(checkIns.filter(checkInValid).map(verifyCheckIn)))
     // filter out checkIns where error occured
-    .filter((offer) => offer !== undefined).map((offer) => offer!);
+    .filter((offer) => offer !== undefined).map((offer) => offer!)
+    .sort(([, t1], [, t2]) => t1.getTime() - t2.getTime()).map(([offer]) => offer).reverse();
 }
 
 function checkInValid({message}: {txHash: string; message: CheckInMessage; timestamp: Date; }) {
@@ -24,7 +25,7 @@ function checkInValid({message}: {txHash: string; message: CheckInMessage; times
 
 function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer: Offer) => any) {
   return async (tx: {txHash: string; message: CheckInMessage; timestamp: Date; }, index: number):
-      Promise<Offer | undefined> => {
+      Promise<[Offer, Date] | undefined> => {
     log.debug('Get information of CheckIn %s...', index);
     const checkIn = tx.message;
     let vehicleId: Int8Array | undefined = checkIn.vehicleId;
@@ -72,7 +73,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
         // vehicle already departed
         trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, undefined, true);
       }
-      return {trip, vehicleInfo, vehicleId};
+      return [{trip, vehicleInfo, vehicleId}, tx.timestamp];
     } catch (e) {
       log.warn('Reading checkIn %s failed. Skipping. %s', tx.txHash, e);
       return undefined;
