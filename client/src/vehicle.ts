@@ -8,5 +8,8 @@ export class Vehicle {
 
 export interface VehicleInfo {
   type?: string;
+  speed?: number;
+  co2emission?: number;
+  maxReservations?: number;
   [args: string]: any;
 }

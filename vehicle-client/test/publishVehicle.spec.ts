@@ -11,8 +11,8 @@ describe('VehiclePublisher', () => {
   let provider: string;
 
   before(async function() {
-    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
-      'https://nodes.thetangle.org:443'));
+    ({iota, provider} = await composeAPIOrSkip(this, // 'https://nodes.devnet.iota.org',
+      'https://nodes.thetangle.org'));
   });
 
   it('should publish vehicleData and read it from the tangle', async function() {

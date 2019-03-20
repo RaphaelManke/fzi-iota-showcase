@@ -1,7 +1,7 @@
 import { Trytes } from '@iota/core/typings/types';
 import { trytesToAscii, asciiToTrytes, trytes, trits } from '@iota/converter';
 
-export function fromTrytes(input: Trytes, ...maps: [string, 'trits' | 'date'][]) {
+export function fromTrytes(input: Trytes, ...maps: Array<[string, 'trits' | 'date']>) {
   return JSON.parse(trytesToAscii(input), (key, value) => {
     const pair = maps.find(([p, t]) => key === p);
     if (pair) {

@@ -1,13 +1,16 @@
 import { getTripSeed, getReservationSeed } from './seeds';
-import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception } from 'fzi-iota-showcase-client';
+import { CheckInMessage, StopWelcomeMessage, log, toTrytes, getDateTag, Exception,
+  intToPaddedTrytes } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
-import { Hash } from '@iota/core/typings/types';
+import { Hash, Trytes } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
 import { MamWriter, MAM_MODE } from 'mam.ts';
+import { Tag } from '@iota/signing/typings/types';
 
 export async function publishCheckIn(provider: string, seed: string, masterChannel: RAAM, address: Hash,
-                                     checkInMessage: CheckInMessage, {depth = 3, mwm = 14}:
-                                     {depth: number, mwm: number} = {depth: 3, mwm: 14}) {
+                                     checkInMessage: CheckInMessage, {depth = 3, mwm = 14, date = new Date()}:
+                                     {depth?: number, mwm?: number, date?: Date} =
+                                     {depth: 3, mwm: 14, date: new Date()}) {
   if (masterChannel.iota) {
     const reservationsSeed = getReservationSeed(seed, checkInMessage.tripChannelIndex);
     const reservationChannel = new MamWriter(provider, reservationsSeed, MAM_MODE.PUBLIC);
@@ -15,7 +18,7 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
     log.debug('Created reservation root');
 
     const [txs, tripChannel] = await Promise.all([
-      await publishCheckInMessage(masterChannel.iota, address, checkInMessage, {depth, mwm}),
+      await publishCheckInMessage(masterChannel.iota, address, checkInMessage, {depth, mwm, tag: getDateTag(date)}),
       await createTripChannel(seed, masterChannel, checkInMessage.tripChannelIndex),
     ]);
 
@@ -23,7 +26,8 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
       checkInMessageRef: txs[0].hash,
       tripChannelId: tripChannel.channelRoot,
     };
-    await publishWelcomeMessage(masterChannel, checkInMessage.tripChannelIndex, welcomeMessage, {depth, mwm});
+    await publishWelcomeMessage(masterChannel, checkInMessage.tripChannelIndex, welcomeMessage,
+      {password: checkInMessage.password, depth, mwm});
 
     return {reservationChannel, tripChannel, welcomeMessage};
   } else {
@@ -32,13 +36,15 @@ export async function publishCheckIn(provider: string, seed: string, masterChann
 }
 
 async function publishCheckInMessage(iota: API, address: Hash, checkInMessage: CheckInMessage,
-                                     {depth = 3, mwm = 14}: {depth: number, mwm: number}) {
-  const message = toTrytes(checkInMessage);
+                                     {depth = 3, mwm = 14, tag = getDateTag()}:
+                                     {depth?: number, mwm?: number, tag?: Tag}) {
+  const trytesMessage = toTrytes(checkInMessage);
+  const message = intToPaddedTrytes(trytesMessage.length, 3) + trytesMessage;
   if (message.length <= 2187) {
     const transfers = [{
       address,
       message,
-      tag: getDateTag(),
+      tag,
       value: 0,
     }];
     try {
@@ -61,9 +67,10 @@ async function createTripChannel(seed: string, masterChannel: RAAM, index: numbe
 }
 
 async function publishWelcomeMessage(masterChannel: RAAM, index: number, welcomeMessage: StopWelcomeMessage,
-                                     {depth = 3, mwm = 14}: {depth: number, mwm: number}) {
+                                     {password, depth = 3, mwm = 14}:
+                                     {password?: Trytes, depth?: number, mwm?: number}) {
   const result = await masterChannel.publish(welcomeMessage.checkInMessageRef,
-    {index, depth, mwm, nextRoot: welcomeMessage.tripChannelId});
+    {index, depth, mwm, nextRoot: welcomeMessage.tripChannelId, messagePassword: password});
   log.debug('Published WelcomeMessage');
   return result;
 }

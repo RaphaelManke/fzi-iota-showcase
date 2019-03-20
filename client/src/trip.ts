@@ -4,7 +4,8 @@ import { ReservationMessage } from './messages/reservationMessage';
 export class Trip {
   constructor(public readonly departsFrom: Hash,
               public readonly paymentAddress: Hash,  public readonly price: number,
-              public readonly reservationRate: number, public readonly reservations: ReservationMessage[] = [],
-              public readonly departed: boolean = false) {
+              public readonly reservationRate: number,
+              public readonly reservations: ReservationMessage[] | undefined,
+              public readonly departed: boolean | undefined) {
   }
 }
