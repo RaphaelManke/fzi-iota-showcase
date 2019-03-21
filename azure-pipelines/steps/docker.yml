@@ -17,7 +17,7 @@
       azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
       azureContainerRegistry: $(azureContainerRegistry)  
       dockerFile: $(app_path)/Dockerfile
-      imageName: $(app_path)
+      imageName: $(app_path):build
       qualifyImageName: true
 
   - task: Docker@1
