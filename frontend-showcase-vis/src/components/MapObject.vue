@@ -1,6 +1,6 @@
 <template>
   <l-marker
-    :lat-lng="position"
+    :lat-lng="getPosition"
     :title="title"
     :draggable="false"
     :icon="icon">
@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { eventBus } from './../events.ts';
 import { LMarker, LPopup, LIcon } from 'vue2-leaflet';
 export default {
   name: 'MapObject',
@@ -27,12 +28,20 @@ export default {
         icon: L.icon({
             iconUrl: 'assets/car.png',
             iconSize: [40, 40],
-            iconAnchor: [20, 20]
+            iconAnchor: [20, 20],
       }),
-      }
+      };
   },
   created() {
-      // listen on events
+      eventBus.on('updatedPos', (data) => {
+            this.position = L.latLng(this.position.lat + data.y / 1000, this.position.lng + data.x / 1000);
+      },
+      );
+  },
+  computed: {
+      getPosition() {
+          return this.position;
+      },
   },
 };
 </script>
