@@ -39,7 +39,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
       // verify checkIn identity
       if (tx.txHash !== welcomeMessage.checkInMessageRef) {
         // checkIn was not issued by given vehicle!
-        log.warn('Identity of CheckIn %s is not valid. Setting vehicleId and departed undefined.', tx.txHash);
+        log.warn('Identity of CheckIn \'%s\' is not valid. Setting vehicleId and departed undefined.', tx.txHash);
         vehicleId = undefined;
         departed = undefined;
       }

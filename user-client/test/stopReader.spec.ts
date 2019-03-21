@@ -21,7 +21,7 @@ describe('StopReader', () => {
   const TIMEOUT = 180000;
 
   before(async function() {
-    ({iota, provider} = await composeAPIOrSkip(this, // 'https://nodes.devnet.iota.org',
+    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
       'https://nodes.thetangle.org'));
   });
 
