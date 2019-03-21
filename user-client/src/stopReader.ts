@@ -33,15 +33,19 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
 
     try {
       // read welcome from vehicle channel
-      const {welcomeMessage, departed} = await readTripFromVehicle(checkIn.vehicleId, checkIn.tripChannelIndex, iota);
+      const {welcomeMessage, departed: d}
+        = await readTripFromVehicle(checkIn.vehicleId, checkIn.tripChannelIndex, iota);
+      let departed: boolean | undefined = d;
       // verify checkIn identity
       if (tx.txHash !== welcomeMessage.checkInMessageRef) {
         // checkIn was not issued by given vehicle!
+        log.warn('Identity of CheckIn %s is not valid. Setting vehicleId and departed undefined.', tx.txHash);
         vehicleId = undefined;
+        departed = undefined;
       }
 
       let trip: Trip;
-      if (!departed && checkIn.reservationRoot) { // reservationsRoot should normally be set
+      if (departed !== true && checkIn.reservationRoot) { // reservationsRoot should normally be set
         const [reservations] = await Promise.all([
           // not departed, read reservations
           await readReservations(provider, checkIn.reservationRoot)
@@ -55,7 +59,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
           })(),
         ]);
 
-        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, reservations, false);
+        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, reservations, departed);
 
         // check reservations
         if (
@@ -71,7 +75,7 @@ function verifyFunc(provider: string, iota: API, stopId: Hash, callback?: (offer
         }
       } else {
         // vehicle already departed
-        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, undefined, true);
+        trip = new Trip(stopId, checkIn.paymentAddress, checkIn.price, checkIn.reservationRate, undefined, departed);
       }
       return [{trip, vehicleInfo, vehicleId}, tx.timestamp];
     } catch (e) {

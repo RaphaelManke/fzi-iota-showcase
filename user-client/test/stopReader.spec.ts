@@ -1,7 +1,7 @@
 import { queryStop, Offer } from '../src/stopReader';
 import { publishCheckIn, publishVehicle, publishReservation,
   publishCheckOutMessage } from 'fzi-iota-showcase-vehicle-client';
-import { log, CheckInMessage, VehicleInfo } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage, VehicleInfo, toTrytes, intToPaddedTrytes, getDateTag } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
 import { trytes } from '@iota/converter';
 import { Hash } from '@iota/core/typings/types';
@@ -255,42 +255,104 @@ describe('StopReader', () => {
     check(offers[1], masterChannel, message, info);
   });
 
-  function checkOffer(offer: Offer, masterChannel: RAAM, address: Hash, message: CheckInMessage) {
-    let a = expect(offer).to.exist;
-    a = expect(offer.vehicleId).to.exist;
-    expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
+  it('should read CheckIns with one forged CheckIns', async function() {
+    this.timeout(TIMEOUT + 30000);
 
-    a = expect(offer.trip).to.exist;
-    const {trip} = offer;
-    expect(trip.departsFrom).to.equal(address);
-    expect(trip.paymentAddress).to.equal(message.paymentAddress);
-    expect(trip.price).to.equal(message.price);
-    expect(trip.reservationRate).to.equal(message.reservationRate);
-  }
+    const now = Date.now();
+    log.info('Publish CheckIn 1...');
+    const {message, address, masterChannel, info} = await doCheckIn({info: {order: 'erster'},
+      date: new Date(now - 24 * 60 * 60 * 1000)});
 
-  const checkInFunc = (masterChannel: RAAM) => ({
-    paymentAddress: '9'.repeat(81),
-    price: 4000000,
-    reservationRate: 400000,
-    tripChannelIndex: 1,
-    vehicleId: masterChannel.channelRoot,
+    // anybody could publish this message
+    const forged: CheckInMessage = {
+      vehicleId: message.vehicleId,
+      tripChannelIndex: message.tripChannelIndex,
+      paymentAddress: 'MYADDRESS',
+      price: 9000000,
+      reservationRate: 900000,
+      vehicleInfo: {type: 'car', identity: 'forged'},
+      reservationRoot: generateSeed(),
+    };
+    log.info('Publishing forged checkIn message...');
+    await publishCheckInMessage(address, forged);
+
+    const offers = await queryStop(provider, iota, address);
+
+    expect(offers.length).to.be.gte(2);
+    log.info('Offer:');
+    offers.forEach((o, i) => log.info('%s %O', i, {
+      ...o,
+      vehicleId: o.vehicleId ? trytes(o.vehicleId) : undefined,
+    }));
+
+    let a: Chai.Assertion;
+    const check = (offer: Offer, mc: RAAM | undefined, m: CheckInMessage, i: VehicleInfo) => {
+      a = expect(offer.vehicleInfo).to.exist;
+      expect(offer.vehicleInfo).to.deep.equal(i);
+      checkOffer(offer, mc, address, m);
+      a = expect(offer.trip.reservations).to.be.empty;
+    };
+    check(offers[1], masterChannel, message, info);
+    a = expect(offers[1].trip.departed).to.be.false;
+    check(offers[0], undefined, forged, forged.vehicleInfo!);
+    a = expect(offers[0].trip.departed).to.not.exist;
   });
 
-  async function doCheckIn({date = new Date(), info = {type: 'car'}, checkIn = checkInFunc, address = generateSeed()}:
-                         {date?: Date, info?: VehicleInfo, checkIn?: (masterChannel: RAAM) => CheckInMessage,
-                          address?: Hash} = {date: new Date(), info: {type: 'car'}, checkIn: checkInFunc,
-                          address: generateSeed()}) {
-    const seed = generateSeed();
-    log.info('Seed: %s', seed);
-    log.info('Creating vehicle...');
-    const { masterChannel } = await publishVehicle(provider, seed, 4, info, iota);
-    log.info('MasterChannel id: %s', trytes(masterChannel.channelRoot));
-    log.info('Stop address: %s', address);
-    const message: CheckInMessage = checkIn(masterChannel);
-    log.info('Publishing checkIn...');
-    return {message, address, masterChannel, info,
-      ...await publishCheckIn(provider, seed, masterChannel, address, message, {date})};
+  async function publishCheckInMessage(address: Hash, checkInMessage: CheckInMessage) {
+    const trytesMessage = toTrytes(checkInMessage);
+    const message = intToPaddedTrytes(trytesMessage.length, 3) + trytesMessage;
+    const transfers = [{
+    address,
+    message,
+    tag: getDateTag(),
+    value: 0,
+    }];
+    const t = await iota.prepareTransfers('9'.repeat(81), transfers);
+    const result = await iota.sendTrytes(t, 3, 14);
+    log.debug('Published CheckInMessage');
+    return result;
   }
+
+  async function doCheckIn({date = new Date(), info = {type: 'car'}, checkIn = checkInFunc, address = generateSeed()}:
+                       {date?: Date, info?: VehicleInfo, checkIn?: (masterChannel: RAAM) => CheckInMessage,
+                        address?: Hash} = {date: new Date(), info: {type: 'car'}, checkIn: checkInFunc,
+                        address: generateSeed()}) {
+  const seed = generateSeed();
+  log.info('Seed: %s', seed);
+  log.info('Creating vehicle...');
+  const { masterChannel } = await publishVehicle(provider, seed, 4, info, iota);
+  log.info('MasterChannel id: %s', trytes(masterChannel.channelRoot));
+  log.info('Stop address: %s', address);
+  const message: CheckInMessage = checkIn(masterChannel);
+  log.info('Publishing checkIn...');
+  return {message, address, masterChannel, info,
+    ...await publishCheckIn(provider, seed, masterChannel, address, message, {date})};
+}
+});
+
+function checkOffer(offer: Offer, masterChannel: RAAM | undefined, address: Hash, message: CheckInMessage) {
+  let a = expect(offer).to.exist;
+  if (masterChannel) {
+    a = expect(offer.vehicleId).to.exist;
+    expect(offer.vehicleId).to.deep.equal(masterChannel.channelRoot);
+  } else {
+    a = expect(offer.vehicleId).to.not.exist;
+  }
+
+  a = expect(offer.trip).to.exist;
+  const {trip} = offer;
+  expect(trip.departsFrom).to.equal(address);
+  expect(trip.paymentAddress).to.equal(message.paymentAddress);
+  expect(trip.price).to.equal(message.price);
+  expect(trip.reservationRate).to.equal(message.reservationRate);
+}
+
+const checkInFunc = (masterChannel: RAAM) => ({
+  paymentAddress: '9'.repeat(81),
+  price: 4000000,
+  reservationRate: 400000,
+  tripChannelIndex: 1,
+  vehicleId: masterChannel.channelRoot,
 });
 
 function generateSeed(length = 81) {
