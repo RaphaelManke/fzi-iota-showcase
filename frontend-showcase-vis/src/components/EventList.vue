@@ -16,6 +16,7 @@
 import { eventBus } from '../events';
 
 export default {
+  name: 'EventList',
   data() {
       return {
           events: [],
@@ -39,8 +40,8 @@ export default {
 
 #eventList {
     position: relative;
-    max-height: 90%;
-    height: 90%;
+    max-height: 91%;
+    height: 91%;
     margin-top: 16%;
     overflow-y: scroll;
     overflow-x: hidden;

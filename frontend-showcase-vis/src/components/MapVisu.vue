@@ -6,20 +6,20 @@
       :zoom="zoom"
       :center="center"
       :options="mapOptions"
-      style="height: 80vh"
-      @update:center="centerUpdate"
-      @update:zoom="zoomUpdate"
     >
       <l-tile-layer
         :url="url"
         :attribution="attribution"
       />
-      <l-marker :lat-lng="withPopup">
+      <map-object
+        :position="withPopup"
+      />
+      <!--<l-marker :lat-lng="withPopup">
         <l-popup>
           <div @click="innerClick">
             I am a popup
             <p v-show="showParagraph">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada1.
             </p>
           </div>
         </l-popup>
@@ -29,11 +29,11 @@
           <div @click="innerClick">
             I am a tooltip
             <p v-show="showParagraph">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada2.
             </p>
           </div>
         </l-tooltip>
-      </l-marker>
+      </l-marker>-->
     </l-map>
 
     </div>
@@ -44,52 +44,56 @@
 import { eventBus } from './../events.ts';
 import L from 'leaflet';
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from 'vue2-leaflet';
+import MapObject from './MapObject';
 
 
 export default {
-  name: 'mapVisu',
+  name: 'MapVisu',
   components: {
     LMap,
     LTileLayer,
     LMarker,
     LPopup,
     LTooltip,
+    MapObject,
   },
-  data () {
+  data() {
     return {
       zoom: 13,
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       withPopup: L.latLng(49.0091, 8.3799),
-      withTooltip: L.latLng(49.0091, 8.3799),
-      currentZoom: 11.5,
-      currentCenter: L.latLng(49.0091, 8.3799),
-      showParagraph: false,
+      withTooltip: L.latLng(49.0091, 8.385),
+      showParagraph: true,
       mapOptions: {
-        zoomSnap: 0.5
+        zoomSnap: 0.5,
       },
     };
   },
+  created() {
+      // listen on events
+  },
   methods: {
-    zoomUpdate(zoom) {
-      this.currentZoom = zoom;
-    },
-    centerUpdate(center) {
-      this.currentCenter = center;
-    },
     showLongText() {
       this.showParagraph = !this.showParagraph;
     },
     innerClick() {
       alert('Click!');
     },
-  }
+  },
 };
 </script>
 
 <style scoped>
 @import "../../node_modules/leaflet/dist/leaflet.css";
+
+#mapVisu {
+    height: 80vh;
+    -webkit-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
+    -moz-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
+    box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
+}
 
 </style>
 
