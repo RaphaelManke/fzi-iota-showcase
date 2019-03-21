@@ -2,6 +2,8 @@ import Vue from 'vue';
 import App from './App.vue';
 import store from './store';
 import VueSocketIO from 'vue-socket.io';
+import L from 'leaflet';
+
 
 Vue.config.productionTip = false;
 
