@@ -2,7 +2,7 @@
   <div id="app">
     <div id="top">
     <map-visu></map-visu>
-    <h2 style="position: absolute; right: 0; width: 20%; text-align: center; top: 0;">Events</h2>
+    
     <event-list></event-list>
     </div>
     <h1>Fancy Info Box</h1>
