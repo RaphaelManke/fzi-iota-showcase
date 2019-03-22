@@ -2,7 +2,7 @@
 
   <div id="eventListContainer">
 
-    <h2 style="text-align: center;">Events</h2>
+    <h2 style="text-align: center; margin: 0;">Events</h2>
 
   <div id="eventList" ref="eventList">
            
