@@ -12,7 +12,11 @@
         :attribution="attribution"
       />
       <map-object
-        :position="withPopup"
+        :initPosition="testCar"
+      />
+      <!--integrate tram lines into map-->
+      <l-geo-json
+        :geojson="tram.geojson"
       />
       <!--<l-marker :lat-lng="withPopup">
         <l-popup>
@@ -43,8 +47,11 @@
 <script>
 import { eventBus } from './../events.ts';
 import L from 'leaflet';
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from 'vue2-leaflet';
+import { LMap, LTileLayer, LMarker, LPopup, LGeoJson } from 'vue2-leaflet';
 import MapObject from './MapObject';
+
+// load geo data locally
+import data from '../assets/geojson/geojson.js';
 
 
 export default {
@@ -54,7 +61,7 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-    LTooltip,
+    LGeoJson,
     MapObject,
   },
   data() {
@@ -63,11 +70,13 @@ export default {
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      withPopup: L.latLng(49.0091, 8.3799),
-      withTooltip: L.latLng(49.0091, 8.385),
-      showParagraph: true,
+      testCar: L.latLng(49.0091, 8.3799),
       mapOptions: {
         zoomSnap: 0.5,
+      },
+      // integrate tram lines
+      tram: {
+        geojson: data.tram,
       },
     };
   },
@@ -75,12 +84,7 @@ export default {
       // listen on events
   },
   methods: {
-    showLongText() {
-      this.showParagraph = !this.showParagraph;
-    },
-    innerClick() {
-      alert('Click!');
-    },
+    
   },
 };
 </script>
