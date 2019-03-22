@@ -1,7 +1,6 @@
 <template>
   <l-marker
     :lat-lng="getPosition"
-    :title="title"
     :draggable="false"
     :icon="icon">
     <l-popup content="ID"/>
@@ -18,7 +17,7 @@ export default {
     LPopup,
   },
   props: {
-    position: {
+    initPosition: {
       type: Object,
       default: () => {},
     },
@@ -30,6 +29,7 @@ export default {
             iconSize: [40, 40],
             iconAnchor: [20, 20],
       }),
+      position: this.initPosition,
       };
   },
   created() {
