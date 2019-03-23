@@ -5,7 +5,7 @@
     :icon="icon">
     <l-popup content="ID"/>
     <l-tooltip :options="{permanent: true, direction: 'bottom'}">
-            Tiptoptooltip
+            1,5 Mi
     </l-tooltip>
   </l-marker>
 </template>
@@ -57,9 +57,7 @@ export default {
 
 <style scoped>
 
-l-marker {
-    transition: 5s linear;
-}
+
 
 </style>
 

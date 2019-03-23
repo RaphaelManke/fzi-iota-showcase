@@ -73,8 +73,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @import "../../node_modules/leaflet/dist/leaflet.css";
+
+.leaflet-tooltip {
+  border: 1px solid #a3a3a3;;
+  color: #04a997;
+}
+
+.leaflet-tooltip-bottom::before {
+    border-bottom-color: #a3a3a3;;
+} 
 
 #mapVisu {
     height: 80vh;
