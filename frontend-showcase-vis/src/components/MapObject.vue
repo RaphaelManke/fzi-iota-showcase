@@ -4,19 +4,27 @@
     :draggable="false"
     :icon="icon">
     <l-popup content="ID"/>
+    <l-tooltip :options="{permanent: true, direction: 'bottom'}">
+            Tiptoptooltip
+    </l-tooltip>
   </l-marker>
 </template>
 
 <script>
 import { eventBus } from './../events.ts';
-import { LMarker, LPopup, LIcon } from 'vue2-leaflet';
+import { LMarker, LPopup, LIcon, LTooltip} from 'vue2-leaflet';
 export default {
   name: 'MapObject',
   components: {
     LMarker,
     LPopup,
+    LTooltip,
   },
   props: {
+    type: {
+        type: String,
+        default: '',
+    },
     initPosition: {
       type: Object,
       default: () => {},
@@ -25,9 +33,9 @@ export default {
   data() {
       return {
         icon: L.icon({
-            iconUrl: 'assets/images/car.png',
+            iconUrl: 'assets/images/' + this.type + '.png',
             iconSize: [40, 40],
-            iconAnchor: [20, 20],
+            iconAnchor: [20, 30],
             popupAnchor: [0, -15],
       }),
       position: this.initPosition,
@@ -46,3 +54,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+l-marker {
+    transition: 5s linear;
+}
+
+</style>
+

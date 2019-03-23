@@ -12,6 +12,7 @@
         :attribution="attribution"
       />
       <map-object
+        type="car"
         :initPosition="testCar"
       />
       <!--integrate tram lines into map-->
