@@ -35,7 +35,7 @@ export default {
       });
   },
   updated() {
-      this.$refs["eventList"].scrollTop = this.$refs["eventList"].scrollHeight;
+      this.$refs['eventList'].scrollTop = this.$refs['eventList'].scrollHeight;
   },
 };
 

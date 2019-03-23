@@ -25,9 +25,10 @@ export default {
   data() {
       return {
         icon: L.icon({
-            iconUrl: 'assets/car.png',
+            iconUrl: 'assets/images/car.png',
             iconSize: [40, 40],
             iconAnchor: [20, 20],
+            popupAnchor: [0, -15],
       }),
       position: this.initPosition,
       };

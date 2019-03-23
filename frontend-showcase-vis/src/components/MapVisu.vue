@@ -18,26 +18,7 @@
       <l-geo-json
         :geojson="tram.geojson"
       />
-      <!--<l-marker :lat-lng="withPopup">
-        <l-popup>
-          <div @click="innerClick">
-            I am a popup
-            <p v-show="showParagraph">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada1.
-            </p>
-          </div>
-        </l-popup>
-      </l-marker>
-      <l-marker :lat-lng="withTooltip">
-        <l-tooltip :options="{permanent: true, interactive: true}">
-          <div @click="innerClick">
-            I am a tooltip
-            <p v-show="showParagraph">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada2.
-            </p>
-          </div>
-        </l-tooltip>
-      </l-marker>-->
+      
     </l-map>
 
     </div>
@@ -51,7 +32,8 @@ import { LMap, LTileLayer, LMarker, LPopup, LGeoJson } from 'vue2-leaflet';
 import MapObject from './MapObject';
 
 // load geo data locally
-import data from '../assets/geojson/geojson.js';
+import data from '../../public/assets/geojson/geojson.js';
+
 
 
 export default {
@@ -82,6 +64,7 @@ export default {
   },
   created() {
       // listen on events
+      // get data from server
   },
   methods: {
     
