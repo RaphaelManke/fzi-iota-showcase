@@ -79,11 +79,16 @@ export default {
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;;
   color: #04a997;
+  transition: 3s linear;
 }
 
 .leaflet-tooltip-bottom::before {
     border-bottom-color: #a3a3a3;;
 } 
+
+.leaflet-marker-icon.leaflet-interactive {
+  transition: 3s linear;
+}
 
 #mapVisu {
     height: 80vh;
