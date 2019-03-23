@@ -4,7 +4,7 @@
 
     <h2 style="text-align: center; margin: 0;">Events</h2>
 
-  <div id="eventList" ref="eventList">
+  <div v-on:mouseover="mouseOnEvents = true" v-on:mouseleave="mouseOnEvents = false" id="eventList" ref="eventList">
            
     <ul>
 
@@ -26,6 +26,7 @@ export default {
   data() {
       return {
           events: [],
+          mouseOnEvents: false,
       };
   },
   created() {
@@ -35,7 +36,9 @@ export default {
       });
   },
   updated() {
-      this.$refs['eventList'].scrollTop = this.$refs['eventList'].scrollHeight;
+      if(!this.mouseOnEvents){
+        this.$refs['eventList'].scrollTop = this.$refs['eventList'].scrollHeight;
+      }
   },
 };
 
