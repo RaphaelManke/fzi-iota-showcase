@@ -13,29 +13,20 @@ import { EnvironmentInfo, Type, Connection } from '../src/env';
     width: 100,
     stops: [{
       id: 0,
-      name: 'Tivoli',
-      x: 90,
-      y: 90,
+      name: 'Marktplatz',
+      lat:  49.009525,
+      lon: 8.405141,
     }, {
       id: 1,
-      name: 'Werderstraße',
-      x: 90,
-      y: 70,
-    }, {
-      id: 2,
-      name: 'Poststraße',
-      x: 75,
-      y: 90,
-    }, {
-      id: 3,
-      name: 'Karlsruhe Hbf',
-      x: 60,
-      y: 90,
+      name: 'Kronenplatz',
+      lat:  49.009380,
+      lon: 8.408518,
     }],
-    connections: new Array<Type>('car', 'tram').map((type: Type) => [1, 2, 3].map((i) => ({
+    connections: new Array<Type>('car', 'tram').map((type: Type) => [1].map((i) => ({
       from: i - 1,
       to: i,
       type,
+      path: [],
     }))).reduce((acc: Connection[], v: Connection[]) => {
       v.forEach((c: Connection) => acc.push(c));
       return acc;

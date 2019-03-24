@@ -17,17 +17,32 @@ export interface EnvironmentInfo {
   connections: Connection[];
 }
 
-export interface Stop {
+export interface Stop extends Position {
   id: number;
   name: string;
-  x: number;
-  y: number;
 }
 
 export interface Connection {
   type: Type;
   from: number;
   to: number;
+  path: Position[];
+}
+
+export interface Position {
+  lon: number;
+  lat: number;
 }
 
 export type Type = 'car' | 'bike' | 'tram';
+
+// login(id) -> wallet, position
+
+// getStops()
+
+// getConnection()
+
+// getCheckIn()
+
+// reserveVehicle()
+
