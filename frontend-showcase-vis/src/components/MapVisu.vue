@@ -15,6 +15,10 @@
         type="car"
         :initPosition="testCar"
       />
+      <map-object
+        type="male"
+        :initPosition="testGuy"
+      />
       <!--integrate tram lines into map-->
       <l-geo-json
         :geojson="tram.geojson"
@@ -54,6 +58,7 @@ export default {
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       testCar: L.latLng(49.0091, 8.3799),
+      testGuy: L.latLng(49.0091, 8.381),
       mapOptions: {
         zoomSnap: 0.5,
       },
