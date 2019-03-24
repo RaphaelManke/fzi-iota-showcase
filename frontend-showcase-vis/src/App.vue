@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div id="top">
-    <mapVisu></mapVisu>
-    <h2 style="position: absolute; right: 0; width: 20%; text-align: center; top: 0;">Events</h2>
-    <eventList></eventList>
+    <map-visu></map-visu>
+    
+    <event-list></event-list>
     </div>
     <h1>Fancy Info Box</h1>
   </div>

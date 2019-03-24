@@ -2,52 +2,109 @@
 
     <div id="mapVisu">
 
-        <div id="mapGrid">
-
-        <basicPanel v-for="entry in matrix" :location="entry"></basicPanel>
-
-        </div>
-
-        <vehicleSpace></vehicleSpace>
+    <l-map
+      :zoom="zoom"
+      :center="center"
+      :options="mapOptions"
+    >
+      <l-tile-layer
+        :url="url"
+        :attribution="attribution"
+      />
+      <map-object
+        type="car"
+        :initPosition="testCar"
+      />
+      <map-object
+        type="male"
+        :initPosition="testGuy"
+      />
+      <!--integrate tram lines into map-->
+      <l-geo-json
+        :geojson="tram.geojson"
+      />
+      
+    </l-map>
 
     </div>
     
 </template>
 
 <script>
-
-import BasicPanel from './BasicPanel';
-import VehicleSpace from './VehicleSpace';
 import { eventBus } from './../events.ts';
+import L from 'leaflet';
+import { LMap, LTileLayer, LMarker, LPopup, LGeoJson } from 'vue2-leaflet';
+import MapObject from './MapObject';
+
+// load geo data locally
+import data from '../../public/assets/geojson/geojson.js';
 
 
-export default{
-  data() {
-      return {
-          matrix: ['1', '2', '3', '4', '5', '6', '7', '8'],
-      };
-  },
+
+export default {
+  name: 'MapVisu',
   components: {
-      BasicPanel,
-      VehicleSpace,
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup,
+    LGeoJson,
+    MapObject,
   },
-  methods: {},
-  computed: {},
+  data() {
+    return {
+      zoom: 13,
+      center: L.latLng(49.0091, 8.3799),
+      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      testCar: L.latLng(49.0091, 8.3799),
+      testGuy: L.latLng(49.0091, 8.381),
+      mapOptions: {
+        zoomSnap: 0.5,
+      },
+      // integrate tram lines
+      tram: {
+        geojson: data.tram,
+      },
+    };
+  },
+  created() {
+      // listen on events
+      // get data from server
+  },
+  methods: {
+    
+  },
 };
 </script>
 
-<style scoped>
+<style>
+@import "../../node_modules/leaflet/dist/leaflet.css";
 
-#mapVisu {
-    position: relative;
-    border: 10px solid gray;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.3), 0 12px 40px 0 rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+.leaflet-tooltip {
+  border: 1px solid #a3a3a3;;
+  color: #04a997;
+  transition: 3s linear;
 }
 
-#mapGrid {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
+.leaflet-popup-content {
+  color: #04a997;
+  transition: 3s linear;
+}
+
+.leaflet-tooltip-bottom::before {
+    border-bottom-color: #a3a3a3;;
+} 
+
+.leaflet-marker-icon {
+  transition: 3s linear;
+}
+
+#mapVisu {
+    height: 80vh;
+    -webkit-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
+    -moz-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
+    box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
 }
 
 </style>
