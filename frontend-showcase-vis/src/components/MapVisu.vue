@@ -13,11 +13,17 @@
       />
       <map-object
         type="car"
-        :initPosition="testCar"
+        :initParas="testCar"
       />
       <map-object
         type="male"
-        :initPosition="testGuy"
+        :initParas="testGuy"
+      />
+      <!-- add stops -->
+      <map-object
+        v-for="stop in env.stops"
+        type="stop"
+        :initParas="stop"
       />
       <!--integrate tram lines into map-->
       <l-geo-json
@@ -57,8 +63,8 @@ export default {
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      testCar: L.latLng(49.0091, 8.3799),
-      testGuy: L.latLng(49.0091, 8.381),
+      testCar: {lat: 49.0091, lon: 8.3799, name: 'Tessi'},
+      testGuy: {lat: 49.0091, lon: 8.381, name: 'Peter'},
       mapOptions: {
         zoomSnap: 0.5,
       },
@@ -71,10 +77,9 @@ export default {
   },
   created() {
       // listen on events
-      // get env data from server
+      // get env data from server (maybe link with socket connect)
       this.$http.get(this.$hostname + '/env').then(function(env) {
-               // this.env = env;
-               window.console.log(env);
+               this.env = env.body;
             });
   },
   methods: {
@@ -89,10 +94,6 @@ export default {
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;;
   color: #04a997;
-  transition: 3s linear;
-}
-
-.leaflet-popup-wrapper {
   transition: 3s linear;
 }
 

@@ -6,7 +6,7 @@
     <l-popup>
          1,5 Mi<img src="assets/images/iota.png">
     </l-popup>
-    <l-tooltip :options="{permanent: true, direction: 'bottom'}">
+    <l-tooltip v-if="this.type !== 'stop'" :options="{permanent: true, direction: 'bottom'}">
             1,5 Mi
             <img src="assets/images/iota.png">
     </l-tooltip>
@@ -28,7 +28,7 @@ export default {
         type: String,
         default: '',
     },
-    initPosition: {
+    initParas: {
       type: Object,
       default: () => {},
     },
@@ -41,13 +41,17 @@ export default {
             iconAnchor: [20, 30],
             popupAnchor: [0, -15],
       }),
-      position: this.initPosition,
+      paras: this.initParas,
+      position: L.latLng(this.initParas.lat, this.initParas.lon),
       };
   },
   created() {
+      this.position = L.latLng(this.paras.lat, this.paras.lon);
       eventBus.on('updatedPos', (data) => {
-            this.position = L.latLng(this.position.lat + data.y / 1000, this.position.lng + data.x / 1000);
-      },
+        if (this.type !== 'stop') {
+          this.position = L.latLng(this.position.lat + data.y / 1000, this.position.lng + data.x / 1000);
+        }
+        },
       );
   },
   computed: {
