@@ -82,6 +82,11 @@ export default {
   transition: 3s linear;
 }
 
+.leaflet-popup-content {
+  color: #04a997;
+  transition: 3s linear;
+}
+
 .leaflet-tooltip-bottom::before {
     border-bottom-color: #a3a3a3;;
 } 

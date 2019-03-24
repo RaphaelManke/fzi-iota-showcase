@@ -3,9 +3,12 @@
     :lat-lng="getPosition"
     :draggable="false"
     :icon="icon">
-    <l-popup content="ID"/>
+    <l-popup>
+         1,5 Mi<img src="assets/images/iota.png">
+    </l-popup>
     <l-tooltip :options="{permanent: true, direction: 'bottom'}">
             1,5 Mi
+            <img src="assets/images/iota.png">
     </l-tooltip>
   </l-marker>
 </template>
@@ -57,7 +60,9 @@ export default {
 
 <style scoped>
 
-
+img {
+    height: 10px;
+}
 
 </style>
 
