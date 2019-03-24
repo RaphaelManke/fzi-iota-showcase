@@ -7,8 +7,7 @@
          1,5 Mi<img src="assets/images/iota.png">
     </l-popup>
     <l-tooltip v-if="this.type !== 'stop'" :options="{permanent: true, direction: 'bottom'}">
-            1,5 Mi
-            <img src="assets/images/iota.png">
+            {{paras.name}}
     </l-tooltip>
   </l-marker>
 </template>
