@@ -2,15 +2,20 @@ import Vue from 'vue';
 import App from './App.vue';
 import store from './store';
 import VueSocketIO from 'vue-socket.io';
-import L from 'leaflet';
+import VueResource from 'vue-resource';
 
 
 Vue.config.productionTip = false;
 
+Vue.prototype.$hostname = (Vue.config.productionTip) ? '192.168.178.72:3000' : 'http://localhost:3000';
+
+// enable http requests
+Vue.use(VueResource);
+
 Vue.use(
   new VueSocketIO({
     debug: true,
-    connection: 'http://localhost:3000',
+    connection: Vue.prototype.$hostname,
     vuex: {
       store,
       actionPrefix: 'SOCKET_',

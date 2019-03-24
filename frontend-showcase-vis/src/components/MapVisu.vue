@@ -62,6 +62,7 @@ export default {
       mapOptions: {
         zoomSnap: 0.5,
       },
+      env: {},
       // integrate tram lines
       tram: {
         geojson: data.tram,
@@ -70,10 +71,14 @@ export default {
   },
   created() {
       // listen on events
-      // get data from server
+      // get env data from server
+      this.$http.get(this.$hostname + '/env').then(function(env) {
+               // this.env = env;
+               window.console.log(env);
+            });
   },
   methods: {
-    
+
   },
 };
 </script>
@@ -87,9 +92,12 @@ export default {
   transition: 3s linear;
 }
 
+.leaflet-popup-wrapper {
+  transition: 3s linear;
+}
+
 .leaflet-popup-content {
   color: #04a997;
-  transition: 3s linear;
 }
 
 .leaflet-tooltip-bottom::before {

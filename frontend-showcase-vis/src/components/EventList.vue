@@ -36,7 +36,7 @@ export default {
       });
   },
   updated() {
-      if(!this.mouseOnEvents){
+      if (!this.mouseOnEvents) {
         this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
       }
   },
