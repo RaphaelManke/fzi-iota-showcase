@@ -37,7 +37,7 @@ export default {
   },
   updated() {
       if(!this.mouseOnEvents){
-        this.$refs['eventList'].scrollTop = this.$refs['eventList'].scrollHeight;
+        this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
       }
   },
 };
