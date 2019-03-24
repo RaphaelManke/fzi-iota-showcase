@@ -86,7 +86,7 @@ export default {
     border-bottom-color: #a3a3a3;;
 } 
 
-.leaflet-marker-icon.leaflet-interactive {
+.leaflet-marker-icon {
   transition: 3s linear;
 }
 
