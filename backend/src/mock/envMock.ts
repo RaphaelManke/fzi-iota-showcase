@@ -1,6 +1,8 @@
 import VehicleMock from './vehicleMock';
 import { EventEmitter2 } from 'eventemitter2';
-import { Environment, EnvironmentInfo } from '../env';
+import { Environment } from '../env';
+import { EnvironmentInfo } from '../envInfo';
+
 
 export default class EnvironmentMock implements Environment {
   public static EPS = 0.9;

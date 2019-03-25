@@ -4,18 +4,20 @@ import { enableLogging } from '../src/logger';
 import Controller from '../src/controller';
 import EnvironmentMock from '../src/mock/envMock';
 import { Server } from '../src/server';
-import { EnvironmentInfo, Type, Connection } from '../src/env';
+import { EnvironmentInfo, Type, Connection } from '../src/envInfo';
 
 (async () => {
   const events = new EventEmitter2();
   const info: EnvironmentInfo = {
+    vehicles: [],
+    users: [],
     stops: [{
-      id: 0,
+      id: 'A',
       name: 'Marktplatz',
       lat:  49.009525,
       lng: 8.405141,
     }, {
-      id: 1,
+      id: 'B',
       name: 'Kronenplatz',
       lat:  49.009380,
       lng: 8.408518,

@@ -1,4 +1,5 @@
-import Vehicle from './vehicle';
+import { Vehicle } from './vehicle';
+import { EnvironmentInfo } from './envInfo';
 
 export interface Environment {
   info: EnvironmentInfo;
@@ -9,38 +10,3 @@ export interface Environment {
 
   getVehicle(id: string): Vehicle | undefined;
 }
-
-export interface EnvironmentInfo {
-  stops: Stop[];
-  connections: Connection[];
-}
-
-export interface Stop extends Position {
-  id: number;
-  name: string;
-}
-
-export interface Connection {
-  type: Type;
-  from: number;
-  to: number;
-  path: Position[];
-}
-
-export interface Position {
-  lng: number;
-  lat: number;
-}
-
-export type Type = 'car' | 'bike' | 'tram';
-
-// login(id) -> wallet, position
-
-// getStops()
-
-// getConnection()
-
-// getCheckIn()
-
-// reserveVehicle()
-

@@ -5,6 +5,7 @@ import { toTrytes } from '../src/messages/converter';
 import {expect} from 'chai';
 import { ReservationMessage, StopWelcomeMessage, Reservation } from '../src';
 import { Trytes } from '@iota/core/typings/types';
+import 'mocha';
 
 describe('message formatting', () => {
   it('should convert CheckInMessage to and from trytes', () => {

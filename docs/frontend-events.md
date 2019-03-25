@@ -18,20 +18,20 @@
 - userId
 - vehicleId
 
-## StartBoarding
+## BoardingStarted
 - userId
 - vehicleId
 - destination
 
-## StartTrip
+## TripStarted
 - userId
 - vehicleId
 
-## EndTrip
+## TripFinished
 - userId
 - vehicleId
 
-## UpdatePos
+## PosUpdated
 - userId/vehicleId
 
 ## TransactionIssued

@@ -1,14 +1,15 @@
-import Vehicle from '../vehicle';
+import { Vehicle } from '../vehicle';
 import Mock from './mock';
 import { EventEmitter2 } from 'eventemitter2';
+import { Trytes } from '@iota/core/typings/types';
 
 export default class VehicleMock implements Vehicle, Mock {
-  private id: string;
+  private id: Trytes;
   private started = false;
   private speed = 1;
   private events: EventEmitter2;
 
-  constructor(id: string, events: EventEmitter2) {
+  constructor(id: Trytes, events: EventEmitter2) {
     this.id = id;
     this.events = events;
   }

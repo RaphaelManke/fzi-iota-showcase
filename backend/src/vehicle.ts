@@ -1,4 +1,4 @@
-export default interface Vehicle {
+export interface Vehicle {
   start(): void;
 
   stop(): void;
