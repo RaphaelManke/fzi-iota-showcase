@@ -41,11 +41,11 @@ export default {
             popupAnchor: [0, -20],
       }),
       paras: this.initParas,
-      position: L.latLng(this.initParas.lat, this.initParas.lon),
+      position: L.latLng(this.initParas.lat, this.initParas.lng),
       };
   },
   created() {
-      this.position = L.latLng(this.paras.lat, this.paras.lon);
+      this.position = L.latLng(this.paras.lat, this.paras.lng);
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
           this.position = L.latLng(this.position.lat + data.y / 1000, this.position.lng + data.x / 1000);
