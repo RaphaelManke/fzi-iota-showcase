@@ -1,12 +1,10 @@
 <template>
   <l-marker
-    :lat-lng="getPosition"
+    v-if="shown"
+    :lat-lng="position"
     :draggable="false"
     :icon="icon">
-    <l-popup>
-         1,5 Mi<img src="assets/images/iota.png">
-    </l-popup>
-    <l-tooltip v-if="this.type !== 'stop'" :options="{permanent: true, direction: 'bottom'}">
+    <l-tooltip v-if="this.type !== 'stop'" :options="{permanent: true, direction: 'bottom'}" class="iota_style">
             {{paras.name}}
     </l-tooltip>
   </l-marker>
@@ -41,22 +39,31 @@ export default {
             popupAnchor: [0, -20],
       }),
       paras: this.initParas,
-      position: L.latLng(this.initParas.lat, this.initParas.lng),
+      borded: false,
       };
   },
   created() {
-      this.position = L.latLng(this.paras.lat, this.paras.lng);
+ 
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
-          this.position = L.latLng(this.position.lat + data.y / 1000, this.position.lng + data.x / 1000);
+          this.position = data;
         }
         },
       );
   },
   computed: {
-      getPosition() {
-          return this.position;
+      position: {
+          get() {
+            return L.latLng(this.paras.lat, this.paras.lng);
+          },
+          set(data) {
+            this.paras.lat = this.paras.lat + data.y / 1000;
+            this.paras.lng = this.paras.lng + data.x / 1000;
+          },
       },
+      shown() {
+        return !this.borded;
+      }
   },
 };
 </script>
@@ -65,6 +72,10 @@ export default {
 
 img {
     height: 10px;
+}
+
+.iota_style {
+  color: #04a997;
 }
 
 </style>

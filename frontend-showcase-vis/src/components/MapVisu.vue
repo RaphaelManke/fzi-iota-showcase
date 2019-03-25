@@ -93,14 +93,10 @@ export default {
 <style>
 @import "../../node_modules/leaflet/dist/leaflet.css";
 
+/* custom tooltip styling*/
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;;
-  color: #04a997;
   transition: 3s linear;
-}
-
-.leaflet-popup-content {
-  color: #04a997;
 }
 
 .leaflet-tooltip-bottom::before {
