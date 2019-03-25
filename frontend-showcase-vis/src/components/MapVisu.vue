@@ -66,7 +66,7 @@ export default {
       testCar: {lat: 49.0091, lon: 8.3799, name: 'Tessi'},
       testGuy: {lat: 49.0091, lon: 8.381, name: 'Peter'},
       mapOptions: {
-        zoomSnap: 0.5,
+        zoomSnap: 0.25,
       },
       env: {},
       // integrate tram lines
@@ -77,13 +77,15 @@ export default {
   },
   created() {
       // listen on events
-      // get env data from server (maybe link with socket connect)
-      this.$http.get(this.$hostname + '/env').then(function(env) {
+      
+  },
+  sockets: {
+      connect() {
+        // get env data from server
+        this.$http.get(this.$hostname + '/env').then(function(env) {
                this.env = env.body;
             });
-  },
-  methods: {
-
+      }
   },
 };
 </script>
@@ -110,7 +112,7 @@ export default {
 }
 
 #mapVisu {
-    height: 80vh;
+    height: 70vh;
     -webkit-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
     -moz-box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
     box-shadow: 7px 7px 12px 1px rgba(173,173,173,0.8);
