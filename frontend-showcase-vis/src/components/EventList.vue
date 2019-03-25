@@ -50,7 +50,7 @@ export default {
 #eventListContainer {
   display: flex;
   flex-flow: column;
-  height: 80vh;
+  height: 70vh;
 }
 
 #eventList {
