@@ -11,8 +11,6 @@ export interface Environment {
 }
 
 export interface EnvironmentInfo {
-  width: number;
-  height: number;
   stops: Stop[];
   connections: Connection[];
 }
@@ -30,7 +28,7 @@ export interface Connection {
 }
 
 export interface Position {
-  lon: number;
+  lng: number;
   lat: number;
 }
 
