@@ -38,7 +38,7 @@ export default {
             iconUrl: 'assets/images/' + this.type + '.png',
             iconSize: [40, 40],
             iconAnchor: [20, 30],
-            popupAnchor: [0, -15],
+            popupAnchor: [0, -20],
       }),
       paras: this.initParas,
       position: L.latLng(this.initParas.lat, this.initParas.lon),
