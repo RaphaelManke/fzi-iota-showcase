@@ -63,8 +63,8 @@ export default {
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      testCar: {lat: 49.0091, lon: 8.3799, name: 'Tessi'},
-      testGuy: {lat: 49.0091, lon: 8.381, name: 'Peter'},
+      testCar: {lat: 49.0091, lng: 8.3799, name: 'Tessi'},
+      testGuy: {lat: 49.0091, lng: 8.381, name: 'Peter'},
       mapOptions: {
         zoomSnap: 0.25,
       },
