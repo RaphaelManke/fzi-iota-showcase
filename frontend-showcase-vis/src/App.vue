@@ -5,7 +5,7 @@
     
     <event-list></event-list>
     </div>
-    <h1>Fancy Info Box</h1>
+    <state-table></state-table>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ import { Component, Vue } from 'vue-property-decorator';
 // components
 import MapVisu from './components/MapVisu.vue';
 import EventList from './components/EventList.vue';
+import StateTable from './components/StateTable.vue';
 
 // internal event bus
 import { eventBus } from './events';
@@ -25,6 +26,7 @@ import { eventBus } from './events';
   components: {
     MapVisu,
     EventList,
+    StateTable,
   },
   sockets: {
     connect() {
@@ -48,6 +50,18 @@ export default class App extends Vue {
 </script>
 
 <style>
+
+html {
+  overflow:hidden;
+}
+
+#app {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+}
+
 #top {
     display: grid;
     grid-template-columns: auto 20%;

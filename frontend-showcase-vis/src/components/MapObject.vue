@@ -39,7 +39,7 @@ export default {
             popupAnchor: [0, -20],
       }),
       paras: this.initParas,
-      borded: false,
+      boarded: false,
       };
   },
   created() {
@@ -62,7 +62,7 @@ export default {
           },
       },
       shown() {
-        return !this.borded;
+        return !this.boarded;
       }
   },
 };

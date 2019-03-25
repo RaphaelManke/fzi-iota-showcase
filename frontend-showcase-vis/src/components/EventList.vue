@@ -2,7 +2,7 @@
 
   <div id="eventListContainer">
 
-    <h2 style="text-align: center; margin: 0;">Events</h2>
+    <h2 style="text-align: center; margin: 0;">Transactions</h2>
 
   <div v-on:mouseover="mouseOnEvents = true" v-on:mouseleave="mouseOnEvents = false" id="eventList" ref="eventList">
            
