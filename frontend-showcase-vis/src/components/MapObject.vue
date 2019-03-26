@@ -46,22 +46,15 @@ export default {
       // reaction on update position
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
-          this.position = data;
+          this.paras.coordinates = [this.paras.coordinates[0] += data.y / 1000, this.paras.coordinates[1] += data.x / 1000];
         }
         },
       );
   },
   computed: {
       // computed getter an setter for position property
-      position: {
-          get() {
-            return L.latLng(this.paras.coordinates);
-          },
-          set(data) {
-            window.console.log('updating posiiton');
-            this.paras.coordinates[0] = this.paras.coordinates[0] + data.y / 1000;
-            this.paras.coordinates[1] = this.paras.coordinates[1] + data.x / 1000;
-          },
+      position() {
+            return L.latLng(this.paras.coordinates);     
       },
       // computed shown property depending on the state
       shown() {
