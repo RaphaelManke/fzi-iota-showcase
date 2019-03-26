@@ -4,6 +4,11 @@
 
     <div class="table_wrapper">
 
+        <state-table-object 
+        v-for="stop in stops"
+        :paras="stop"
+        />
+
     </div>
 
     <div class="table_wrapper">
@@ -36,12 +41,12 @@ export default {
       type: Object,
       default: () => {},
     },
-    data() {
-        return {
-            stops: env.stops,
-        };
-    },
   },
+  computed: {
+      stops() {
+          return this.env.stops;
+      }
+  }
 
 }
 </script>

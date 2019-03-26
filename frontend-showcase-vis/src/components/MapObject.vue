@@ -67,7 +67,7 @@ export default {
 <style scoped>
 
 img {
-    height: 10px;
+    height: 3vh;
 }
 
 .iota_style {
