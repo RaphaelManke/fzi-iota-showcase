@@ -25,9 +25,11 @@
         type="stop"
         :initParas="stop"
       />
-      <!--integrate tram lines into map-->
-      <l-geo-json
-        :geojson="tram.geojson"
+      <!--integrate connections into map-->
+      <l-polyline
+        v-for="connection in data.connections"
+        :latLngs="connection.coordinates"
+        :color="connectionStyle(connection)"
       />
       
     </l-map>
@@ -39,7 +41,7 @@
 <script>
 import { eventBus } from './../events.ts';
 import L from 'leaflet';
-import { LMap, LTileLayer, LMarker, LPopup, LGeoJson } from 'vue2-leaflet';
+import { LMap, LTileLayer, LMarker, LPopup, LPolyline } from 'vue2-leaflet';
 import MapObject from './MapObject';
 
 // load geo data locally
@@ -54,7 +56,7 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-    LGeoJson,
+    LPolyline,
     MapObject,
   },
   data() {
@@ -69,10 +71,7 @@ export default {
         zoomSnap: 0.25,
       },
       env: {},
-      // integrate tram lines
-      tram: {
-        geojson: data.tram,
-      },
+      data: data,
     };
   },
   created() {
@@ -87,6 +86,14 @@ export default {
             });
       }
   },
+  methods: {
+    connectionStyle (connection) {
+      switch (connection.type) {
+            case 'car': return "#ff0000";
+            case 'tram':   return "#0000ff";
+        }
+      },
+    },
 };
 </script>
 
