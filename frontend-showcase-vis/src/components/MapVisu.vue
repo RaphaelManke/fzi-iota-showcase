@@ -29,7 +29,7 @@
       <l-polyline
         v-for="connection in data.connections"
         :latLngs="connection.coordinates"
-        :color="connectionStyle(connection)"
+        :color="connectionColor(connection)"
       />
       
     </l-map>
@@ -51,6 +51,12 @@ import data from '../../public/assets/geojson/geojson.js';
 
 export default {
   name: 'MapVisu',
+  props: {
+    env: {
+      type: Object,
+      default: () => {},
+    },
+  },
   components: {
     LMap,
     LTileLayer,
@@ -70,7 +76,6 @@ export default {
       mapOptions: {
         zoomSnap: 0.25,
       },
-      env: {},
       data: data,
     };
   },
@@ -78,16 +83,8 @@ export default {
       // listen on events
       
   },
-  sockets: {
-      connect() {
-        // get env data from server
-        this.$http.get(this.$hostname + '/env').then(function(env) {
-               this.env = env.body;
-            });
-      }
-  },
   methods: {
-    connectionStyle (connection) {
+    connectionColor (connection) {
       switch (connection.type) {
             case 'car': return "#ff0000";
             case 'tram':   return "#0000ff";

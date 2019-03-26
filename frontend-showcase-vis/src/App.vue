@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="top">
-    <map-visu></map-visu>
+    <map-visu :env="env"></map-visu>
     
     <event-list></event-list>
     </div>
@@ -31,10 +31,16 @@ import { eventBus } from './events';
   sockets: {
     connect() {
       window.console.log('Connected to websocket server.');
+      // get env data from server
+        this.$http.get(this.$hostname + '/env').then(function(env) {
+               this.env = env.body;
+            });
     },
 },
 })
 export default class App extends Vue {
+
+  env = {};
 
   private created() {
     // passing on each socket event to the internal event bus
