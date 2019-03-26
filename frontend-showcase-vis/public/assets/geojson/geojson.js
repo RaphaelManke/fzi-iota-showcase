@@ -1,30 +1,27 @@
 export default {
-  tram: {
-    'type': 'FeatureCollection',
-    'features': [
+  connections: [
       {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': [
-            [8.395093923217814, 49.009938876997616],
-            [8.410162925720215, 49.00930415767915]
-          ]
-        },
-        'id': 'ATOB'
+        'id': 'ATOB',
+        'coordinates': [
+            [49.009540, 8.403885],
+            [49.00930415767915, 8.410162925720215]
+          ],
+          'type': 'tram',
       },
       {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': [
-            [8.410162925720215, 49.00930415767915],
-            [8.410420417785645, 49.00598237765667]
-          ]
+        'id': 'BTOC',
+        'coordinates': [
+            [49.00930415767915, 8.410162925720215],
+            [49.00598237765667, 8.410420417785645]
+          ],
+          'type': 'tram',
         },
-        'id': 'BTOC'
-      }
-    ]
-  }
-  
+    ],
+  stops: [
+    {
+      'id': 'A',
+      'name': 'Marktplatz',
+      'coordinates': [49.009540, 8.403885],
+    }
+  ],
 };
