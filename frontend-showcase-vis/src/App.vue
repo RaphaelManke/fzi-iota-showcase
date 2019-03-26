@@ -5,7 +5,7 @@
     
     <event-list></event-list>
     </div>
-    <state-table></state-table>
+    <state-table :env="env"></state-table>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ import { eventBus } from './events';
     connect() {
       window.console.log('Connected to websocket server.');
       // get env data from server
-        this.$http.get(this.$hostname + '/env').then(function(env) {
+        this.$http.get(this.$hostname + '/env').then(function(env: any) {
                this.env = env.body;
             });
     },

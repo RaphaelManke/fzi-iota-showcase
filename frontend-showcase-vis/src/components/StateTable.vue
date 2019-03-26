@@ -2,25 +2,59 @@
 
 <div id="table_container">
 
-<h1>Nummer 1</h1>
-<h1>Nummer 2</h1>
-<h1>Nummer 3</h1>
-<h1>Nummer 4</h1>
-<h1>Nummer 5</h1>
+    <div class="table_wrapper">
+
+    </div>
+
+    <div class="table_wrapper">
+
+    </div>
+
+    <div class="table_wrapper">
+
+    </div>
+
+    <div class="table_wrapper">
+        
+    </div>
+
     
 </div>
 </template>
 
 <script>
+import StateTableObject from './StateTableObject.vue'
+
 export default {
     
+  name: 'StateTable',
+  components: {
+      StateTableObject,
+  },
+  props: {
+    env: {
+      type: Object,
+      default: () => {},
+    },
+    data() {
+        return {
+            stops: env.stops,
+        };
+    },
+  },
+
 }
 </script>
 
-<style>
+<style scoped>
+
+.table_wrapper {
+    display: flex;
+}
 
 #table_container {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
     height: 30vh;
 }
 

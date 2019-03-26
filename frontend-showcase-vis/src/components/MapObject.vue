@@ -38,12 +38,13 @@ export default {
             iconAnchor: [20, 30],
             popupAnchor: [0, -20],
       }),
+      type: this.type,
       paras: this.initParas,
       boarded: false,
       };
   },
   created() {
- 
+      // reaction on update position
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
           this.position = data;
@@ -52,15 +53,17 @@ export default {
       );
   },
   computed: {
+      // computed getter an setter for position property
       position: {
           get() {
-            return L.latLng(this.paras.lat, this.paras.lng);
+            return L.latLng(this.paras.coordinates);
           },
           set(data) {
-            this.paras.lat = this.paras.lat + data.y / 1000;
-            this.paras.lng = this.paras.lng + data.x / 1000;
+            this.paras.coordinates[0] = this.paras.coordinates[0] + data.y / 1000;
+            this.paras.coordinates[1] = this.paras.coordinates[1] + data.x / 1000;
           },
       },
+      // computed shown property depending on the state
       shown() {
         return !this.boarded;
       }

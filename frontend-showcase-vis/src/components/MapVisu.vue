@@ -12,8 +12,9 @@
         :attribution="attribution"
       />
       <map-object
-        type="car"
-        :initParas="testCar"
+        v-for="vehicle in data.vehicles"
+        :type="vehicle.type"
+        :initParas="vehicle"
       />
       <map-object
         type="male"
@@ -21,7 +22,7 @@
       />
       <!-- add stops -->
       <map-object
-        v-for="stop in env.stops"
+        v-for="stop in data.stops"
         type="stop"
         :initParas="stop"
       />
@@ -44,7 +45,7 @@ import L from 'leaflet';
 import { LMap, LTileLayer, LMarker, LPopup, LPolyline } from 'vue2-leaflet';
 import MapObject from './MapObject';
 
-// load geo data locally
+// load geo data locally for testing
 import data from '../../public/assets/geojson/geojson.js';
 
 
@@ -71,8 +72,7 @@ export default {
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      testCar: {lat: 49.0091, lng: 8.3799, name: 'Tessi'},
-      testGuy: {lat: 49.0091, lng: 8.381, name: 'Peter'},
+      testGuy: {coordinates: [49.0091, 8.381], name: 'Peter', type: 'male'},
       mapOptions: {
         zoomSnap: 0.25,
       },
@@ -87,7 +87,7 @@ export default {
     connectionColor (connection) {
       switch (connection.type) {
             case 'car': return "#ff0000";
-            case 'tram':   return "#0000ff";
+            case 'tram':   return "#EAC02B";
         }
       },
     },
