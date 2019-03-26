@@ -38,7 +38,6 @@ export default {
             iconAnchor: [20, 30],
             popupAnchor: [0, -20],
       }),
-      type: this.type,
       paras: this.initParas,
       boarded: false,
       };
@@ -59,6 +58,7 @@ export default {
             return L.latLng(this.paras.coordinates);
           },
           set(data) {
+            window.console.log('updating posiiton');
             this.paras.coordinates[0] = this.paras.coordinates[0] + data.y / 1000;
             this.paras.coordinates[1] = this.paras.coordinates[1] + data.x / 1000;
           },
@@ -66,7 +66,7 @@ export default {
       // computed shown property depending on the state
       shown() {
         return !this.boarded;
-      }
+      },
   },
 };
 </script>
