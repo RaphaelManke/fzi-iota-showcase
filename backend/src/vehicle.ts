@@ -1,9 +1,9 @@
 export interface Vehicle {
+  speed: number;
+
   start(): void;
 
   stop(): void;
 
-  setSpeed(speed: number): void;
-
-  getSpeed(): number;
+  markerDetected(id: string): void;
 }

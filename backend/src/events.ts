@@ -1,5 +1,19 @@
 import { Trytes } from '@iota/core/typings/types';
 import { Position } from './envInfo';
+import { EventEmitter2 } from 'eventemitter2';
+
+export class SafeEmitter {
+  constructor(private readonly events: EventEmitter2) {}
+
+  public emit(...event: Event) {
+    this.events.emit(event[0], event[1]);
+  }
+}
+
+type Event = ['CheckIn', CheckIn] | ['Login', Login] | ['ReservationIssued', ReservationIssued]
+  | ['ReservationExpired', ReservationExpired] | ['BoardingStarted', BoardingStarted]
+  | ['TripStarted', TripStarted] | ['TripFinished', TripFinished] | ['PosUpdated', PosUpdated]
+  | ['Logout', Logout] | ['TransactionIssued', Logout];
 
 export interface CheckIn {
   stopId: Trytes;

@@ -20,7 +20,7 @@ export default class EnvironmentMock implements Environment {
     this.info = info;
     events.on('started', (data) => {
       const v = Array.from(this.vehicles.keys()).find(
-        (e) => e.getId() === data.id,
+        (e) => e.id === data.id,
       );
       if (v) {
         const m = this.vehicles.get(v);
@@ -31,7 +31,7 @@ export default class EnvironmentMock implements Environment {
     });
     events.on('stopped', (data) => {
       const v = Array.from(this.vehicles.keys()).find(
-        (e) => e.getId() === data.id,
+        (e) => e.id === data.id,
       );
       if (v) {
         const m = this.vehicles.get(v);
@@ -44,10 +44,10 @@ export default class EnvironmentMock implements Environment {
 
   public addVehicle(v: VehicleMock, x: number, y: number) {
     const worker = () => {
-      this.updatePos(v, v.getSpeed(), 0);
+      this.updatePos(v, v.speed, 0);
     };
     this.vehicles.set(v, { pos: { x, y }, worker, interval: undefined });
-    this.events.emit('vehicleAdded', { id: v.getId(), x, y });
+    this.events.emit('vehicleAdded', { id: v.id, x, y });
     this.checkForMarkers(v, x, y);
     // send marker detected even if position doesn't change
     setInterval(() => {
@@ -64,13 +64,13 @@ export default class EnvironmentMock implements Environment {
   }
 
   public getVehicle(id: string) {
-    return Array.from(this.vehicles.keys()).find((v) => v.getId() === id);
+    return Array.from(this.vehicles.keys()).find((v) => v.id === id);
   }
 
   private updatePos(v: VehicleMock, x: number, y: number) {
     const m = this.vehicles.get(v);
     if (m === undefined) {
-      throw new Error(v.getId() + ' is not part of environment');
+      throw new Error(v.id + ' is not part of environment');
     }
     const position = {
       x: (m.pos.x + x) % EnvironmentMock.SIZE,
@@ -82,7 +82,7 @@ export default class EnvironmentMock implements Environment {
       interval: m.interval,
     });
     this.events.emit('updatedPos', {
-      id: v.getId(),
+      id: v.id,
       x: position.x,
       y: position.y,
     });
