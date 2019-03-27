@@ -4,6 +4,7 @@ import EnvironmentMock from '../src/mock/envMock';
 import { Server } from '../src/server';
 import { EnvironmentInfo } from '../src/envInfo';
 import { SafeEmitter } from '../src/events';
+import { log } from 'fzi-iota-showcase-client';
 import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock';
 
 (async () => {
@@ -114,6 +115,6 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
     const v = new Vehicle(e, 'SEED', {id: 'A', position: {lat: 49.009540, lng: 8.403885}},
       {co2emission: 0, speed: 83, type: 'tram'});
     const mover = new Mover(router, v, 'C');
-    await mover.startDriving((dest) => console.log('Arrived'), (stop) => console.log('Reached stop', stop));
+    await mover.startDriving(() => log.info('Arrived'), (stop) => log.info('Reached stop %s', stop));
   });
 })();

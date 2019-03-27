@@ -4,9 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "outDir": "out",
-    "sourceMap": true
+    "sourceMap": true,
+    "declaration": true
   },
-  "files": ["./node_modules/@types/node/index.d.ts"],
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
+
