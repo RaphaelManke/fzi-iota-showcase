@@ -5,8 +5,8 @@ import { Router, Connection } from '../src/router';
 import { Position } from '../src/position';
 import { log } from 'fzi-iota-showcase-client';
 
-describe('', () => {
-  it('', () => {
+describe('Router', () => {
+  it('should calculate routes between three stops', () => {
     const stops: Array<Position & {id: Trytes}> = [{
       id: 'A',
       lat: 0,
