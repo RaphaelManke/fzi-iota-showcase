@@ -4,7 +4,7 @@ import { Trytes } from '@iota/core/typings/types';
 export class Router {
   private conntectedTo = new Map<Trytes, Set<Connection>>();
 
-  constructor(private connections: Connection[]) {
+  constructor(connections: Connection[], private readonly cached: RouteResult[] = []) {
     const stops = new Set([...connections.map((c) => c.from), ...connections.map((c) => c.to)]);
     stops.forEach((stop) => {
       const to = connections.filter((c) => c.from === stop);
@@ -17,6 +17,10 @@ export class Router {
   }
 
   public getRoutes(start: Trytes, dest: Trytes, type: Type): Route[] {
+    const cached = this.getCached(start, dest, type);
+    if (cached.length > 0) {
+      return cached;
+    }
     const visited = new Set<Trytes>();
     const innerGetPath = (s: Trytes, d: Trytes, index: number): Route[] => {
       const cons = this.conntectedTo.get(s);
@@ -32,11 +36,11 @@ export class Router {
         return [{path: con.path, stops: [{id: s, index}, {id: d, index: index + con.path.length - 1 }]}];
       }
 
-      const routes: Route[] = arr.filter((c) => !visited.has(c.to)).map((c) => {
+      const innerRoutes: Route[] = arr.filter((c) => !visited.has(c.to)).map((c) => {
         // paths from stop connected to s to dest
         const paths = innerGetPath(c.to, dest, index + c.path.length - 1);
         return paths.map((path) => {
-          const front = this.equals(c.path[c.path.length - 1], path.path[0]) ?
+          const front = equals(c.path[c.path.length - 1], path.path[0]) ?
             c.path.slice(0, c.path.length - 1) : c.path;
           return {stops: [{id: s, index}, ...path.stops], path: [...front, ...path.path]};
         });
@@ -44,13 +48,17 @@ export class Router {
       .reduce((acc, v) => {v.forEach((p) => acc.push(p)); return acc; }, new Array<Route>())
       .sort((a, b) => a.path.length - b.path.length);
 
-      return routes;
+      return innerRoutes;
     };
-    return innerGetPath(start, dest, 0);
+
+    const routes = innerGetPath(start, dest, 0).sort((a, b) => a.path.length - b.path.length);
+    this.cached.push({start, dest, type, routes});
+    return routes;
   }
 
-  private equals(a: Position, b: Position) {
-    return a.lat === b.lat && a.lng === b.lng;
+  public getCached(start: Trytes, dest: Trytes, type: Type) {
+    const result = this.cached.find((r) => r.start === start && r.dest === dest && r.type === type);
+    return result ? result.routes : [];
   }
 
   private add = (id: Trytes, to: Connection[]) => {
@@ -59,11 +67,20 @@ export class Router {
     }
     to.forEach((c) => this.conntectedTo.get(id)!.add(c));
   }
+}
 
-
+function equals(a: Position, b: Position) {
+  return a.lat === b.lat && a.lng === b.lng;
 }
 
 export type Type = 'car' | 'bike' | 'tram';
+
+export interface RouteResult {
+  start: Trytes;
+  dest: Trytes;
+  routes: Route[];
+  type: Type;
+}
 
 export interface Route {
   path: Position[];
