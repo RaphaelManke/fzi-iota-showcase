@@ -14,7 +14,7 @@ export class Mover {
 
   public startDriving(onArrived: (stop: Trytes) => void, onStop?: (stop: Trytes) => void): Promise<Trytes> {
     if (this.vehicle.stop) {
-      const route = this.router.getPath(this.vehicle.stop, this.dest, this.vehicle.info.type);
+      const [route] = this.router.getRoutes(this.vehicle.stop, this.dest, this.vehicle.info.type);
       if (route) {
         return new Promise((resolve, reject) => {
           let {i, next, current} = this.nextSegment(0, route);

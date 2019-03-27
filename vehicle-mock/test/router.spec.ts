@@ -40,16 +40,16 @@ describe('Router', () => {
       }],
     }];
     const r = new Router(cons);
-    let p = r.getPath('A', 'B', 'car'); // easy
+    let p = r.getRoutes('A', 'B', 'car'); // easy
     let a = expect(p).to.exist;
-    log.info('%O', p);
+    log.info('%o', p);
 
-    p = r.getPath('A', 'C', 'car');
+    p = r.getRoutes('A', 'C', 'car');
     a = expect(p).to.exist;
-    log.info('%O', p);
+    log.info('%o', p);
 
-    p = r.getPath('C', 'A', 'car');
+    p = r.getRoutes('C', 'A', 'car');
     a = expect(p).to.exist;
-    log.info('%O', p);
+    log.info('%o', p);
   });
 });
