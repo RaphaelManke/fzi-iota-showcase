@@ -1,5 +1,4 @@
 import { Vehicle } from '../vehicle';
-import { EventEmitter2 } from 'eventemitter2';
 import { Trytes } from '@iota/core/typings/types';
 import { SafeEmitter } from '../events';
 
