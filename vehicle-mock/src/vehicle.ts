@@ -1,13 +1,14 @@
 import { Trytes } from '@iota/core/typings/types';
 import { Emitter } from './emitter';
 import { Position } from './position';
+import { Type } from './router';
 
 export class Vehicle {
   public stop: Trytes | undefined;
   private mPosition: Position;
 
   constructor(private emitter: Emitter, public seed: Trytes, stop: {id: Trytes, position: Position},
-              public info: {type: 'car' | 'bike' | 'tram', speed: number, co2emission: number}) {
+              public info: {type: Type, speed: number, co2emission: number}) {
     this.mPosition = stop.position;
     this.stop = stop.id;
   }

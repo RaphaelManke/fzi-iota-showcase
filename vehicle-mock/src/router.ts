@@ -16,7 +16,7 @@ export class Router {
     });
   }
 
-  public getPath(start: Trytes, dest: Trytes, type: 'car' | 'bike' | 'tram'):
+  public getPath(start: Trytes, dest: Trytes, type: Type):
       Route | undefined {
     const visited = new Set<Trytes>();
     const innerGetPath = (s: Trytes, d: Trytes, index: number): Route | undefined => {
@@ -60,6 +60,8 @@ export class Router {
 
 }
 
+export type Type = 'car' | 'bike' | 'tram';
+
 export interface Route {
   path: Position[];
   stops: Array<{id: Trytes, index: number}>;
@@ -68,5 +70,5 @@ export interface Connection {
   from: Trytes;
   to: Trytes;
   path: Position[];
-  type: 'car' | 'bike' | 'tram';
+  type: Type;
 }

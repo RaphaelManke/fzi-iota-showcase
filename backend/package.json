@@ -28,9 +28,8 @@
   "dependencies": {
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
-    "fzi-iota-showcase-client": "alpha",
-    "socket.io": "^2.2.0",
-    "zeromq": "^5.1.0"
+    "fzi-iota-showcase-vehicle-mock": "alpha",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "7.0.22",

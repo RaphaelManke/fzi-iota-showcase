@@ -1,10 +1,10 @@
-import Car from '../src/mock/vehicleMock';
 import { enableLogging } from '../src/logger';
 import Controller from '../src/controller';
 import EnvironmentMock from '../src/mock/envMock';
 import { Server } from '../src/server';
-import { EnvironmentInfo, Type, Connection } from '../src/envInfo';
+import { EnvironmentInfo } from '../src/envInfo';
 import { SafeEmitter } from '../src/events';
+import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock';
 
 (async () => {
   const info: EnvironmentInfo = {
@@ -34,7 +34,7 @@ import { SafeEmitter } from '../src/events';
       id: 'B',
       name: 'Kronenplatz',
       position: {
-        lat:  49.009380,
+        lat: 49.009380,
         lng: 8.408518,
       },
     }, {
@@ -55,12 +55,18 @@ import { SafeEmitter } from '../src/events';
       }, {
         lat: 49.009304,
         lng: 8.410162,
+      }, {
+        lat: 49.009380,
+        lng: 8.408518,
       }],
     }, {
       from: 'B',
       to: 'C',
       type: 'tram',
       path: [{
+        lat: 49.009380,
+        lng: 8.408518,
+      }, {
         lat: 49.009304,
         lng: 8.410162,
       }, {
@@ -75,6 +81,9 @@ import { SafeEmitter } from '../src/events';
       to: 'C',
       type: 'car',
       path: [{
+        lat: 49.009380,
+        lng: 8.408518,
+      }, {
         lat: 49.009304,
         lng: 8.410262,
       }, {
@@ -92,25 +101,19 @@ import { SafeEmitter } from '../src/events';
   enableLogging(events);
   new Server(con).listen();
 
-  events.onIntern('start', () => {
+  events.onIntern('start', async () => {
     con.setupEnv();
 
-    env.addMarker('START', 0, 0);
-    env.addMarker('HALF', 3, 0);
-
-    const c: Car = new Car('1', events);
-    env.addVehicle(c, 0, 0);
-    c.speed = 1;
-
-    // restart veh. after delay when it reaches second marker
-    const cb = (data: any) => {
-      if (data.markerId === 'HALF') {
-        setTimeout(() => {
-          c.start();
-          events.offIntern('markerDetected', cb);
-        }, 4000);
-      }
+    const router = new Router(info.connections);
+    const e: Emitter = {
+      posUpdated(pos) {
+        info.vehicles[0].position = pos;
+        events.emit('PosUpdated', {id: 'ABC', position: pos});
+      },
     };
-    events.onIntern('markerDetected', cb);
+    const v = new Vehicle(e, 'SEED', {id: 'A', position: {lat: 49.009540, lng: 8.403885}},
+      {co2emission: 0, speed: 83, type: 'tram'});
+    const mover = new Mover(router, v, 'C');
+    await mover.startDriving((dest) => console.log('Arrived'), (stop) => console.log('Reached stop', stop));
   });
 })();
