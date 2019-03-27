@@ -1,15 +1,14 @@
 import { Trytes } from '@iota/core/typings/types';
 import { Emitter } from './emitter';
 import { Position } from './position';
-import { Router } from './router';
 
 export class Vehicle {
   public stop: Trytes | undefined;
   private mPosition: Position;
 
-  constructor(private emitter: Emitter, private router: Router, public seed: Trytes, stop: Position & {id: Trytes},
+  constructor(private emitter: Emitter, public seed: Trytes, stop: {id: Trytes, position: Position},
               public info: {type: 'car' | 'bike' | 'tram', speed: number, co2emission: number}) {
-    this.mPosition = {...stop};
+    this.mPosition = stop.position;
     this.stop = stop.id;
   }
 
@@ -21,14 +20,5 @@ export class Vehicle {
 
   get position() {
     return this.mPosition;
-  }
-
-  public startDriving(dest: Trytes) {
-    if (this.stop) {
-      const route = this.router.getPath(this.stop, dest, this.info.type);
-
-    } else {
-      throw new Error('Vehicle isn\'t at a stop');
-    }
   }
 }

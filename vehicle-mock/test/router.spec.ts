@@ -7,19 +7,6 @@ import { log } from 'fzi-iota-showcase-client';
 
 describe('Router', () => {
   it('should calculate routes between three stops', () => {
-    const stops: Array<Position & {id: Trytes}> = [{
-      id: 'A',
-      lat: 0,
-      lng: 0,
-    }, {
-      id: 'B',
-      lat: 10,
-      lng: 0,
-    }, {
-      id: 'C',
-      lat: 10,
-      lng: 10,
-    }];
     const cons: Connection[] = [{
       from: 'A',
       to: 'B',
@@ -52,7 +39,7 @@ describe('Router', () => {
         lng: 10,
       }],
     }];
-    const r = new Router(stops, cons);
+    const r = new Router(cons);
     let p = r.getPath('A', 'B', 'car'); // easy
     let a = expect(p).to.exist;
     log.info('%O', p);
