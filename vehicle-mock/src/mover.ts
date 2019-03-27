@@ -14,6 +14,9 @@ export class Mover {
 
   public startDriving(route: Route, onStop?: (stop: Trytes) => void): Promise<Trytes> {
     return new Promise((resolve, reject) => {
+      if (this.vehicle.stop !== route.stops[0].id) {
+        reject(new Error('Vehicle is not at the start of the given route'));
+      }
       const dest = route.stops[route.stops.length - 1].id;
       let {i, next, current} = this.nextSegment(0, route);
       let driven = 0;
