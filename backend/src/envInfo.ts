@@ -8,9 +8,10 @@ export interface EnvironmentInfo {
   users: User[];
 }
 
-export interface Stop extends Position {
+export interface Stop {
   id: Trytes;
   name: string;
+  position: Position;
 }
 
 export interface Connection {

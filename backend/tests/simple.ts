@@ -1,5 +1,4 @@
 import Car from '../src/mock/vehicleMock';
-import { EventEmitter2 } from 'eventemitter2';
 import { enableLogging } from '../src/logger';
 import Controller from '../src/controller';
 import EnvironmentMock from '../src/mock/envMock';
@@ -27,18 +26,24 @@ import { SafeEmitter } from '../src/events';
     stops: [{
       id: 'A',
       name: 'Marktplatz',
-      lat:  49.009525,
-      lng: 8.405141,
+      position: {
+        lat:  49.009525,
+        lng: 8.405141,
+      },
     }, {
       id: 'B',
       name: 'Kronenplatz',
-      lat:  49.009380,
-      lng: 8.408518,
+      position: {
+        lat:  49.009380,
+        lng: 8.408518,
+      },
     }, {
       id: 'C',
       name: 'Rüppurer Tor',
-      lat: 49.005752,
-      lng: 8.410360,
+      position: {
+        lat: 49.005752,
+        lng: 8.410360,
+      },
     }],
     connections: [{
       from: 'A',
