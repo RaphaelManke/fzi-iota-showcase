@@ -15,8 +15,8 @@ export interface Stop extends Position {
 
 export interface Connection {
   type: Type;
-  from: number;
-  to: number;
+  from: Trytes;
+  to: Trytes;
   path: Position[];
 }
 

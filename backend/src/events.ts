@@ -8,12 +8,20 @@ export class SafeEmitter {
   public emit(...event: Event) {
     this.events.emit(event[0], event[1]);
   }
+
+  public on<T extends Event, D extends T[1]>(type: T[0], listener: (...data: D[]) => void) {
+    this.events.on(type, listener);
+  }
 }
+
+// new SafeEmitter(new EventEmitter2()).on('Login', (data: Login) => {
+//   console.log(data.id);
+// });
 
 type Event = ['CheckIn', CheckIn] | ['Login', Login] | ['ReservationIssued', ReservationIssued]
   | ['ReservationExpired', ReservationExpired] | ['BoardingStarted', BoardingStarted]
   | ['TripStarted', TripStarted] | ['TripFinished', TripFinished] | ['PosUpdated', PosUpdated]
-  | ['Logout', Logout] | ['TransactionIssued', Logout];
+  | ['Logout', Logout] | ['TransactionIssued', TransactionIssued];
 
 export interface CheckIn {
   stopId: Trytes;

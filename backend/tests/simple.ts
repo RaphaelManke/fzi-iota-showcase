@@ -33,16 +33,52 @@ import { EnvironmentInfo, Type, Connection } from '../src/envInfo';
       name: 'Kronenplatz',
       lat:  49.009380,
       lng: 8.408518,
+    }, {
+      id: 'C',
+      name: 'Rüppurer Tor',
+      lat: 49.005752,
+      lng: 8.410360,
     }],
-    connections: new Array<Type>('car', 'tram').map((type: Type) => [1].map((i) => ({
-      from: i - 1,
-      to: i,
-      type,
-      path: [],
-    }))).reduce((acc: Connection[], v: Connection[]) => {
-      v.forEach((c: Connection) => acc.push(c));
-      return acc;
-    }, []),
+    connections: [{
+      from: 'A',
+      to: 'B',
+      type: 'tram',
+      path: [{
+        lat: 49.009540,
+        lng: 8.403885,
+      }, {
+        lat: 49.009304,
+        lng: 8.410162,
+      }],
+    }, {
+      from: 'B',
+      to: 'C',
+      type: 'tram',
+      path: [{
+        lat: 49.009304,
+        lng: 8.410162,
+      }, {
+        lat: 49.007649,
+        lng: 8.409987,
+      }, {
+        lat: 49.005752,
+        lng: 8.410360,
+      }],
+    }, {
+      from: 'B',
+      to: 'C',
+      type: 'car',
+      path: [{
+        lat: 49.009304,
+        lng: 8.410262,
+      }, {
+        lat: 49.007649,
+        lng: 8.410087,
+      }, {
+        lat: 49.005752,
+        lng: 8.410460,
+      }],
+    }],
   };
   const events = new EventEmitter2();
   const env = new EnvironmentMock(info, events);
