@@ -87,12 +87,14 @@ describe('Mover', () => {
     const router = new Router(connections);
     const e: Emitter = {
       posUpdated(pos) {
-        console.log(pos);
+        log.debug('%O', pos);
       },
     };
     const v = new Vehicle(e, 'SEED', {id: 'A', position: {lat: 49.009540, lng: 8.403885}},
       {co2emission: 0, speed: 83, type: 'tram'});
-    const mover = new Mover(router, v, 'C');
-    await mover.startDriving((dest) => console.log('Arrived'), (stop) => console.log('Reached stop', stop));
+    const mover = new Mover(v);
+    const routes = router.getRoutes(v.stop!, 'C', v.info.type);
+    await mover.startDriving(routes[0], (stop) => log.info('Reached stop %s', stop));
+    log.info('Arrived');
   });
 });

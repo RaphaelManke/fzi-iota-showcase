@@ -1,6 +1,6 @@
 import { Vehicle } from './vehicle';
 import { Trytes } from '@iota/core/typings/types';
-import { Router, Route } from './router';
+import { Route } from './router';
 import { interpolate, toGeo } from './interpolator';
 import { getDistance } from 'geolib';
 
@@ -10,46 +10,37 @@ export class Mover {
 
   private interval?: NodeJS.Timer;
 
-  constructor(private router: Router, private vehicle: Vehicle, private dest: Trytes) {}
+  constructor(private vehicle: Vehicle) {}
 
-  public startDriving(onArrived: (stop: Trytes) => void, onStop?: (stop: Trytes) => void): Promise<Trytes> {
-    if (this.vehicle.stop) {
-      const [route] = this.router.getRoutes(this.vehicle.stop, this.dest, this.vehicle.info.type);
-      if (route) {
-        return new Promise((resolve, reject) => {
-          let {i, next, current} = this.nextSegment(0, route);
-          let driven = 0;
-          let nextStop = 1;
-          const worker = () => {
-            driven += this.vehicle.info.speed * Mover.UPDATE_INTERVAL / 1000;
-            const pos = interpolate(current, next, driven);
-            this.vehicle.position = pos;
-            if (getDistance(toGeo(pos), toGeo(next)) < Mover.REACHED_THRESHOLD) {
-              // reached stop?
-              if (onStop && route.stops[nextStop].index === i) {
-                onStop(route.stops[nextStop].id);
-                nextStop++;
-              }
+  public startDriving(route: Route, onStop?: (stop: Trytes) => void): Promise<Trytes> {
+    return new Promise((resolve, reject) => {
+      const dest = route.stops[route.stops.length - 1].id;
+      let {i, next, current} = this.nextSegment(0, route);
+      let driven = 0;
+      let nextStop = 1;
+      const worker = () => {
+        driven += this.vehicle.info.speed * Mover.UPDATE_INTERVAL / 1000;
+        const pos = interpolate(current, next, driven);
+        this.vehicle.position = pos;
+        if (getDistance(toGeo(pos), toGeo(next)) < Mover.REACHED_THRESHOLD) {
+          // reached stop?
+          if (onStop && route.stops[nextStop].index === i) {
+            onStop(route.stops[nextStop].id);
+            nextStop++;
+          }
 
-              if (i < route.path.length - 1) {
-                ({current, next, i} = this.nextSegment(i, route));
-                driven = 0;
-              } else {
-                // arrived
-                clearInterval(this.interval!);
-                onArrived(this.dest);
-                resolve(this.dest);
-              }
-            }
-          };
-          this.interval = setInterval(worker, Mover.UPDATE_INTERVAL);
-        });
-      } else {
-        throw new Error('No route to this destination');
-      }
-    } else {
-      throw new Error('Vehicle isn\'t at a stop');
-    }
+          if (i < route.path.length - 1) {
+            ({current, next, i} = this.nextSegment(i, route));
+            driven = 0;
+          } else {
+            // arrived
+            clearInterval(this.interval!);
+            resolve(dest);
+          }
+        }
+      };
+      this.interval = setInterval(worker, Mover.UPDATE_INTERVAL);
+    });
   }
 
   public stopDrivingAtNextStop() {
