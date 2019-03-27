@@ -2,23 +2,18 @@ import VehicleMock from './vehicleMock';
 import { EventEmitter2 } from 'eventemitter2';
 import { Environment } from '../env';
 import { EnvironmentInfo } from '../envInfo';
-
+import { SafeEmitter } from '../events';
 
 export default class EnvironmentMock implements Environment {
   public static EPS = 0.9;
   public static MARKER_RESEND_TIMEOUT = 1500;
   public static SIZE = 10;
 
-  public info: EnvironmentInfo;
   private markers = new Array<Marker>();
   private vehicles = new Map<VehicleMock, Mover>();
 
-  private events: EventEmitter2;
-
-  constructor(info: EnvironmentInfo, events: EventEmitter2) {
-    this.events = events;
-    this.info = info;
-    events.on('started', (data) => {
+  constructor(public info: EnvironmentInfo, private events: SafeEmitter) {
+    events.onIntern('started', (data) => {
       const v = Array.from(this.vehicles.keys()).find(
         (e) => e.id === data.id,
       );
@@ -29,7 +24,7 @@ export default class EnvironmentMock implements Environment {
         }
       }
     });
-    events.on('stopped', (data) => {
+    events.onIntern('stopped', (data) => {
       const v = Array.from(this.vehicles.keys()).find(
         (e) => e.id === data.id,
       );
@@ -47,7 +42,7 @@ export default class EnvironmentMock implements Environment {
       this.updatePos(v, v.speed, 0);
     };
     this.vehicles.set(v, { pos: { x, y }, worker, interval: undefined });
-    this.events.emit('vehicleAdded', { id: v.id, x, y });
+    this.events.emitIntern('vehicleAdded', { id: v.id, x, y });
     this.checkForMarkers(v, x, y);
     // send marker detected even if position doesn't change
     setInterval(() => {
@@ -60,7 +55,7 @@ export default class EnvironmentMock implements Environment {
 
   public addMarker(id: string, x: number, y: number) {
     this.markers.push({ id, x, y });
-    this.events.emit('markerAdded', { id, x, y });
+    this.events.emitIntern('markerAdded', { id, x, y });
   }
 
   public getVehicle(id: string) {
@@ -81,7 +76,7 @@ export default class EnvironmentMock implements Environment {
       pos: position,
       interval: m.interval,
     });
-    this.events.emit('updatedPos', {
+    this.events.emitIntern('updatedPos', {
       id: v.id,
       x: position.x,
       y: position.y,

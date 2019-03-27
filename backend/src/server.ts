@@ -3,6 +3,7 @@ import * as socketio from 'socket.io';
 import * as http from 'http';
 import { log } from 'fzi-iota-showcase-client';
 import Controller from './controller';
+import { SafeEmitter } from './events';
 
 export class Server {
   private io: SocketIO.Server;
@@ -20,9 +21,13 @@ export class Server {
   public listen() {
     this.io.on('connection', (client: SocketIO.Socket) => {
       log.info('Connected to websocket client.');
-      this.con.events.onAny((event: any, data: any) => client.emit(event, data));
+      this.con.events.onAny((event: any, data: any) => {
+        if (event[0] === SafeEmitter.PUBLIC) {
+          client.emit(event, data);
+        }
+      });
       client.on('start', () => {
-        this.con.events.emit('start');
+        this.con.events.emitIntern('start');
       });
     });
 

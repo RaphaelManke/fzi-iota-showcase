@@ -1,17 +1,14 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { Environment } from './env';
 import { log } from 'fzi-iota-showcase-client';
+import { SafeEmitter } from './events';
 
 export default class Controller {
   // assume that exacly 1 vehicle can enter a specific marker, because roadways are seperated
   // thus markerid implicates vehicle
-  public env: Environment;
-  public events: EventEmitter2;
   private lastTimeDetected = new Map<string, number>();
 
-  constructor(events: EventEmitter2, env: Environment) {
-    this.events = events;
-    this.env = env;
+  constructor(public events: SafeEmitter, public env: Environment) {
   }
 
   public setupEnv() {
@@ -27,7 +24,7 @@ export default class Controller {
       });
     }, 1000);
 
-    this.events.on('markerDetected', (data) => {
+    this.events.onIntern('markerDetected', (data) => {
       const previous = this.lastTimeDetected.get(data.markerId);
       if (previous === undefined) {
         // vehicle has entered marker area -> stop vehicle
@@ -37,20 +34,6 @@ export default class Controller {
         }
       }
       this .lastTimeDetected.set(data.markerId, Date.now());
-    });
-
-    this.events.on('rfidDetected', (data) => {
-      const v = this .env.getVehicle(data.id);
-      if (v) {
-        v.start();
-      }
-    });
-
-    this.events.on('rfidRemoved', (data) => {
-      const v = this.env.getVehicle(data.id);
-      if (v) {
-        v.stop();
-      }
     });
 
     return this.env;

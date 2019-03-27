@@ -1,8 +1,8 @@
-import { EventEmitter2 } from 'eventemitter2';
 import { log } from 'fzi-iota-showcase-client';
+import { SafeEmitter } from './events';
 
-export function enableLogging(events: EventEmitter2) {
-  const prettify = (type: string, data: any) => {
+export function enableLogging(events: SafeEmitter) {
+  const prettify = (type: string[], data: any) => {
     const skip = 'id';
     const r: any = {};
     if (data) {
@@ -15,20 +15,20 @@ export function enableLogging(events: EventEmitter2) {
           }
           r[p] = v;
         });
-      const name = type.startsWith('markerAdded') ? 'Mrk.' : 'Veh.';
-      const typePadding = data.id.length < 10 ? ' '.repeat(10 - data.id.length) : '';
-      const prefix = `${name} ${data.id}${typePadding} ${type}`;
+      const name = type[1].startsWith('markerAdded') ? 'Mrk.' : 'Veh.';
+      const typePadding = !data.id || data.id.length < 10 ? ' '.repeat(10 - (data.id ? data.id.length : 0)) : '';
+      const prefix = `${name} ${data.id}${typePadding} ${type[1]}`;
 
       if (Object.keys(r).length > 0) {
         const padding = prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
-        return prefix + `:${padding} ${JSON.stringify(r)}`;
+        log.debug(`${prefix}:${padding}  %o`, r);
       } else {
-        return prefix;
+        log.debug(prefix);
       }
     } else {
-      return type;
+      log.debug(type.join('.'));
     }
   };
 
-  events.onAny((type: any, data: any) => log.debug(prettify(type, data)));
+  events.onAny((type: any, data: any) => prettify(type, data));
 }

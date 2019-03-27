@@ -1,12 +1,13 @@
 import { Vehicle } from './vehicle';
 import { EnvironmentInfo } from './envInfo';
+import { Trytes } from '@iota/core/typings/types';
 
 export interface Environment {
   info: EnvironmentInfo;
 
-  addVehicle(v: Vehicle, x: number, y: number): void;
+  addVehicle(v: Vehicle, lat: number, lng: number): void;
 
-  addMarker(id: string, x: number, y: number): void;
+  addMarker(id: Trytes, lat: number, lng: number): void;
 
-  getVehicle(id: string): Vehicle | undefined;
+  getVehicle(id: Trytes): Vehicle | undefined;
 }

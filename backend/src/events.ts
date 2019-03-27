@@ -1,16 +1,35 @@
 import { Trytes } from '@iota/core/typings/types';
 import { Position } from './envInfo';
-import { EventEmitter2 } from 'eventemitter2';
+import { EventEmitter2, Listener, EventAndListener } from 'eventemitter2';
 
 export class SafeEmitter {
-  constructor(private readonly events: EventEmitter2) {}
+  public static PUBLIC = 'public';
+  public static INTERN = 'intern';
+
+  constructor(private readonly events: EventEmitter2 = new EventEmitter2({wildcard: true})) {}
 
   public emit(...event: Event) {
-    this.events.emit(event[0], event[1]);
+    this.events.emit([SafeEmitter.PUBLIC, event[0]], event[1]);
+  }
+
+  public emitIntern(type: string, ...data: any[]) {
+    this.events.emit([SafeEmitter.INTERN, type], ...data);
   }
 
   public on<T extends Event, D extends T[1]>(type: T[0], listener: (...data: D[]) => void) {
-    this.events.on(type, listener);
+    this.events.on([SafeEmitter.PUBLIC, type], listener);
+  }
+
+  public onIntern(type: string, listener: Listener) {
+    this.events.on([SafeEmitter.INTERN, type], listener);
+  }
+
+  public offIntern(type: string, listener: Listener) {
+    this.events.off(SafeEmitter.INTERN + '.' + type, listener);
+  }
+
+  public onAny(listener: EventAndListener) {
+    this.events.onAny(listener);
   }
 }
 
