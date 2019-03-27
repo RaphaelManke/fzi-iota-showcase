@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <div id="top">
-    <map-visu></map-visu>
+    <map-visu :env="env"></map-visu>
     
     <event-list></event-list>
     </div>
-    <state-table></state-table>
+    <state-table :env="env"></state-table>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { Component, Vue } from 'vue-property-decorator';
 
 // components
@@ -22,7 +22,8 @@ import { eventBus } from './events';
 
 
 
-@Component({
+
+export default {
   components: {
     MapVisu,
     EventList,
@@ -31,21 +32,28 @@ import { eventBus } from './events';
   sockets: {
     connect() {
       window.console.log('Connected to websocket server.');
+      // get env data from server
+        this.$http.get(this.$hostname + '/env').then(function(env) {
+               this.env = env.body;
+            });
     },
-},
-})
-export default class App extends Vue {
+  },
 
-  private created() {
+  data() {
+    return {
+      env: {},
+    };
+  },
+
+  created() {
     // passing on each socket event to the internal event bus
     ['vehicleAdded', 'markerDetected', 'rfidDetected',
       'updatedPos']
-      .forEach((e) => this.sockets.subscribe(e, (data: any) => {
+      .forEach((e) => this.sockets.subscribe(e, (data) => {
         eventBus.emit(e, data);
     }));
     this.$socket.emit('start');
-  }
-
+  },
 }
 </script>
 

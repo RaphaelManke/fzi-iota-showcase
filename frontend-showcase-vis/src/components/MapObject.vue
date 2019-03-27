@@ -43,27 +43,23 @@ export default {
       };
   },
   created() {
- 
+      // reaction on update position
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
-          this.position = data;
+          this.paras.coordinates = [this.paras.coordinates[0] += data.y / 1000, this.paras.coordinates[1] += data.x / 1000];
         }
         },
       );
   },
   computed: {
-      position: {
-          get() {
-            return L.latLng(this.paras.lat, this.paras.lng);
-          },
-          set(data) {
-            this.paras.lat = this.paras.lat + data.y / 1000;
-            this.paras.lng = this.paras.lng + data.x / 1000;
-          },
+      // computed getter an setter for position property
+      position() {
+            return L.latLng(this.paras.coordinates);     
       },
+      // computed shown property depending on the state
       shown() {
         return !this.boarded;
-      }
+      },
   },
 };
 </script>
@@ -71,7 +67,7 @@ export default {
 <style scoped>
 
 img {
-    height: 10px;
+    height: 3vh;
 }
 
 .iota_style {

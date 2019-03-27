@@ -1,30 +1,55 @@
 export default {
-  tram: {
-    'type': 'FeatureCollection',
-    'features': [
+  connections: [
       {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': [
-            [8.395093923217814, 49.009938876997616],
-            [8.410162925720215, 49.00930415767915]
-          ]
-        },
-        'id': 'ATOB'
+        'id': 'MARTPLATZKARLSRUHE9TRAM9KRONENPLATZKARLSRUHE',
+        'coordinates': [
+            [49.009540, 8.403885],
+            [49.009304, 8.410162]
+          ],
+          'type': 'tram',
       },
       {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': [
-            [8.410162925720215, 49.00930415767915],
-            [8.410420417785645, 49.00598237765667]
-          ]
+        'id': 'KRONENPLATZKARLSRUHE9TRAM9SCHECKINKARLSRUHE',
+        'coordinates': [
+            [49.009304, 8.410162],
+            [49.007649, 8.409987],
+            [49.005752, 8.410360],
+          ],
+          'type': 'tram',
         },
-        'id': 'BTOC'
-      }
-    ]
-  }
-  
+        {
+          'id': 'KRONENPLATZKARLSRUHE9CAR9SCHECKINKARLSRUHE',
+          'coordinates': [
+              [49.009304, 8.410262],
+              [49.007649, 8.410087],
+              [49.005752, 8.410460],
+            ],
+            'type': 'car',
+          },
+    ],
+  stops: [
+    {
+      'id': 'MARTPLATZKARLSRUHE',
+      'name': 'Marktplatz',
+      'coordinates': [49.009540, 8.403885],
+    },
+    {
+      'id': 'KRONENPLATZKARLSRUHE',
+      'name': 'Kronenplatz',
+      'coordinates': [49.009288, 8.410087],
+    },
+    {
+      'id': 'SCHECKINKARLSRUHE',
+      'name': 'Rüppurer Tor',
+      'coordinates': [49.005752, 8.410360],
+    },
+  ],
+  vehicles: [
+    {
+      'id': 'CARA',
+      'name': 'Tessi',
+      'coordinates': [49.0091, 8.3799],
+      'type': 'car'
+    },
+  ],
 };
