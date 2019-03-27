@@ -116,6 +116,8 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
     const mover = new Mover(v);
     const router = new Router(info.connections);
     const route = router.getRoutes(v.stop!, 'C', v.info.type)[0];
-    mover.startDriving(route, (stop) => log.info('Reached stop %s', stop));
+    mover.startDriving(route, (stop) => log.info('Reached stop %s', stop))
+      .then((end) => log.info('Stopped at %s', end));
+    setInterval(() => mover.stopDrivingAtNextStop(), 2000);
   });
 })();

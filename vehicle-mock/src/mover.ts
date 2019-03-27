@@ -9,6 +9,7 @@ export class Mover {
   public static REACHED_THRESHOLD = 10;
 
   private interval?: NodeJS.Timer;
+  private continue = true;
 
   constructor(private vehicle: Vehicle) {}
 
@@ -17,28 +18,38 @@ export class Mover {
       if (this.vehicle.stop !== route.stops[0].id) {
         reject(new Error('Vehicle is not at the start of the given route'));
       }
-      const dest = route.stops[route.stops.length - 1].id;
+
       let {i, next, current} = this.nextSegment(0, route);
       let driven = 0;
       let nextStop = 1;
+      this.continue = true;
       const worker = () => {
         driven += this.vehicle.info.speed * Mover.UPDATE_INTERVAL / 1000;
         const pos = interpolate(current, next, driven);
         this.vehicle.position = pos;
+        // very close to a path point
         if (getDistance(toGeo(pos), toGeo(next)) < Mover.REACHED_THRESHOLD) {
-          // reached stop?
-          if (onStop && route.stops[nextStop].index === i) {
-            onStop(route.stops[nextStop].id);
+          let stop = false;
+          // reached stop ?
+          if (route.stops[nextStop].index === i) {
+            if (onStop) {
+              onStop(route.stops[nextStop].id);
+            }
+
             nextStop++;
+            if (!this.continue) {
+              stop = true;
+            }
           }
 
-          if (i < route.path.length - 1) {
+          // path points left ?
+          if (i < route.path.length - 1 && !stop) {
             ({current, next, i} = this.nextSegment(i, route));
             driven = 0;
           } else {
             // arrived
             clearInterval(this.interval!);
-            resolve(dest);
+            resolve(route.stops[nextStop - 1].id);
           }
         }
       };
@@ -48,8 +59,7 @@ export class Mover {
 
   public stopDrivingAtNextStop() {
     if (this.interval) {
-      // TODO wait until vehicle reached next stop
-      clearInterval(this.interval);
+      this.continue = false;
     }
   }
 
