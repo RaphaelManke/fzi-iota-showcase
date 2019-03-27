@@ -105,16 +105,17 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
   events.onIntern('start', async () => {
     con.setupEnv();
 
-    const router = new Router(info.connections);
     const e: Emitter = {
       posUpdated(pos) {
         info.vehicles[0].position = pos;
         events.emit('PosUpdated', {id: 'ABC', position: pos});
       },
     };
-    const v = new Vehicle(e, 'SEED', {id: 'A', position: {lat: 49.009540, lng: 8.403885}},
+    const v = new Vehicle(e, 'SEED', info.stops[0],
       {co2emission: 0, speed: 83, type: 'tram'});
-    const mover = new Mover(router, v, 'C');
-    await mover.startDriving(() => log.info('Arrived'), (stop) => log.info('Reached stop %s', stop));
+    const mover = new Mover(v);
+    const router = new Router(info.connections);
+    const route = router.getRoutes(v.stop!, 'C', v.info.type)[0];
+    mover.startDriving(route, (stop) => log.info('Reached stop %s', stop));
   });
 })();
