@@ -65,8 +65,8 @@ export default {
   },
   data() {
     return {
-      zoom: 13,
-      center: L.latLng(49.0091, 8.3799),
+      zoom: 15.5,
+      center: L.latLng(49.0075, 8.402),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       testGuy: {position: [49.0091, 8.381], name: 'Peter', type: 'male'},
@@ -105,7 +105,7 @@ export default {
 /* custom tooltip styling*/
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;;
-  transition: 3s linear;
+  transition: 2s linear;
 }
 
 .leaflet-tooltip-bottom::before {
@@ -113,7 +113,7 @@ export default {
 } 
 
 .leaflet-marker-icon {
-  transition: 3s linear;
+  transition: 2s linear;
 }
 
 #mapVisu {
