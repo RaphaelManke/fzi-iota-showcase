@@ -1,6 +1,6 @@
 export const mapObjects = {
     namespaced : true,
-    state: { 
+    state: {
         env: {
             connections: [],
             users: [],
@@ -8,8 +8,8 @@ export const mapObjects = {
             vehicles: [],
         },
     },
-    mutations: { 
-        initState (state: any, event:any ) {
+    mutations: {
+        initState(state: any, event: any ) {
             state.env = event;
         },
         changeStopName(state: any, payload: any) {
@@ -27,7 +27,7 @@ export const mapObjects = {
 
      },
     actions: {  },
-    getters: { 
+    getters: {
         getStops: (state: any) => {
             return state.env.stops;
         },

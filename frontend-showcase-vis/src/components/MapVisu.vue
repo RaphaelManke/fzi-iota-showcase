@@ -30,6 +30,14 @@
         :latLngs="connection.path"
         :color="connectionColor(connection)"
       />
+
+      <vehicle-object
+        v-for="vehicle in vehicles" :key="vehicle.id"
+        :paras="vehicle"
+      />
+      <user-object
+        :paras="testGuy"
+      />
       
     </l-map>
   
@@ -95,10 +103,8 @@ export default {
       stops() {
         return this.$store.getters['mapObjects/getStops'];
       },
-      vehicles() {
-        
+      vehicles() {      
         return this.$store.getters['mapObjects/getVehicles'];
-
       },
       stopsById(id) {
         

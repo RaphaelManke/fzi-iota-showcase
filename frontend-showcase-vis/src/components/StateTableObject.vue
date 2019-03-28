@@ -20,8 +20,7 @@ export default {
       default: () => {name: 'default'},
     },
     }
-  
-    
+
 };
 </script>
 
