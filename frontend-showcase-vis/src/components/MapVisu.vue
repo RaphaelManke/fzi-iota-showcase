@@ -1,7 +1,6 @@
 <template>
     
     <div id="mapVisu">
-      <div v-for="conn in store.connections">{{ conn}} </div>
     <l-map
       :zoom="zoom"
       :center="center"
@@ -11,22 +10,15 @@
         :url="url"
         :attribution="attribution"
       />
-      <vehicle-object
-        v-for="vehicle in vehicles" :key="vehicle.id"
-        :paras="vehicle"
-      />
-      <user-object
-        :paras="testGuy"
-        v-bind:id="1"
-      />
     
       <stop-object
-        v-for="stop in stops" :key="stop.id" :id="stop.id"
+        v-for="stop in stops" :key="stop.id" 
+        :id="stop.id"
         
       />
       <!--integrate connections into map-->
       <l-polyline
-        v-for="connection in store"
+        v-for="connection in connections"
         :latLngs="connection.path"
         :color="connectionColor(connection)"
       />
@@ -37,6 +29,7 @@
       />
       <user-object
         :paras="testGuy"
+        :id="1"
       />
       
     </l-map>
@@ -97,7 +90,7 @@ export default {
     },
   computed: {
     
-      store() {
+      connections() {
         return this.$store.getters['mapObjects/getConnections'];
       },
       stops() {

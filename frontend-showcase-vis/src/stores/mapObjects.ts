@@ -43,8 +43,6 @@ export const mapObjects = {
         },
         getUserByName: (state: any) => (name: string) => {
             return state.env.users.find((el: any) => el.paras.name === name);
-
-        }
-        
+        },
      },
   };

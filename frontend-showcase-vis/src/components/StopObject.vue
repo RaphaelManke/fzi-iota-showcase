@@ -16,10 +16,6 @@ import { LMarker, LPopup, LIcon, LTooltip} from 'vue2-leaflet';
 export default {
   name: 'StopObject',
   props: {
-      paras: {
-      type: Object,
-      default: () => {},
-    },
       id: {
         type: String,
       }

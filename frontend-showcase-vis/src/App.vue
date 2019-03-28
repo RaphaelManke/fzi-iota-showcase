@@ -43,12 +43,6 @@ export default {
     },
   },
 
-  data() {
-    return {
-      env: {},
-    };
-  },
-
   created() {
     // passing on each socket event to the internal event bus
     ['vehicleAdded', 'markerDetected', 'rfidDetected',
