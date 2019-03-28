@@ -26,7 +26,11 @@ export const mapObjects = {
         },
 
      },
-    actions: {  },
+     actions: {
+        SOCKET_PosUpdated(data: any) {
+            window.console.log(data);
+        }
+      },
     getters: {
         getStops: (state: any) => {
             return state.env.stops;
