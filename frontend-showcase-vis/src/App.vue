@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div id="top">
-          <div>
+       <!--   <div>
     <button @click="changeName">Button</button>
-    </div>
+    </div>-->
 
     <map-visu></map-visu>
     
@@ -45,8 +45,7 @@ export default {
 
   created() {
     // passing on each socket event to the internal event bus
-    ['vehicleAdded', 'markerDetected', 'rfidDetected',
-      'updatedPos']
+    ['PosUpdated']
       .forEach((e) => this.sockets.subscribe(e, (data) => {
         eventBus.emit(e, data);
     }));
