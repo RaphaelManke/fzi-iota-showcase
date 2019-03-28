@@ -21,7 +21,8 @@ export class Server {
       log.info('Connected to websocket client.');
       this.events.onAny((event: any, data: any) => {
         if (event[0] === SafeEmitter.PUBLIC) {
-          client.emit(event, data);
+          client.emit(event[1], data);
+          console.log(event);
         }
       });
       client.on('start', () => {
