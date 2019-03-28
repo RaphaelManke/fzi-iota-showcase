@@ -2,17 +2,15 @@ import * as express from 'express';
 import * as socketio from 'socket.io';
 import * as http from 'http';
 import { log } from 'fzi-iota-showcase-client';
-import Controller from './controller';
 import { SafeEmitter } from './events';
+import { EnvironmentInfo } from './envInfo';
 
 export class Server {
   private io: SocketIO.Server;
-  private con: Controller;
   private app: express.Application;
   private server: http.Server;
 
-  constructor(con: Controller) {
-    this.con = con;
+  constructor(private events: SafeEmitter, private readonly info: EnvironmentInfo) {
     this.app = express();
     this.server = http.createServer(this.app);
     this.io = socketio(this.server);
@@ -21,13 +19,13 @@ export class Server {
   public listen() {
     this.io.on('connection', (client: SocketIO.Socket) => {
       log.info('Connected to websocket client.');
-      this.con.events.onAny((event: any, data: any) => {
+      this.events.onAny((event: any, data: any) => {
         if (event[0] === SafeEmitter.PUBLIC) {
           client.emit(event, data);
         }
       });
       client.on('start', () => {
-        this.con.events.emitIntern('start');
+        this.events.emitIntern('start');
       });
     });
 
@@ -38,7 +36,7 @@ export class Server {
     });
 
     this.app.get('/env', (req, res) => {
-      res.json(this.con.env.info);
+      res.json(this.info);
     });
 
     this.server.listen(3000);

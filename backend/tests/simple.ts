@@ -1,6 +1,4 @@
 import { enableLogging } from '../src/logger';
-import Controller from '../src/controller';
-import EnvironmentMock from '../src/mock/envMock';
 import { Server } from '../src/server';
 import { EnvironmentInfo } from '../src/envInfo';
 import { SafeEmitter } from '../src/events';
@@ -97,14 +95,10 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
     }],
   };
   const events = new SafeEmitter();
-  const env = new EnvironmentMock(info, events);
-  const con = new Controller(events, env);
   enableLogging(events);
-  new Server(con).listen();
+  new Server(events, info).listen();
 
   events.onIntern('start', async () => {
-    con.setupEnv();
-
     const e: Emitter = {
       posUpdated(pos) {
         info.vehicles[0].position = pos;
