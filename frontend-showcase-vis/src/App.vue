@@ -35,6 +35,7 @@ export default {
       // get env data from server
         this.$http.get(this.$hostname + '/env').then(function(env) {
                this.env = env.body;
+               this.$store.commit('mapObjects/initState', env.body)
             });
     },
   },

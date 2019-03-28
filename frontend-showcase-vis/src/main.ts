@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
-import store from './store';
+import store from './stores/store';
 import VueSocketIO from 'vue-socket.io';
 import VueResource from 'vue-resource';
 
