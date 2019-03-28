@@ -38,11 +38,11 @@ export default {
       };
   },
 
-  },
+  
   computed: {
     stopData() {
       return this.$store.getters['mapObjects/getStopById'](this.paras.id);
-    }
+    },
   }
 };
 </script>
