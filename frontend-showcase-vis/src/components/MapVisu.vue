@@ -1,7 +1,7 @@
 <template>
-
+    
     <div id="mapVisu">
-
+      <div v-for="conn in store.connections">{{ conn}} </div>
     <l-map
       :zoom="zoom"
       :center="center"
@@ -25,8 +25,8 @@
       />-->
       <!--integrate connections into map-->
       <l-polyline
-        v-for="connection in store"
-        :latLngs="connection.coordinates"
+        v-for="connection in store.connections"
+        :latLngs="connection.path"
         :color="connectionColor(connection)"
       />
       
@@ -86,6 +86,12 @@ export default {
         }
       },
     },
+  computed: {
+    
+      store() {
+        return this.$store.state.mapObjects.env
+      }
+  }
 };
 </script>
 
