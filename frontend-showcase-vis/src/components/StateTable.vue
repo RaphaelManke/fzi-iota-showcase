@@ -4,11 +4,6 @@
 
     <div class="table_wrapper">
 
-        <state-table-object 
-        v-for="stop in stops"
-        :paras="stop"
-        />
-
     </div>
 
     <div class="table_wrapper">
@@ -36,16 +31,8 @@ export default {
   components: {
       StateTableObject,
   },
-  props: {
-    env: {
-      type: Object,
-      default: () => {},
-    },
-  },
   computed: {
-      stops() {
-          return this.env.stops;
-      }
+      
   }
 
 }

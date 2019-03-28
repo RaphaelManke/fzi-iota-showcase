@@ -9,5 +9,12 @@ export const mapObjects = {
         }
      },
     actions: {  },
-    getters: {  },
+    getters: { 
+        getStops(state: any){
+            return state.env.stops;
+        },
+        getConnections(state: any){
+            return state.env.connections;
+        },
+     },
   };
