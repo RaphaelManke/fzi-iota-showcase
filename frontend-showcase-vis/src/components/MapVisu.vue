@@ -21,8 +21,8 @@
       />
     
       <stop-object
-        v-for="stop in stops" :key="stop.id"
-        :paras="stop"
+        v-for="stop in stops" :key="stop.id" :id="stop.id"
+        
       />
       <!--integrate connections into map-->
       <l-polyline

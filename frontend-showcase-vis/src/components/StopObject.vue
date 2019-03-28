@@ -1,10 +1,10 @@
 <template>
   <l-marker
-    :lat-lng="paras.position"
+    :lat-lng="stopData.position"
     :draggable="false"
     :icon="icon">
     <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">
-            {{paras.name}}
+            {{stopData.name}}
     </l-tooltip>
   </l-marker>
 </template>
@@ -20,6 +20,9 @@ export default {
       type: Object,
       default: () => {},
     },
+      id: {
+        type: String,
+      }
   },
   components: {
     LMarker,
@@ -41,7 +44,7 @@ export default {
   
   computed: {
     stopData() {
-      return this.$store.getters['mapObjects/getStopById'](this.paras.id);
+      return this.$store.getters['mapObjects/getStopById'](this.id);
     },
   }
 };
