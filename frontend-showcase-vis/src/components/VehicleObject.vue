@@ -1,10 +1,10 @@
 <template>
   <l-marker
-    :lat-lng="paras.position"
+    :lat-lng="vehicleData.position"
     :draggable="false"
     :icon="icon">
     <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">
-            {{paras.name}}
+            {{vehicleData.name}}
     </l-tooltip>
   </l-marker>
 </template>
@@ -20,10 +20,9 @@ export default {
     LTooltip,
   },
   props: {
-    paras: {
-      type: Object,
-      default: () => {},
-    },
+    id: {
+        type: String,
+      }
   },
   data() {
       return {
@@ -34,6 +33,11 @@ export default {
             popupAnchor: [0, -20],
       }),
       };
+  },
+  computed: {
+    vehicleData() {
+      return this.$store.getters['mapObjects/getVehicleById'](this.id);
+    },
   },
 
 };

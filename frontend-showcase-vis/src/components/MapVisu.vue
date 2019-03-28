@@ -25,7 +25,7 @@
 
       <vehicle-object
         v-for="vehicle in vehicles" :key="vehicle.id"
-        :paras="vehicle"
+        :id="vehicle.id"
       />
       <user-object
         :paras="testGuy"
