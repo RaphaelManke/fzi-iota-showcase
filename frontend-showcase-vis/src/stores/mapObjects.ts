@@ -15,14 +15,19 @@ export const mapObjects = {
      },
     actions: {  },
     getters: { 
-        getStops(state: any){
+        getStops: (state: any) => {
             return state.env.stops;
         },
-        getConnections(state: any){
+        getStopsById: (state: any) => (id:string) => {
+            // return 'ABC';
+            return state.env.stops.find((el: any) => el.id === id);
+         },
+        getConnections: (state: any) => {
             return state.env.connections;
         },
-        getVehicles(state: any){
+        getVehicles: (state: any) => {
             return state.env.vehicles;
         },
+        
      },
   };

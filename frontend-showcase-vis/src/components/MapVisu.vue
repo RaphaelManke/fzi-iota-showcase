@@ -98,6 +98,11 @@ export default {
         
         return this.$store.getters['mapObjects/getVehicles'];
 
+      },
+      vehiclesById() {
+        
+        return this.$store.getters['mapObjects/getStopsById']('A');
+
       }
   }
 };
