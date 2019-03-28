@@ -25,13 +25,13 @@
       />-->
       <!--integrate connections into map-->
       <l-polyline
-        v-for="connection in connections"
+        v-for="connection in store"
         :latLngs="connection.coordinates"
         :color="connectionColor(connection)"
       />
       
     </l-map>
-
+  
     </div>
     
 </template>
@@ -85,14 +85,6 @@ export default {
             case 'tram':   return "#EAC02B";
         }
       },
-    },
-    computed: {
-        stops () {
-          this.$store.getters['mapObjects/getStops'];
-        },
-        connections () {
-          this.$store.getters['mapObjects/getConnections'];
-        },
     },
 };
 </script>

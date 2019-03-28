@@ -60,6 +60,9 @@ export default {
       shown() {
         return !this.boarded;
       },
+      store() {
+        return this.$store.state.mapObjects.env
+      }
   },
 };
 </script>
