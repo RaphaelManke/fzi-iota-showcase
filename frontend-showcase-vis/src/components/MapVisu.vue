@@ -11,21 +11,21 @@
         :url="url"
         :attribution="attribution"
       />
-      <!--<vehicle-object
-        v-for="vehicle in data.vehicles" :key="vehicle.id"
+      <vehicle-object
+        v-for="vehicle in vehicles" :key="vehicle.id"
         :paras="vehicle"
       />
       <user-object
         :paras="testGuy"
       />
-      
+    
       <stop-object
-        v-for="stop in data.stops" :key="stop.id"
+        v-for="stop in stops" :key="stop.id"
         :paras="stop"
-      />-->
+      />
       <!--integrate connections into map-->
       <l-polyline
-        v-for="connection in store.connections"
+        v-for="connection in store"
         :latLngs="connection.path"
         :color="connectionColor(connection)"
       />
@@ -89,7 +89,15 @@ export default {
   computed: {
     
       store() {
-        return this.$store.state.mapObjects.env
+        return this.$store.getters['mapObjects/getConnections'];
+      },
+      stops() {
+        return this.$store.getters['mapObjects/getStops'];
+      },
+      vehicles() {
+        
+        return this.$store.getters['mapObjects/getVehicles'];
+
       }
   }
 };

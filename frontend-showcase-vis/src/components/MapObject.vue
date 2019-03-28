@@ -61,7 +61,8 @@ export default {
         return !this.boarded;
       },
       store() {
-        return this.$store.state.mapObjects.env
+        return this.$store.getters['mapObjects/getConnections'];
+        //return this.$store.state.mapObjects.env
       }
   },
 };

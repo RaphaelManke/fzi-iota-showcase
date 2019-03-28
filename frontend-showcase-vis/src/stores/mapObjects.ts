@@ -21,5 +21,8 @@ export const mapObjects = {
         getConnections(state: any){
             return state.env.connections;
         },
+        getVehicles(state: any){
+            return state.env.vehicles;
+        },
      },
   };
