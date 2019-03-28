@@ -1,6 +1,6 @@
 export const mapObjects = {
     namespaced : true,
-    state: { 
+    state: {
         env: {
             connections: [],
             users: [],
@@ -8,17 +8,17 @@ export const mapObjects = {
             vehicles: [],
         },
     },
-    mutations: { 
-        initState (state: any, event:any ) {
+    mutations: {
+        initState(state: any, event: any ) {
             state.env = event;
-        }
+        },
      },
     actions: {  },
-    getters: { 
+    getters: {
         getStops: (state: any) => {
             return state.env.stops;
         },
-        getStopsById: (state: any) => (id:string) => {
+        getStopsById: (state: any) => (id: string) => {
             // return 'ABC';
             return state.env.stops.find((el: any) => el.id === id);
          },
@@ -28,6 +28,5 @@ export const mapObjects = {
         getVehicles: (state: any) => {
             return state.env.vehicles;
         },
-        
      },
   };

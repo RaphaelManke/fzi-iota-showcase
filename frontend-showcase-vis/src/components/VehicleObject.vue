@@ -35,10 +35,7 @@ export default {
       }),
       };
   },
-  created() {
- 
-  },
- 
+
 };
 </script>
 
