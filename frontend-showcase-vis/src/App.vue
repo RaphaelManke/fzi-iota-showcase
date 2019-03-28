@@ -1,6 +1,10 @@
 <template>
   <div id="app">
     <div id="top">
+          <div>
+    <button @click="changeName">Button</button>
+    </div>
+
     <map-visu></map-visu>
     
     <event-list></event-list>
@@ -54,6 +58,11 @@ export default {
     }));
     this.$socket.emit('start');
   },
+  methods: {
+    changeName(){
+      this.$store.commit('mapObjects/changeStopPos', {stopId:'A', newName:'MPLTZ'})
+    }
+  }
 }
 </script>
 

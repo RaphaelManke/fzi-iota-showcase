@@ -40,6 +40,11 @@ export default {
   created() {
 
   },
+  computed: {
+    stopData() {
+      return this.$store.getters['mapObjects/getStopById'](this.paras.id);
+    }
+  }
 };
 </script>
 

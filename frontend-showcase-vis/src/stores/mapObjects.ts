@@ -11,14 +11,27 @@ export const mapObjects = {
     mutations: { 
         initState (state: any, event:any ) {
             state.env = event;
-        }
+        },
+        changeStopName(state: any, payload: any) {
+            
+            const stop = state.env.stops.find((el: any) => el.id === payload.stopId);
+            stop.name = payload.newName;
+            
+        },
+        changeStopPos(state: any, payload: any) {
+            
+            const stop = state.env.stops.find((el: any) => el.id === payload.stopId);
+            stop.position.lat += 0.0001;
+            
+        },
+
      },
     actions: {  },
     getters: { 
         getStops: (state: any) => {
             return state.env.stops;
         },
-        getStopsById: (state: any) => (id:string) => {
+        getStopById: (state: any) => (id:string) => {
             // return 'ABC';
             return state.env.stops.find((el: any) => el.id === id);
          },
@@ -28,6 +41,10 @@ export const mapObjects = {
         getVehicles: (state: any) => {
             return state.env.vehicles;
         },
+        getUserByName: (state: any) => (name: string) => {
+            return state.env.users.find((el: any) => el.paras.name === name);
+
+        }
         
      },
   };

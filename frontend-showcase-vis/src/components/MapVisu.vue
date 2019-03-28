@@ -17,6 +17,7 @@
       />
       <user-object
         :paras="testGuy"
+        v-bind:id="1"
       />
     
       <stop-object
@@ -99,9 +100,9 @@ export default {
         return this.$store.getters['mapObjects/getVehicles'];
 
       },
-      vehiclesById() {
+      stopsById(id) {
         
-        return this.$store.getters['mapObjects/getStopsById']('A');
+        return this.$store.getters['mapObjects/getStopsById'](id);
 
       }
   }
