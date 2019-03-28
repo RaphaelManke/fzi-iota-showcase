@@ -44,11 +44,6 @@ export default {
   },
 
   created() {
-    // passing on each socket event to the internal event bus
-    ['PosUpdated']
-      .forEach((e) => this.sockets.subscribe(e, (data) => {
-        eventBus.emit(e, data);
-    }));
     this.$socket.emit('start');
   },
   methods: {
