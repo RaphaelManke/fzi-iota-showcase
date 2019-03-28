@@ -10,13 +10,13 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
     vehicles: [{
       balance: 42,
       id: 'ABC',
-      name: 'Tessi',
+      name: 'Lukas',
       position: {
         lat: 49.009525,
         lng: 8.405141,
       },
        info: {
-         type: 'car',
+         type: 'tram',
          co2emission: 90000,
          speed: 50,
        },
@@ -51,9 +51,6 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
       path: [{
         lat: 49.009540,
         lng: 8.403885,
-      }, {
-        lat: 49.009304,
-        lng: 8.410162,
       }, {
         lat: 49.009380,
         lng: 8.408518,
@@ -112,6 +109,6 @@ import { Router, Emitter, Vehicle, Mover } from 'fzi-iota-showcase-vehicle-mock'
     const route = router.getRoutes(v.stop!, 'C', v.info.type)[0];
     mover.startDriving(route, (stop) => log.info('Reached stop %s', stop))
       .then((end) => log.info('Stopped at %s', end));
-    setInterval(() => mover.stopDrivingAtNextStop(), 2000);
+    // setInterval(() => mover.stopDrivingAtNextStop(), 2000);
   });
 })();
