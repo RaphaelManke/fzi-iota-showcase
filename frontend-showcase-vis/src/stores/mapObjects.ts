@@ -27,7 +27,7 @@ export const mapObjects = {
 
      },
      actions: {
-        SOCKET_PosUpdated(data: any) {
+        SOCKET_PosUpdated(state: any, data: any) {
             window.console.log(data);
         }
       },
