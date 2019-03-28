@@ -19,7 +19,7 @@ export default {
       type: Object,
       default: () => {name: 'default'},
     },
-    }
+    },
 
 };
 </script>

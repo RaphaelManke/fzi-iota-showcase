@@ -1,16 +1,19 @@
 <template>
+
   <div id="app">
+
     <div id="top">
-       <!--   <div>
-    <button @click="changeName">Button</button>
-    </div>-->
 
     <map-visu></map-visu>
     
     <event-list></event-list>
+
     </div>
+
     <state-table></state-table>
+
   </div>
+
 </template>
 
 <script>
@@ -44,13 +47,9 @@ export default {
   },
 
   created() {
+    // start the simulation in the backend
     this.$socket.emit('start');
   },
-  methods: {
-    changeName(){
-      this.$store.commit('mapObjects/changeStopPos', {stopId:'A', newName:'MPLTZ'})
-    }
-  }
 }
 </script>
 

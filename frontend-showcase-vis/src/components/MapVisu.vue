@@ -76,12 +76,8 @@ export default {
       data: data,
     };
   },
-  created() {
-      // listen on events
-      
-  },
   methods: {
-    connectionColor (connection) {
+    connectionColor(connection) {
       switch (connection.type) {
             case 'car': return "#ff0000";
             case 'tram':   return "#EAC02B";
@@ -99,12 +95,7 @@ export default {
       vehicles() {      
         return this.$store.getters['mapObjects/getVehicles'];
       },
-      stopsById(id) {
-        
-        return this.$store.getters['mapObjects/getStopsById'](id);
-
-      }
-  }
+  },
 };
 </script>
 

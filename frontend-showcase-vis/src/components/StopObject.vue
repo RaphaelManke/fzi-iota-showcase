@@ -18,7 +18,7 @@ export default {
   props: {
       id: {
         type: String,
-      }
+      },
   },
   components: {
     LMarker,
@@ -35,7 +35,7 @@ export default {
       }),
 
       };
-  }, 
+  },
   computed: {
     stopData() {
       return this.$store.getters['mapObjects/getStopById'](this.id);

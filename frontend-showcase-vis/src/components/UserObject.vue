@@ -4,7 +4,7 @@
     :draggable="false"
     :icon="icon">
     <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">
-            {{fullname}}
+            {{paras.name}}
     </l-tooltip>
   </l-marker>
 </template>
@@ -27,7 +27,7 @@ export default {
     id: {
       type: Number,
       default: '',
-    }
+    },
   },
   data() {
       return {
@@ -37,16 +37,12 @@ export default {
             iconAnchor: [20, 30],
             popupAnchor: [0, -20],
       }),
-    
       };
   },
-  created() {
- 
-  },
   computed: {
-    fullname() {
+    userData() {
       return  this.$store.getters['mapObjects/getUserByName'](this.paras.name);
-    }
+    },
   },
 };
 </script>
