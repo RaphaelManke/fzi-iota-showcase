@@ -11,24 +11,21 @@
         :url="url"
         :attribution="attribution"
       />
-      <map-object
-        v-for="vehicle in data.vehicles"
-        :type="vehicle.type"
-        :initParas="vehicle"
+      <!--<vehicle-object
+        v-for="vehicle in data.vehicles" :key="vehicle.id"
+        :paras="vehicle"
       />
-      <map-object
-        type="male"
-        :initParas="testGuy"
+      <user-object
+        :paras="testGuy"
       />
-      <!-- add stops -->
-      <map-object
-        v-for="stop in data.stops"
-        type="stop"
-        :initParas="stop"
-      />
+      
+      <stop-object
+        v-for="stop in data.stops" :key="stop.id"
+        :paras="stop"
+      />-->
       <!--integrate connections into map-->
       <l-polyline
-        v-for="connection in data.connections"
+        v-for="connection in connections"
         :latLngs="connection.coordinates"
         :color="connectionColor(connection)"
       />
@@ -43,7 +40,9 @@
 import { eventBus } from './../events.ts';
 import L from 'leaflet';
 import { LMap, LTileLayer, LMarker, LPopup, LPolyline } from 'vue2-leaflet';
-import MapObject from './MapObject';
+import StopObject from './StopObject';
+import VehicleObject from './VehicleObject';
+import UserObject from './UserObject';
 
 // load geo data locally for testing
 import data from '../../public/assets/geojson/geojson.js';
@@ -52,19 +51,15 @@ import data from '../../public/assets/geojson/geojson.js';
 
 export default {
   name: 'MapVisu',
-  props: {
-    env: {
-      type: Object,
-      default: () => {},
-    },
-  },
   components: {
     LMap,
     LTileLayer,
     LMarker,
     LPopup,
     LPolyline,
-    MapObject,
+    StopObject,
+    VehicleObject,
+    UserObject,
   },
   data() {
     return {
@@ -72,7 +67,7 @@ export default {
       center: L.latLng(49.0091, 8.3799),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      testGuy: {coordinates: [49.0091, 8.381], name: 'Peter', type: 'male'},
+      testGuy: {position: [49.0091, 8.381], name: 'Peter', type: 'male'},
       mapOptions: {
         zoomSnap: 0.25,
       },
@@ -90,6 +85,14 @@ export default {
             case 'tram':   return "#EAC02B";
         }
       },
+    },
+    computed: {
+        stops () {
+          this.$store.getters['mapObjects/getStops'];
+        },
+        connections () {
+          this.$store.getters['mapObjects/getConnections'];
+        },
     },
 };
 </script>

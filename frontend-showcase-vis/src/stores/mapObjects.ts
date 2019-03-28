@@ -1,7 +1,12 @@
 export const mapObjects = {
     namespaced : true,
     state: { 
-        env: undefined,
+        env: {
+            connections: [],
+            users: [],
+            stops: [],
+            vehicles: [],
+        },
     },
     mutations: { 
         initState (state: any, event:any ) {
@@ -9,5 +14,12 @@ export const mapObjects = {
         }
      },
     actions: {  },
-    getters: {  },
+    getters: { 
+        getStops(state: any){
+            return state.env.stops;
+        },
+        getConnections(state: any){
+            return state.env.connections;
+        },
+     },
   };

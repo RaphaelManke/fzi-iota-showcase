@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div id="top">
-    <map-visu :env="env"></map-visu>
+    <map-visu></map-visu>
     
     <event-list></event-list>
     </div>
-    <state-table :env="env"></state-table>
+    <state-table></state-table>
   </div>
 </template>
 
@@ -34,7 +34,6 @@ export default {
       window.console.log('Connected to websocket server.');
       // get env data from server
         this.$http.get(this.$hostname + '/env').then(function(env) {
-               this.env = env.body;
                this.$store.commit('mapObjects/initState', env.body)
             });
     },
