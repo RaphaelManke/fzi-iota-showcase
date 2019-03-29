@@ -2,13 +2,11 @@
   <l-marker :lat-lng="vehicleData.position" :draggable="false" :icon="icon">
     <l-tooltip
       :options="{ permanent: true, direction: 'bottom' }"
-      class="iota_style"
+      class="iota_style">
       {{
-      vehicle-data-name
+      vehicleData.name
       }}
-      -x3c-
-      l-tooltip
-    />
+    </l-tooltip>
   </l-marker>
 </template>
 
@@ -30,11 +28,11 @@ export default {
   data() {
     return {
       icon: L.icon({
-        iconUrl: 'assets/images/car.png',
+        iconUrl: "assets/images/car.png",
         iconSize: [40, 40],
         iconAnchor: [20, 30],
-        popupAnchor: [0, -20],
-      }),
+        popupAnchor: [0, -20]
+      })
     };
   },
   computed: {
