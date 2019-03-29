@@ -15,7 +15,6 @@
   "vetur.format.defaultFormatter.css": "prettier",
   // relevant for 'prettier-eslint' instead of 'prettier'
   "prettier.eslintIntegration": false,
-  "vetur.format.defaultFormatter.css": "prettier",
   "vetur.format.defaultFormatter.less": "prettier",
   "vetur.format.defaultFormatter.postcss": "prettier",
   "vetur.format.defaultFormatter.scss": "prettier",

@@ -18,8 +18,8 @@ export const buildSet = (messages: any[], add = 'add', remove = 'remove') => {
     if (m[add]) {
       array(m[add]).forEach((i) => result.push(i));
     } else if (m[remove]) {
-      array(m[remove]).forEach((i) => {
-        const index = result.indexOf(i);
+      array(m[remove]).forEach((prop) => {
+        const index = result.indexOf(prop);
         if (index !== -1) {
           result.splice(index, 1);
         }
@@ -29,7 +29,10 @@ export const buildSet = (messages: any[], add = 'add', remove = 'remove') => {
   return result.filter(onlyUnique);
 };
 
-export const buildReversingKeyPropertiesArray = (messages: any[], usedProperties: string[]) => {
+export const buildReversingKeyPropertiesArray = (
+  messages: any[],
+  usedProperties: string[],
+) => {
   const keys: any = {};
   const keyOrder: string[] = [];
   messages.forEach((message) => {
