@@ -2,7 +2,7 @@ import { CheckInMessage } from '../src/messages/checkInMessage';
 import { trits, trytesToAscii } from '@iota/converter';
 import { log } from '../src/logger';
 import { toTrytes } from '../src/messages/converter';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import { ReservationMessage, StopWelcomeMessage, Reservation } from '../src';
 import { Trytes } from '@iota/core/typings/types';
 import 'mocha';
@@ -10,6 +10,7 @@ import 'mocha';
 describe('message formatting', () => {
   it('should convert CheckInMessage to and from trytes', () => {
     const m: CheckInMessage = {
+      hashedNonce: 'A'.repeat(81),
       vehicleId: trits('M'.repeat(81)),
       paymentAddress: 'N'.repeat(81),
       price: 40000000,
