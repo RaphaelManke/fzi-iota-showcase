@@ -21,6 +21,7 @@
         v-for="connection in connections"
         :latLngs="connection.path"
         :color="connectionColor(connection)"
+        :key="connection.from + connection.to"
       />
 
       <vehicle-object
@@ -73,26 +74,25 @@ export default {
       mapOptions: {
         zoomSnap: 0.25,
       },
-      data: data,
+      data,
     };
   },
   methods: {
-    connectionColor(connection) {
-      switch (connection.type) {
-            case 'car': return "#ff0000";
-            case 'tram':   return "#EAC02B";
-        }
+      connectionColor(connection) {
+          switch (connection.type) {
+              case 'car': return '#ff0000';
+              case 'tram':   return '#EAC02B';
+          }
       },
-    },
+  },
   computed: {
-    
       connections() {
         return this.$store.getters['mapObjects/getConnections'];
       },
       stops() {
         return this.$store.getters['mapObjects/getStops'];
       },
-      vehicles() {      
+      vehicles() {
         return this.$store.getters['mapObjects/getVehicles'];
       },
   },

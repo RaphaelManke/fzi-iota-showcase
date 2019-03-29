@@ -22,7 +22,7 @@ export default {
   props: {
     paras: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
     id: {
       type: Number,

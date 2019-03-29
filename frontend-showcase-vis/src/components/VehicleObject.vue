@@ -21,25 +21,24 @@ export default {
   },
   props: {
     id: {
-        type: String,
-      },
+      type: String,
+    },
   },
   data() {
-      return {
-        icon: L.icon({
-            iconUrl: 'assets/images/car.png',
-            iconSize: [40, 40],
-            iconAnchor: [20, 30],
-            popupAnchor: [0, -20],
+    return {
+      icon: L.icon({
+        iconUrl: 'assets/images/car.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 30],
+        popupAnchor: [0, -20],
       }),
-      };
+    };
   },
   computed: {
     vehicleData() {
       return this.$store.getters['mapObjects/getVehicleById'](this.id);
     },
   },
-
 };
 </script>
 
