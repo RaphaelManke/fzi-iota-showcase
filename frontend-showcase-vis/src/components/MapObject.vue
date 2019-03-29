@@ -27,7 +27,7 @@ export default {
     },
     initParas: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
   },
   data() {
@@ -46,7 +46,10 @@ export default {
       // reaction on update position
       eventBus.on('updatedPos', (data) => {
         if (this.type !== 'stop') {
-          this.paras.coordinates = [this.paras.coordinates[0] += data.y / 1000, this.paras.coordinates[1] += data.x / 1000];
+          this.paras.coordinates = [
+            this.paras.coordinates[0] += data.y / 1000,
+            this.paras.coordinates[1] += data.x / 1000,
+          ];
         }
         },
       );
@@ -54,7 +57,7 @@ export default {
   computed: {
       // computed getter an setter for position property
       position() {
-            return L.latLng(this.paras.coordinates);     
+            return L.latLng(this.paras.coordinates);
       },
       // computed shown property depending on the state
       shown() {
@@ -62,8 +65,8 @@ export default {
       },
       store() {
         return this.$store.getters['mapObjects/getConnections'];
-        //return this.$store.state.mapObjects.env
-      }
+        // return this.$store.state.mapObjects.env
+      },
   },
 };
 </script>

@@ -16,11 +16,10 @@
 export default {
     props: {
         paras: {
-      type: Object,
-      default: () => {name: 'default'},
+            type: Object,
+            default: () => ({name: 'default'}),
+        },
     },
-    },
-
 };
 </script>
 

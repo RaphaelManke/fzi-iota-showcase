@@ -21,6 +21,7 @@
         v-for="connection in connections"
         :latLngs="connection.path"
         :color="connectionColor(connection)"
+        :key="connection.from + connection.to"
       />
 
       <vehicle-object
@@ -65,34 +66,33 @@ export default {
   },
   data() {
     return {
-      zoom: 13,
-      center: L.latLng(49.0091, 8.3799),
+      zoom: 15.5,
+      center: L.latLng(49.0075, 8.402),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       testGuy: {position: [49.0091, 8.381], name: 'Peter', type: 'male'},
       mapOptions: {
         zoomSnap: 0.25,
       },
-      data: data,
+      data,
     };
   },
   methods: {
-    connectionColor(connection) {
-      switch (connection.type) {
-            case 'car': return "#ff0000";
-            case 'tram':   return "#EAC02B";
-        }
+      connectionColor(connection) {
+          switch (connection.type) {
+              case 'car': return '#ff0000';
+              case 'tram':   return '#EAC02B';
+          }
       },
-    },
+  },
   computed: {
-    
       connections() {
         return this.$store.getters['mapObjects/getConnections'];
       },
       stops() {
         return this.$store.getters['mapObjects/getStops'];
       },
-      vehicles() {      
+      vehicles() {
         return this.$store.getters['mapObjects/getVehicles'];
       },
   },
@@ -105,7 +105,7 @@ export default {
 /* custom tooltip styling*/
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;;
-  transition: 3s linear;
+  transition: 2s linear;
 }
 
 .leaflet-tooltip-bottom::before {
@@ -113,7 +113,7 @@ export default {
 } 
 
 .leaflet-marker-icon {
-  transition: 3s linear;
+  transition: 2s linear;
 }
 
 #mapVisu {

@@ -40,9 +40,9 @@ export default {
     connect() {
       window.console.log('Connected to websocket server.');
       // get env data from server
-        this.$http.get(this.$hostname + '/env').then(function(env) {
-               this.$store.commit('mapObjects/initState', env.body)
-            });
+      this.$http.get(this.$hostname + '/env').then(function(env) {
+        this.$store.commit('mapObjects/initState', env.body);
+      });
     },
   },
 
@@ -50,7 +50,7 @@ export default {
     // start the simulation in the backend
     this.$socket.emit('start');
   },
-}
+};
 </script>
 
 <style>

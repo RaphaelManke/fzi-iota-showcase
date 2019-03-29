@@ -23,19 +23,17 @@
 </template>
 
 <script>
-import StateTableObject from './StateTableObject.vue'
+import StateTableObject from './StateTableObject.vue';
 
 export default {
-    
   name: 'StateTable',
   components: {
-      StateTableObject,
+    StateTableObject,
   },
   computed: {
-      
-  }
 
-}
+  },
+};
 </script>
 
 <style scoped>
