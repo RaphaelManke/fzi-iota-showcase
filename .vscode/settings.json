@@ -9,6 +9,8 @@
   "prettier.jsxSingleQuote": true,
   "prettier.tslintIntegration": true,
   "files.eol": "\n",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
   // Set the default
   "editor.formatOnSave": true
 }
