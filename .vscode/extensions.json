@@ -2,7 +2,7 @@
   "recommendations": [
     "ms-vscode.vscode-typescript-tslint-plugin",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier",
+    "esbenp.prettier-vscode",
     "octref.vetur"
   ]
 }
