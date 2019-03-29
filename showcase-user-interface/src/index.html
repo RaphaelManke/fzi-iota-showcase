@@ -1,0 +1,82 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+    <body>
+    <div id="app">
+        <div id="page1" v-if="page == 1">
+            <span>Select start: </span>
+            <select v-model="startName">
+                <option v-for="option in stations">
+                    {{ option.text }}
+                </option>
+            </select>
+            <br>
+            <span>Select end: </span>
+            <select v-model="endName">
+                <option v-for="option in stations">
+                    {{ option.text }}
+                </option>
+            </select>
+            <br>
+            <br>
+            <label>Bicycle</label>
+            <input type="checkbox" v-model="to0">
+            <br>
+            <label>Bus</label>
+            <input type="checkbox" v-model="to1">
+            <br>
+            <label>Taxi</label>
+            <input type="checkbox" v-model="to2">
+
+            <br><br>
+
+            <input type="radio" value="Cheapest" v-model="picked">
+            <label>Cheapest</label>
+            <br>
+            <input type="radio" value="Fastest" v-model="picked">
+            <label>Fastest</label>
+            <br>
+            <br>
+            <span>Wallet: {{wallet}}</span>
+            <br>
+            <br>
+            <button v-on:click="calculate">Find a Connection</button>
+            <br>
+            <br>
+            <span v-if="showError">No path found using these settings.</span>
+            <div v-if="showPath">
+                <span>Distance: {{distance}} </span>
+                <br>
+                <span>Price: {{price}},</span>
+                <br>
+                <span>including Reservation: {{reservationPrice}}</span> 
+                <br>
+                <span>Duration: {{duration}} </span>
+                <br>
+                <span>Path:<pre>{{path}}</pre> </span>
+                <br>
+                <button v-on:click="chooseTrip" v-if="showPath">Start Trip</button>
+            </div>
+        </div>
+        <div id="page2" v-if="page == 2">
+
+                <span>Currently at: {{startName}}</span>
+                <br><br>
+
+                <span>Wallet: {{wallet}}</span>
+    
+                <br><br>
+
+                <span>Distance: {{distance}} </span><br>
+                <span>Price: {{price}}</span><br>
+                <span>Duration: {{duration}} </span><br>
+                <span>Path:<pre>{{path}}</pre></span><br>
+                <button v-on:click="cancelTrip">Cancel Trip</button>
+        </div>
+    </div>  
+    </body>
+    
+    <script src="index.js"></script>
+</html>
