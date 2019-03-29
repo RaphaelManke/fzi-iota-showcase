@@ -1,61 +1,54 @@
 <template>
-  <l-marker
-    :lat-lng="paras.position"
-    :draggable="false"
-    :icon="icon">
-    <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">
-            {{paras.name}}
-    </l-tooltip>
+  <l-marker :lat-lng="paras.position" :draggable="false" :icon="icon">
+    <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">{{paras.name}}</l-tooltip>
   </l-marker>
 </template>
 
 <script>
-import { eventBus } from './../events.ts';
-import { LMarker, LPopup, LIcon, LTooltip} from 'vue2-leaflet';
+import { eventBus } from "./../events.ts";
+import { LMarker, LPopup, LIcon, LTooltip } from "vue2-leaflet";
 export default {
-  name: 'UserObject',
+  name: "UserObject",
   components: {
     LMarker,
     LPopup,
-    LTooltip,
+    LTooltip
   },
   props: {
     paras: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     id: {
       type: Number,
-      default: '',
-    },
+      default: ""
+    }
   },
   data() {
-      return {
-        icon: L.icon({
-            iconUrl: 'assets/images/male.png',
-            iconSize: [40, 40],
-            iconAnchor: [20, 30],
-            popupAnchor: [0, -20],
-      }),
-      };
+    return {
+      icon: L.icon({
+        iconUrl: "assets/images/male.png",
+        iconSize: [40, 40],
+        iconAnchor: [20, 30],
+        popupAnchor: [0, -20]
+      })
+    };
   },
   computed: {
     userData() {
-      return  this.$store.getters['mapObjects/getUserByName'](this.paras.name);
-    },
-  },
+      return this.$store.getters["mapObjects/getUserByName"](this.paras.name);
+    }
+  }
 };
 </script>
 
 <style scoped>
-
 img {
-    height: 3vh;
+  height: 3vh;
 }
 
 .iota_style {
   color: #04a997;
 }
-
 </style>
 

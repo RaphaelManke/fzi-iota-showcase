@@ -9,4 +9,6 @@
   "prettier.jsxSingleQuote": true,
   "prettier.tslintIntegration": true,
   "files.eol": "\n",
+  // Set the default
+  "editor.formatOnSave": true
 }
