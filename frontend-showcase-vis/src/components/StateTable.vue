@@ -50,5 +50,3 @@ export default {
   height: 30vh;
 }
 </style>
-
-

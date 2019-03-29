@@ -1,9 +1,14 @@
 <template>
-  <l-marker :lat-lng="vehicleData.position" :draggable="false" :icon="vehicleIcon">
+  <l-marker :lat-lng="vehicleData.position" :draggable="false" :icon="icon">
     <l-tooltip
-      :options="{permanent: true, direction: 'bottom'}"
+      :options="{ permanent: true, direction: 'bottom' }"
       class="iota_style"
-    >{{vehicleData.name}}</l-tooltip>
+      {{
+      vehicle-data-name
+      }}
+      -x3c-
+      l-tooltip
+    />
   </l-marker>
 </template>
 
@@ -14,13 +19,23 @@ export default {
   name: "VehicleObject",
   components: {
     LMarker,
-    LPopup,
     LTooltip
   },
   props: {
     id: {
-      type: String
+      type: String,
+      default: ""
     }
+  },
+  data() {
+    return {
+      icon: L.icon({
+        iconUrl: 'assets/images/car.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 30],
+        popupAnchor: [0, -20],
+      }),
+    };
   },
   computed: {
     vehicleData() {
@@ -50,4 +65,3 @@ img {
   color: #04a997;
 }
 </style>
-

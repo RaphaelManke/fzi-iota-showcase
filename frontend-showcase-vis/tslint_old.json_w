@@ -1,19 +1,19 @@
 {
   "defaultSeverity": "warning",
-  "extends": [
-    "tslint:recommended"
-  ],
+  "extends": ["prettier", "plugin:vue/recommended"],
   "linterOptions": {
-    "exclude": [
-      "node_modules/**"
-    ]
+    "exclude": ["node_modules/**"]
   },
+  "plugins": ["vue", "prettier"],
   "rules": {
-    "quotemark": [true, "single"],
+    "prettier/prettier": "error"
+
+    /*     "quotemark": [true, "single"],
     "indent": [true, "spaces", 2],
     "interface-name": false,
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-consecutive-blank-lines": false
+ */
   }
 }

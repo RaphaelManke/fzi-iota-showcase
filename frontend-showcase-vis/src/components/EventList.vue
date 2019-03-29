@@ -1,52 +1,53 @@
 <template>
-
   <div id="eventListContainer">
+    <h2 style="text-align: center; margin: 0;">
+      Transactions
+    </h2>
 
-    <h2 style="text-align: center; margin: 0;">Transactions</h2>
-
-  <div v-on:mouseover="mouseOnEvents = true" v-on:mouseleave="mouseOnEvents = false" id="eventList" ref="eventList">
-           
-    <ul>
-
-          <li v-for="event in events">{{event}}</li>
-
-    </ul>
-
+    <div
+      id="eventList"
+      ref="eventList"
+      @mouseover="mouseOnEvents = true"
+      @mouseleave="mouseOnEvents = false"
+    >
+      <ul>
+        <li v-for="event in events">
+          {{ event }}
+        </li>
+      </ul>
+    </div>
   </div>
-
-  </div>
-  
 </template>
 
 <script>
-import { eventBus } from '../events';
+import { eventBus } from "../events";
 
 export default {
-  name: 'EventList',
+  name: "EventList",
   data() {
-      return {
-          events: [],
-          mouseOnEvents: false,
-      };
+    return {
+      events: [],
+      mouseOnEvents: false
+    };
   },
   created() {
-      eventBus.on('**', (data) => {
-        this.events.push(eventBus.event + ': ' + JSON.stringify(data));
-        if (this.events.length > 50) { this.events.shift(); }
-      });
+    eventBus.on("**", data => {
+      this.events.push(eventBus.event + ": " + JSON.stringify(data));
+      if (this.events.length > 50) {
+        this.events.shift();
+      }
+    });
   },
   updated() {
-      if (!this.mouseOnEvents) {
-        this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
-      }
-  },
+    if (!this.mouseOnEvents) {
+      this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
+    }
+  }
 };
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 #eventListContainer {
   display: flex;
   flex-flow: column;
@@ -54,17 +55,15 @@ export default {
 }
 
 #eventList {
-    position: relative;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    border: solid 2px black;
-    margin-left: 7%;
-    flex-grow : 1;
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: solid 2px black;
+  margin-left: 7%;
+  flex-grow: 1;
 }
 
 ul {
   margin-left: -8%;
 }
-
-
 </style>

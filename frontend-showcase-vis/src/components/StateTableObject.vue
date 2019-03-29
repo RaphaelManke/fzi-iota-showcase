@@ -59,5 +59,3 @@ img {
   height: 4vh;
 }
 </style>
-
-
