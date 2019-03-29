@@ -22,24 +22,6 @@ export default {
       type: String
     }
   },
-  data() {
-    return {
-      icon: L.icon({
-        iconUrl: "assets/images/" + vehicleData.info.type + ".png",
-        iconSize: [40, 40],
-        iconAnchor: [20, 30],
-        popupAnchor: [0, -20]
-      })
-    };
-  },
-  created() {
-    this.icon = L.icon({
-      iconUrl: "assets/images/" + vehicleData.info.type + ".png",
-      iconSize: [40, 40],
-      iconAnchor: [20, 30],
-      popupAnchor: [0, -20]
-    });
-  },
   computed: {
     vehicleData() {
       return this.$store.getters["mapObjects/getVehicleById"](this.id);
