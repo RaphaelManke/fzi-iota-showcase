@@ -9,7 +9,9 @@
       />
     </div>
 
-    <div class="table_wrapper"></div>
+    <div class="table_wrapper">
+      <state-table-object v-for="stop in stops" :key="stop.id" :id="stop.id" type="stop"/>
+    </div>
 
     <div class="table_wrapper"></div>
 
@@ -39,6 +41,7 @@ export default {
 <style scoped>
 .table_wrapper {
   display: flex;
+  border: solid 1px gray;
 }
 
 #table_container {

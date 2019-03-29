@@ -1,7 +1,11 @@
 <template>
   <div id="state_object">
     <img :src="image_url">
-    {{vehicleData.name}}: Speed ({{vehicleData.info.speed}})
+    <div
+      class="info_container"
+      v-if="type === 'tram' || type === 'car'"
+    >{{vehicleData.name}}: Speed ({{vehicleData.info.speed}})</div>
+    <div class="info_container" v-if="type === 'stop'">{{stopData.name}}</div>
   </div>
 </template>
 
@@ -25,6 +29,9 @@ export default {
   computed: {
     vehicleData() {
       return this.$store.getters["mapObjects/getVehicleById"](this.id);
+    },
+    stopData() {
+      return this.$store.getters["mapObjects/getStopById"](this.id);
     }
   }
 };
@@ -38,6 +45,10 @@ p {
 
 img {
   max-height: 100%;
+}
+
+.info_container {
+  margin: auto;
 }
 
 #state_object {
