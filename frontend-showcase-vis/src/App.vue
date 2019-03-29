@@ -1,62 +1,52 @@
 <template>
-
   <div id="app">
-
     <div id="top">
+      <map-visu />
 
-    <map-visu></map-visu>
-    
-    <event-list></event-list>
-
+      <event-list />
     </div>
 
-    <state-table></state-table>
-
+    <state-table />
   </div>
-
 </template>
 
 <script>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from "vue-property-decorator";
 
 // components
-import MapVisu from './components/MapVisu.vue';
-import EventList from './components/EventList.vue';
-import StateTable from './components/StateTable.vue';
+import MapVisu from "./components/MapVisu.vue";
+import EventList from "./components/EventList.vue";
+import StateTable from "./components/StateTable.vue";
 
 // internal event bus
-import { eventBus } from './events';
-
-
-
+import { eventBus } from "./events";
 
 export default {
   components: {
     MapVisu,
     EventList,
-    StateTable,
+    StateTable
   },
   sockets: {
     connect() {
-      window.console.log('Connected to websocket server.');
+      window.console.log("Connected to websocket server.");
       // get env data from server
-      this.$http.get(this.$hostname + '/env').then(function(env) {
-        this.$store.commit('mapObjects/initState', env.body);
+      this.$http.get(this.$hostname + "/env").then(function(env) {
+        this.$store.commit("mapObjects/initState", env.body);
       });
-    },
+    }
   },
 
   created() {
     // start the simulation in the backend
-    this.$socket.emit('start');
-  },
+    this.$socket.emit("start");
+  }
 };
 </script>
 
 <style>
-
 html {
-  overflow:hidden;
+  overflow: hidden;
 }
 
 #app {
@@ -67,7 +57,7 @@ html {
 }
 
 #top {
-    display: grid;
-    grid-template-columns: auto 20%;
+  display: grid;
+  grid-template-columns: auto 20%;
 }
 </style>

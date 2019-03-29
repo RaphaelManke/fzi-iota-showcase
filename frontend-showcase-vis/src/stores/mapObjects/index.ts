@@ -1,4 +1,7 @@
-export const mapObjects = {
+import { Env, MapObjectsState } from "./types";
+import { Module } from "vuex";
+import { RootState } from "../types";
+export const mapObjects: Module<MapObjectsState, RootState> = {
   namespaced: true,
   state: {
     env: {

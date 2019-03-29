@@ -1,6 +1,10 @@
 <template>
   <l-marker :lat-lng="paras.position" :draggable="false" :icon="icon">
-    <l-tooltip :options="{permanent: true, direction: 'bottom'}" class="iota_style">{{paras.name}}</l-tooltip>
+    <l-tooltip
+      :options="{ permanent: true, direction: 'bottom' }"
+      class="iota_style"
+      >{{ paras.name }}</l-tooltip
+    >
   </l-marker>
 </template>
 
@@ -11,7 +15,6 @@ export default {
   name: "UserObject",
   components: {
     LMarker,
-    LPopup,
     LTooltip
   },
   props: {
@@ -21,7 +24,7 @@ export default {
     },
     id: {
       type: Number,
-      default: ""
+      default: -1
     }
   },
   data() {
@@ -51,4 +54,3 @@ img {
   color: #04a997;
 }
 </style>
-

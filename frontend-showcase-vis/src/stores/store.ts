@@ -1,20 +1,16 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { mapObjects } from './mapObjects';
+import Vue from "vue";
+import Vuex, { StoreOptions } from "vuex";
+import { mapObjects } from "@/stores/mapObjects";
+import { RootState } from "./types";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {
-
-  },
-  mutations: {
-
-  },
-  actions: {
-
-  },
+const store: StoreOptions<RootState> = {
+  state: {},
+  mutations: {},
+  actions: {},
   modules: {
-    mapObjects,
-  },
-});
+    mapObjects
+  }
+};
+export default new Vuex.Store<RootState>(store);
