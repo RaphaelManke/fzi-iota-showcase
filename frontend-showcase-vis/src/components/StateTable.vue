@@ -1,53 +1,51 @@
 <template>
-
-<div id="table_container">
-
+  <div id="table_container">
     <div class="table_wrapper">
-
+      <state-table-object
+        v-for="vehicle in vehicles"
+        :key="vehicle.id"
+        :id="vehicle.id"
+        :type="vehicle.info.type"
+      />
     </div>
 
-    <div class="table_wrapper">
+    <div class="table_wrapper"></div>
 
-    </div>
+    <div class="table_wrapper"></div>
 
-    <div class="table_wrapper">
-
-    </div>
-
-    <div class="table_wrapper">
-        
-    </div>
-
-    
-</div>
+    <div class="table_wrapper"></div>
+  </div>
 </template>
 
 <script>
-import StateTableObject from './StateTableObject.vue';
+import StateTableObject from "./StateTableObject.vue";
 
 export default {
-  name: 'StateTable',
+  name: "StateTable",
   components: {
-    StateTableObject,
+    StateTableObject
   },
   computed: {
-
-  },
+    stops() {
+      return this.$store.getters["mapObjects/getStops"];
+    },
+    vehicles() {
+      return this.$store.getters["mapObjects/getVehicles"];
+    }
+  }
 };
 </script>
 
 <style scoped>
-
 .table_wrapper {
-    display: flex;
+  display: flex;
 }
 
 #table_container {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-    height: 30vh;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  height: 30vh;
 }
-
 </style>
 
 

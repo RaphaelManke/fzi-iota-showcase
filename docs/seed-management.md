@@ -8,9 +8,13 @@ The problem gets more difficult because of the way IOTA (MAM, RAAM) generates ke
 
 <code>
 subseed(seed, index) = hash(seed + index)
+</code>
 
+<code>
 key(subseed) = hash(subseed)
+</code>
 
+<code>
 digest(key) = hash<sup>27</sup>(key) = hash<sup>27</sup>(hash(hash(seed + index)))
 </code>
 

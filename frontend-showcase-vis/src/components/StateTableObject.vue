@@ -1,48 +1,52 @@
 <template>
-
-    <div id="state_object">
-
-        <img src="assets/images/iota.png">
-        <p>Test</p>
-        <p>Test1</p>
-        <p>Teset2</p>
-
-
-    </div>
-    
+  <div id="state_object">
+    <img :src="image_url">
+    {{vehicleData.name}}: Speed ({{vehicleData.info.speed}})
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        paras: {
-            type: Object,
-            default: () => ({name: 'default'}),
-        },
+  props: {
+    id: {
+      type: Object,
+      default: () => ""
     },
+    type: {
+      type: String,
+      default: () => ""
+    }
+  },
+  data() {
+    return {
+      image_url: "assets/images/" + this.type + ".png"
+    };
+  },
+  computed: {
+    vehicleData() {
+      return this.$store.getters["mapObjects/getVehicleById"](this.id);
+    }
+  }
 };
 </script>
 
 <style scoped>
-
 p {
-    margin:0;
-    padding:0
+  margin: 0;
+  padding: 0;
 }
 
 img {
-    max-height: 100%;
+  max-height: 100%;
 }
 
 #state_object {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
-    border: groove 2px;
-    height: 4vh;
-
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+  border: groove 2px;
+  height: 4vh;
 }
-
 </style>
 
 
