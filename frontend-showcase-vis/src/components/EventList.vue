@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import { eventBus } from "../events";
-
 export default {
   name: "EventList",
   data() {
@@ -29,14 +27,6 @@ export default {
       events: [],
       mouseOnEvents: false
     };
-  },
-  created() {
-    eventBus.on("**", data => {
-      this.events.push(eventBus.event + ": " + JSON.stringify(data));
-      if (this.events.length > 50) {
-        this.events.shift();
-      }
-    });
   },
   updated() {
     if (!this.mouseOnEvents) {

@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import { eventBus } from "./../events.ts";
 import { LMarker, LPopup, LIcon, LTooltip } from "vue2-leaflet";
 export default {
   name: "UserObject",

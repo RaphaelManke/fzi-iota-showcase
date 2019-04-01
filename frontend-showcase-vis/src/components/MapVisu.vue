@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import { eventBus } from "./../events.ts";
 import L from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LPolyline } from "vue2-leaflet";
 import StopObject from "./StopObject";

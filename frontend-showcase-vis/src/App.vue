@@ -18,9 +18,6 @@ import MapVisu from "./components/MapVisu.vue";
 import EventList from "./components/EventList.vue";
 import StateTable from "./components/StateTable.vue";
 
-// internal event bus
-import { eventBus } from "./events";
-
 export default {
   components: {
     MapVisu,
