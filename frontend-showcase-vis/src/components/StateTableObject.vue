@@ -1,11 +1,21 @@
 <template>
   <div id="state_object">
     <img :src="image_url">
-    <div
-      class="info_container"
-      v-if="type === 'tram' || type === 'car'"
-    >{{vehicleData.name}}: Speed ({{vehicleData.info.speed}})</div>
-    <div class="info_container" v-if="type === 'stop'">{{stopData.name}}</div>
+
+    <!-- representation for vehicles -->
+    <div class="info_container"
+    v-if="type === 'tram' || type === 'car'"
+    >
+      {{vehicleData.name}}: 
+      Speed {{vehicleData.info.speed}} 
+      Position {{vehicleData.position}}
+    </div>
+
+    <!-- representation for stops -->
+    <div class="info_container"
+    v-if="type === 'stop'">
+      {{stopData.name}}
+    </div>
   </div>
 </template>
 
