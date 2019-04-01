@@ -13,18 +13,21 @@ export class Mover {
 
   constructor(private vehicle: Vehicle) {}
 
-  public startDriving(route: Route, onStop?: (stop: Trytes) => void): Promise<Trytes> {
+  public startDriving(
+    route: Route,
+    onStop?: (stop: Trytes) => void,
+  ): Promise<Trytes> {
     return new Promise((resolve, reject) => {
       if (this.vehicle.stop !== route.stops[0].id) {
         reject(new Error('Vehicle is not at the start of the given route'));
       }
 
-      let {i, next, current} = this.nextSegment(0, route);
+      let { i, next, current } = this.nextSegment(0, route);
       let driven = 0;
       let nextStop = 1;
       this.continue = true;
       const worker = () => {
-        driven += this.vehicle.info.speed * Mover.UPDATE_INTERVAL / 1000;
+        driven += (this.vehicle.info.speed * Mover.UPDATE_INTERVAL) / 1000;
         const pos = interpolate(current, next, driven);
         this.vehicle.position = pos;
         // very close to a path point
@@ -44,7 +47,7 @@ export class Mover {
 
           // path points left ?
           if (i < route.path.length - 1 && !stop) {
-            ({current, next, i} = this.nextSegment(i, route));
+            ({ current, next, i } = this.nextSegment(i, route));
             driven = 0;
           } else {
             // arrived
@@ -72,4 +75,3 @@ export class Mover {
     };
   }
 }
-
