@@ -1,5 +1,10 @@
 <template>
-  <l-marker :lat-lng="paras.position" :draggable="false" :icon="icon" zIndexOffset="999">
+  <l-marker
+    :lat-lng="paras.position"
+    :draggable="false"
+    :icon="icon"
+    zIndexOffset="999"
+  >
     <l-tooltip
       :options="{ permanent: true, direction: 'bottom' }"
       zIndexOffset="999"

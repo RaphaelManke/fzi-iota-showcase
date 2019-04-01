@@ -3,14 +3,19 @@
     <div class="table_wrapper">
       <state-table-object
         v-for="vehicle in vehicles"
-        :key="vehicle.id"
         :id="vehicle.id"
+        :key="vehicle.id"
         :type="vehicle.info.type"
       />
     </div>
 
     <div class="table_wrapper">
-      <state-table-object v-for="stop in stops" :key="stop.id" :id="stop.id" type="stop"/>
+      <state-table-object
+        v-for="stop in stops"
+        :id="stop.id"
+        :key="stop.id"
+        type="stop"
+      />
     </div>
 
     <div class="table_wrapper"></div>
