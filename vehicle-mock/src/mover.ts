@@ -5,7 +5,7 @@ import { interpolate, toGeo } from './interpolator';
 import { getDistance } from 'geolib';
 
 export class Mover {
-  public static UPDATE_INTERVAL = 2000; // milliseconds
+  public static UPDATE_INTERVAL = 500; // milliseconds
   public static REACHED_THRESHOLD = 10; // meters
 
   private interval?: NodeJS.Timer;
