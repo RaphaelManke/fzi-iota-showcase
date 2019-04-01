@@ -86,7 +86,7 @@ export default {
 /* custom tooltip styling*/
 .leaflet-tooltip {
   border: 1px solid #a3a3a3;
-  transition: 2s linear;
+  transition: 0.5s linear;
 }
 
 .leaflet-tooltip-bottom::before {
@@ -94,7 +94,7 @@ export default {
 }
 
 .leaflet-marker-icon {
-  transition: 2s linear;
+  transition: 0.5s linear;
 }
 
 #mapVisu {
