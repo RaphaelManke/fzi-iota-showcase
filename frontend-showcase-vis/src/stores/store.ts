@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { mapObjects } from "@/stores/mapObjects";
+import { mapObjects } from "@/stores/mapObjects/index";
 import { RootState } from "./types";
 
 Vue.use(Vuex);
