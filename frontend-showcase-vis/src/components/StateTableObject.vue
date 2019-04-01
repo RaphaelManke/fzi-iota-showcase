@@ -23,7 +23,7 @@
 export default {
   props: {
     id: {
-      type: Object,
+      type: String,
       default: () => ""
     },
     type: {

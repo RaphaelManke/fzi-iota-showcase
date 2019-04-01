@@ -11,8 +11,8 @@
       @mouseleave="mouseOnEvents = false"
     >
       <ul>
-        <li v-for="event in events">
-          {{ event }}
+        <li v-for="transaction in transactionData">
+          {{ transaction }}
         </li>
       </ul>
     </div>
@@ -27,6 +27,11 @@ export default {
       events: [],
       mouseOnEvents: false
     };
+  },
+  computed: {
+    transactionData() {
+      return this.$store.getters["transactions/getTransactions"];
+    }
   },
   updated() {
     if (!this.mouseOnEvents) {
