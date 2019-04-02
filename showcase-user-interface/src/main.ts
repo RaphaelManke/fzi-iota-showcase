@@ -1,11 +1,11 @@
 import Vue from "vue";
 import App from "./App.vue";
-import store from "./store";
+import store from "./stores/store";
 import VueSocketIO from "vue-socket.io";
 import VueRouter from "vue-router";
 
-import Login from "./components/Login";
-import RouteSelection from "./components/RouteSelection";
+import Login from "./components/Login.vue";
+import RouteSelection from "./components/RouteSelection.vue";
 
 Vue.config.productionTip = false;
 
