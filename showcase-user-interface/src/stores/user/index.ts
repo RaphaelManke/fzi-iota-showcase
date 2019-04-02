@@ -4,7 +4,7 @@ import { RootState } from "../types";
 export const user: Module<User, RootState> = {
   namespaced: true,
   state: {
-    seed: ""
+    seed: "PREDEFINEDTESTSEED"
   },
   mutations: {
     updateSeed(state: any, seed: string) {

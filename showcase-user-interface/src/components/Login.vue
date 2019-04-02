@@ -1,45 +1,44 @@
 <template>
-  <div class="container-fluid">
+  <b-container fluid>
 
-    
-    <b-jumbotron>
+    <b-jumbotron class="text-center">
         <template slot="header">Welcome</template>
     </b-jumbotron>
-
-
+    
+    <b-row align-h="center">
+        <b-col col lg="8">
         <b-form-group
-      id="fieldset-1"
-      :description="seed"
-      label-for="input-1"
-      :invalid-feedback="invalidFeedback"
-      :valid-feedback="validFeedback"
-      :state="state"
-    >
-      <b-form-input id="input-1" v-model="seed" :state="state" trim></b-form-input>
-    </b-form-group>
-
+        description="Your seed"
+        :state="state"
+        >
+            <b-form-input v-model="seed" :state="state"></b-form-input>
+        </b-form-group>
+        </b-col>
+    </b-row>
+    <b-row align-h="center">
+        <b-form-group>
         <b-button>
 
             Scan QR-Code
 
         </b-button>
-
-        <b-button @click="login">
+        </b-form-group>
+    </b-row>
+    <b-row align-h="center">
+        <b-form-group>
+        <b-button @click="login" variant="primary">
 
             Login
 
         </b-button>
-  </div>
+        </b-form-group>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
 export default {
   name: "Login",
-  data() {
-    return {
-      currentSeed: "ABCDEFGHIJKLMNOP"
-    };
-  },
   methods: {
     login() {
       this.$router.push("route-selection");
