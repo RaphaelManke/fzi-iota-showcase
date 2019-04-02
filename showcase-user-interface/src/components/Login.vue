@@ -1,9 +1,10 @@
 <template>
   <div id="login_screen">
+
     
-    <div class="banner">
-        <h1>Welcome</h1>
-    </div>
+    <b-jumbotron>
+        <template slot="header">Welcome</template>
+    </b-jumbotron>
 
     <div class="button_container">
 
@@ -41,26 +42,6 @@ export default {
 </script>
 
 <style>
-button {
-  margin: auto;
-}
 
-.banner {
-  background-color: green;
-  height: 30vh;
-  line-height: 30vh;
-  text-align: center;
-}
-
-.button_container {
-  height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-#login_screen {
-}
 </style>
 

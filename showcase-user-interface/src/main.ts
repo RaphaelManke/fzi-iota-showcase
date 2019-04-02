@@ -3,11 +3,17 @@ import App from "./App.vue";
 import store from "./stores/store";
 import VueSocketIO from "vue-socket.io";
 import VueRouter from "vue-router";
+import BootstrapVue from "bootstrap-vue";
 
 import Login from "./components/Login.vue";
 import RouteSelection from "./components/RouteSelection.vue";
 
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+
 Vue.config.productionTip = false;
+
+Vue.use(BootstrapVue);
 
 Vue.use(
   new VueSocketIO({
