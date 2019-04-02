@@ -6,7 +6,11 @@ export const user: Module<User, RootState> = {
   state: {
     seed: ""
   },
-  mutations: {},
+  mutations: {
+    updateSeed(state: any, seed: string) {
+      state.seed = seed;
+    }
+  },
   getters: {
     getSeed: (state: any) => {
       return state.seed;

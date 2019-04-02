@@ -1,27 +1,34 @@
 <template>
-  <div id="login_screen">
+  <div class="container-fluid">
 
     
     <b-jumbotron>
         <template slot="header">Welcome</template>
     </b-jumbotron>
 
-    <div class="button_container">
 
-        Current Seed: {{currentSeed}}
+        <b-form-group
+      id="fieldset-1"
+      :description="seed"
+      label-for="input-1"
+      :invalid-feedback="invalidFeedback"
+      :valid-feedback="validFeedback"
+      :state="state"
+    >
+      <b-form-input id="input-1" v-model="seed" :state="state" trim></b-form-input>
+    </b-form-group>
 
-        <button>
+        <b-button>
 
-            <h1>Scan QR-Code</h1>
+            Scan QR-Code
 
-        </button>
+        </b-button>
 
-        <button @click="login">
+        <b-button @click="login">
 
-            <h1>Login</h1>
+            Login
 
-        </button>
-    </div>
+        </b-button>
   </div>
 </template>
 
@@ -37,11 +44,24 @@ export default {
     login() {
       this.$router.push("route-selection");
     }
+  },
+  computed: {
+    // check if seed is valid
+    state() {
+      return this.seed.length === 81 ? true : false;
+    },
+    seed: {
+      get() {
+        return this.$store.getters["user/getSeed"];
+      },
+      set(value) {
+        this.$store.commit("user/updateSeed", value);
+      }
+    }
   }
 };
 </script>
 
 <style>
-
 </style>
 

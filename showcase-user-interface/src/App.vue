@@ -17,5 +17,6 @@ export default {
 <style>
 html {
   overflow: hidden;
+  height: 100vh;
 }
 </style>
