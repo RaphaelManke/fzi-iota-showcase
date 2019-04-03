@@ -1,5 +1,5 @@
 <template>
-  <div id="mapVisu">
+  <div style="height: 70vh">
     <l-map :zoom="zoom" :center="center" :options="mapOptions">
       <l-tile-layer :url="url" :attribution="attribution" />
 
@@ -91,12 +91,5 @@ export default {
 
 .leaflet-marker-icon {
   transition: 0.5s linear;
-}
-
-#mapVisu {
-  height: 70vh;
-  -webkit-box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
-  -moz-box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
-  box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
 }
 </style>

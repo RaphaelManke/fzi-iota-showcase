@@ -1,0 +1,61 @@
+<template>
+  <l-marker
+    :lat-lng="paras.position"
+    :draggable="false"
+    :icon="icon"
+    zIndexOffset=999
+  >
+    <l-tooltip
+      :options="{ permanent: true, direction: 'bottom' }"
+      zIndexOffset=999
+      class="iota_style"
+      >{{ paras.name }}</l-tooltip
+    >
+  </l-marker>
+</template>
+
+<script>
+import { LMarker, LPopup, LIcon, LTooltip } from "vue2-leaflet";
+export default {
+  name: "UserObject",
+  components: {
+    LMarker,
+    LTooltip
+  },
+  props: {
+    paras: {
+      type: Object,
+      default: () => {}
+    },
+    id: {
+      type: Number,
+      default: -1
+    }
+  },
+  data() {
+    return {
+      icon: L.icon({
+        iconUrl: "assets/images/male.png",
+        iconSize: [40, 40],
+        iconAnchor: [20, 30],
+        popupAnchor: [0, -20]
+      })
+    };
+  },
+  computed: {
+    userData() {
+      return this.$store.getters["mapObjects/getUserByName"](this.paras.name);
+    }
+  }
+};
+</script>
+
+<style scoped>
+img {
+  height: 3vh;
+}
+
+.iota_style {
+  color: #04a997;
+}
+</style>

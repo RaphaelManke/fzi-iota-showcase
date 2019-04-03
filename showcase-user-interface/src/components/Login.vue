@@ -6,7 +6,7 @@
     </b-jumbotron>
     
     <b-row align-h="center">
-        <b-col col lg="8">
+        <b-col cols="8">
         <b-form-group
         description="Your seed"
         :state="state"
