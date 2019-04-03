@@ -1,5 +1,6 @@
 import { Trytes, Hash } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
+import { Login } from './events';
 
 export interface EnvironmentInfo {
   stops: Stop[];
@@ -28,12 +29,8 @@ export interface Position {
 
 export type Type = 'car' | 'bike' | 'tram';
 
-export interface User {
-  id: Trytes;
-  name: string;
-  position: Position;
-  balance: number;
-  stop?: Hash;
+export interface User extends Login {
+  loggedIn: boolean;
 }
 
 // login(id) -> wallet, position

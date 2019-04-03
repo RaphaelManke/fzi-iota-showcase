@@ -1,13 +1,29 @@
 import { log } from 'fzi-iota-showcase-client';
-import { SafeEmitter } from './events';
+import { SafeEmitter, Event } from './events';
 
 export function enableLogging(events: SafeEmitter) {
-  const prettify = (type: string[], data: any) => {
-    const skip = 'id';
+  const prettify = (type: Type, data: any) => {
+    let format: { skip: string; entity: string };
+    switch (type[1]) {
+      case 'Login':
+      case 'Logout':
+        format = { skip: 'id', entity: 'User' };
+        break;
+      case 'TransactionIssued':
+        format = { skip: 'from', entity: 'User' };
+        break;
+      case 'PosUpdated':
+        format = { skip: 'id', entity: 'Vehicle' };
+        break;
+      default:
+        format = { skip: 'userId', entity: 'User' };
+        break;
+    }
+
     const r: any = {};
     if (data) {
       Object.keys(data)
-        .filter((p) => p !== skip)
+        .filter((p) => p !== format.skip)
         .forEach((p) => {
           let v = data[p];
           if (typeof v === 'number') {
@@ -15,13 +31,16 @@ export function enableLogging(events: SafeEmitter) {
           }
           r[p] = v;
         });
-      const name = type[1].startsWith('markerAdded') ? 'Mrk.' : 'Veh.';
-      const typePadding = !data.id || data.id.length < 10 ? ' '.repeat(10 - (data.id ? data.id.length : 0)) : '';
-      const prefix = `${name} ${data.id}${typePadding} ${type[1]}`;
+      const typePadding =
+        !data.id || data.id.length < 10
+          ? ' '.repeat(10 - (data.id ? data.id.length : 0))
+          : '';
+      const prefix = `${format.entity} ${data.id}${typePadding} ${type[1]}`;
 
       if (Object.keys(r).length > 0) {
-        const padding = prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
-        log.debug(`${prefix}:${padding}  %o`, r);
+        // const padding =
+        //   prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
+        log.debug(`${prefix}:\n%o`, r);
       } else {
         log.debug(prefix);
       }
@@ -32,3 +51,5 @@ export function enableLogging(events: SafeEmitter) {
 
   events.onAny((type: any, data: any) => prettify(type, data));
 }
+
+type Type = ['public', Event[0]];

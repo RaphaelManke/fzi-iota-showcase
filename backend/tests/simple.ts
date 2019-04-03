@@ -2,6 +2,7 @@ import { enableLogging } from '../src/logger';
 import { Server } from '../src/server';
 import { Controller } from '../src/controller';
 import { EnvironmentInfo, User, Stop } from '../src/envInfo';
+import { Users } from '../src/users';
 import { SafeEmitter } from '../src/events';
 import { log } from 'fzi-iota-showcase-client';
 import {
@@ -122,10 +123,10 @@ import { Hash } from '@iota/core/typings/types';
     ],
   };
 
-  const users = new Map<Hash, User>();
   const stops = new Map<Hash, Stop>();
   info.stops.forEach((s) => stops.set(s.id, s));
-  users.set(
+  const seeds = new Map<Hash, User>();
+  seeds.set(
     'EWRTZJHGSDGTRHNGVDISUGHIFVDJFERHUFBGRZEUFSDHFEGBRVHISDJIFUBUHVFDSHFUERIBUJHDRGBCG',
     {
       balance: 1000000000,
@@ -133,8 +134,10 @@ import { Hash } from '@iota/core/typings/types';
       name: 'Peter',
       stop: info.stops[0].id,
       position: info.stops[0].position,
+      loggedIn: false,
     },
   );
+  const users = new Users(seeds);
   const events = new SafeEmitter();
   enableLogging(events);
   const c = new Controller(events, info, users).setup();

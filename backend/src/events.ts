@@ -1,4 +1,4 @@
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { Position, User } from './envInfo';
 import { EventEmitter2, Listener, EventAndListener } from 'eventemitter2';
 
@@ -44,7 +44,7 @@ export class SafeEmitter {
 //   console.log(data.id);
 // });
 
-type Event =
+export type Event =
   | ['CheckIn', CheckIn]
   | ['Login', Login]
   | ['ReservationIssued', ReservationIssued]
@@ -61,7 +61,13 @@ export interface CheckIn {
   vehicleId: Trytes;
 }
 
-export interface Login extends User {}
+export interface Login {
+  id: Trytes;
+  name: string;
+  position: Position;
+  balance: number;
+  stop?: Hash;
+}
 
 export interface ReservationIssued {
   userId: Trytes;

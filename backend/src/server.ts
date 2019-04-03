@@ -3,7 +3,7 @@ import * as socketio from 'socket.io';
 import * as http from 'http';
 import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Login } from './events';
-import { EnvironmentInfo } from './envInfo';
+import { EnvironmentInfo, User } from './envInfo';
 import { Controller } from './controller';
 
 export class Server {
@@ -57,10 +57,16 @@ export class Server {
     });
 
     this.app.post('/login', (req, res) => {
-      if (this.controller.users.has(req.body)) {
-        const l: Login = this.controller.users.get(req.body)!;
-        this.controller.events.emit('Login', l);
-        res.json(l);
+      const user = this.controller.users.getBySeed(req.body);
+      if (user) {
+        if (!user.loggedIn) {
+          user.loggedIn = true;
+          this.controller.events.emit('Login', user);
+          res.json(user);
+        } else {
+          res.status(406);
+          res.json(user);
+        }
       } else {
         res.status(404);
         res.send();
