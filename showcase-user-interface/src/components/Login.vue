@@ -49,10 +49,23 @@ export default {
   },
   methods: {
     login() {
-      this.$router.push("route-selection");
+      this.$http
+        .post(this.$hostname + "/login", this.seed)
+        .then(function(response) {
+          if (response.status === 200) {
+            this.$store.commit("user/updateUserInfo", response.body);
+            this.$router.push("route-selection");
+          }
+        })
+        .catch(function(response) {
+          if (response.status === 406) {
+            alert("You are already logged in!");
+          }
+        });
     }
   }
 };
 </script>
+
 
 <style></style>
