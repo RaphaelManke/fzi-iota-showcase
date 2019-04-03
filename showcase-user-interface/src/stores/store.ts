@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import { mapObjects } from "@/stores/mapObjects/index";
 import { transactions } from "@/stores/transactions/index";
+import { routes } from "@/stores/routes/index";
 import { user } from "@/stores/user/index";
 import { RootState } from "./types";
 
@@ -14,7 +15,8 @@ const store: StoreOptions<RootState> = {
   modules: {
     mapObjects,
     transactions,
-    user
+    user,
+    routes
   }
 };
 export default new Vuex.Store<RootState>(store);
