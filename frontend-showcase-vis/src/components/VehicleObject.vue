@@ -2,7 +2,7 @@
   <l-marker
     :lat-lng="vehicleData.position"
     :draggable="false"
-    :icon="icon"
+    :icon="vehicleIcon"
     z-index-offset="999"
   >
     <l-tooltip
@@ -28,16 +28,6 @@ export default {
       type: String,
       default: ""
     }
-  },
-  data() {
-    return {
-      icon: L.icon({
-        iconUrl: "assets/images/car.png",
-        iconSize: [40, 40],
-        iconAnchor: [20, 30],
-        popupAnchor: [0, -20]
-      })
-    };
   },
   computed: {
     vehicleData() {
