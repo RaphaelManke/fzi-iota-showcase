@@ -74,6 +74,23 @@ export class Server {
       }
     });
 
+    this.app.post('/logout', (req, res) => {
+      const user = this.controller.users.getBySeed(req.body);
+      if (user) {
+        if (user.loggedIn) {
+          user.loggedIn = false;
+          this.controller.events.emit('Logout', { id: user.id });
+          res.json(user);
+        } else {
+          res.status(406);
+          res.json(user);
+        }
+      } else {
+        res.status(404);
+        res.send();
+      }
+    });
+
     this.app.get('/routes', (req, res) => {
       if (req.query.start && req.query.destination) {
         const fake: RouteInfo = {
