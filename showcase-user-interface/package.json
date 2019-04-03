@@ -6,7 +6,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "lint-1": "eslint --ext .js,.vue src ",
+    "lint-autofix": "eslint --ext .js,.vue src  --fix"
   },
   "dependencies": {
     "@types/leaflet": "^1.4.3",

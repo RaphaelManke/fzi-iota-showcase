@@ -3,11 +3,11 @@
     :lat-lng="vehicleData.position"
     :draggable="false"
     :icon="icon"
-    zIndexOffset='999'
+    z-index-offset="999"
   >
     <l-tooltip
       :options="{ permanent: true, direction: 'bottom' }"
-      zIndexOffset='999'
+      z-index-offset="999"
       class="iota_style"
     >
       {{ vehicleData.name }}

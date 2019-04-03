@@ -11,7 +11,6 @@ module.exports = {
     node: true
   },
 
-  extends: ["prettier", "prettier/standard", "plugin:vue/recommended"],
   plugins: ["vue", "prettier"],
 
   rules: {

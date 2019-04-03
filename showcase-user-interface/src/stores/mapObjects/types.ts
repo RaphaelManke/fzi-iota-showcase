@@ -9,6 +9,4 @@ export interface Env {
   vehicles: any[];
 }
 
-export interface Connection {
-    
-}
+export interface Connection {}

@@ -1,20 +1,16 @@
 <template>
   <div id="state_object">
-    <img :src="image_url">
+    <img :src="image_url" />
 
     <!-- representation for vehicles -->
-    <div class="info_container"
-    v-if="type === 'tram' || type === 'car'"
-    >
-      {{vehicleData.name}}: 
-      Speed {{vehicleData.info.speed}} 
-      Position {{vehicleData.position}}
+    <div v-if="type === 'tram' || type === 'car'" class="info_container">
+      {{ vehicleData.name }}: Speed {{ vehicleData.info.speed }} Position
+      {{ vehicleData.position }}
     </div>
 
     <!-- representation for stops -->
-    <div class="info_container"
-    v-if="type === 'stop'">
-      {{stopData.name}}
+    <div v-if="type === 'stop'" class="info_container">
+      {{ stopData.name }}
     </div>
   </div>
 </template>
