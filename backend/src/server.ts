@@ -5,6 +5,7 @@ import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Login } from './events';
 import { EnvironmentInfo, User } from './envInfo';
 import { Controller } from './controller';
+import { RouteInfo } from './routeInfo';
 
 export class Server {
   private io: SocketIO.Server;
@@ -69,6 +70,33 @@ export class Server {
         }
       } else {
         res.status(404);
+        res.send();
+      }
+    });
+
+    this.app.get('/routes', (req, res) => {
+      if (req.query.start && req.query.destination) {
+        const fake: RouteInfo = {
+          start: 'A',
+          destination: 'B',
+          sections: [
+            {
+              from: 'A',
+              to: 'B',
+              vehicle: {
+                id: 'ABC',
+                type: 'tram',
+              },
+              price: 900000,
+              departure: new Date(),
+              arrival: new Date(Date.now() + 1000 * 60 * 5),
+              distance: 5,
+            },
+          ],
+        };
+        res.json([fake]);
+      } else {
+        res.status(400);
         res.send();
       }
     });
