@@ -60,6 +60,8 @@ export default {
         .catch(function(response) {
           if (response.status === 406) {
             alert("You are already logged in!");
+          } else {
+            window.console.log(response);
           }
         });
     }
