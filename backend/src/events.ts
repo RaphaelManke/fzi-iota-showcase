@@ -107,5 +107,5 @@ export interface TransactionIssued {
 }
 
 export interface Logout {
-  userId: Trytes;
+  id: Trytes;
 }
