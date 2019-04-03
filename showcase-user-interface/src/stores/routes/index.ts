@@ -9,14 +9,14 @@ export const routes: Module<RouteStore, RootState> = {
       { id: "B", route: ["A", "Peter", "C"] },
       { id: "C", route: ["A", "B", "C"] }
     ],
-    routeSelectedIndex: 0
+    routeSelectedId: ""
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
     },
-    updateRouteSelected(state: any, selected: number) {
-      state.routeSelectedIndex = selected;
+    updateRouteSelected(state: any, selected: string) {
+      state.routeSelectedId = selected;
     }
   },
   getters: {
@@ -24,7 +24,7 @@ export const routes: Module<RouteStore, RootState> = {
       return state.routesAvailable;
     },
     getRouteSelected: (state: any) => {
-      return state.routeSelectedIndex;
+      return state.routeSelectedId;
     }
   }
 };

@@ -24,13 +24,13 @@
       </b-col>
       <b-col>
           <b-card header="Route Options" style="height: 100%;">
-              <b-tabs pills card vertical nav-wrapper-class="w-50" v-model="tabIndex">
-      <b-tab v-for="route in routes" :title="route.id"><b-card-text>
-          <b-list-group>
-              <b-list-group-item v-for="s in route.route">{{s}}</b-list-group-item>
-          </b-list-group>
-          </b-card-text></b-tab>
-    </b-tabs>
+              <b-list-group v-model="tabIndex">
+      <b-list-group-item v-for="route in routes" :active="route.id===selectedRoute"
+      @click="selectedRoute=route.id" button="true" class="d-flex justify-content-between align-items-center">
+          {{route.route}}
+          <b-badge variant="primary" pill>14</b-badge>
+      </b-list-group-item>
+    </b-list-group>
         </b-card>
       </b-col>
     </b-row>
@@ -68,6 +68,21 @@ export default {
       set(value) {
         this.$store.commit("user/updateDestination", value);
       }
+    },
+    selectedRoute: {
+      get() {
+        return this.$store.getters["routes/getRouteSelected"];
+      },
+      set(value) {
+        this.$store.commit("routes/updateRouteSelected", value);
+      }
+    },
+    routeVisu(route) {
+      let result = "";
+      route.forEach(element => {
+        result += element + " - ";
+      });
+      return result;
     }
   }
 };
