@@ -6,9 +6,12 @@ import VueRouter from "vue-router";
 import BootstrapVue from "bootstrap-vue";
 import VueResource from "vue-resource";
 
+// import router components
 import Login from "./components/Login.vue";
 import RouteSelection from "./components/RouteSelection.vue";
+import RouteObserver from "./components/RouteObserver.vue";
 
+// import bootstrap globally
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
@@ -40,7 +43,8 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   routes: [
     { path: "/", component: Login },
-    { path: "/route-selection", component: RouteSelection }
+    { path: "/route-selection", component: RouteSelection },
+    { path: "/route-observer", component: RouteObserver }
   ]
 });
 
