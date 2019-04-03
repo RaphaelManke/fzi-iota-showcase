@@ -6,10 +6,16 @@
                 <b-form-group>
                     <b-row>
                     <b-col>
-                    <b-form-select v-model="selectedDestination" :options="stops"></b-form-select>
+                    Start
+                    <b-form-select v-model="selectedDestination" :options="stops"
+                    value-field="id" text-field="name"
+                    ></b-form-select>
                     </b-col>
                     <b-col>
-                    <b-form-select v-model="selectedDestination" :options="stops"></b-form-select>
+                    Stop
+                    <b-form-select v-model="selectedDestination" :options="stops"
+                    value-field="id" text-field="name"
+                    ></b-form-select>
                     </b-col>
                     </b-row>
                 </b-form-group>
@@ -54,12 +60,7 @@ export default {
       return this.$store.getters["routes/getRoutesAvailable"];
     },
     stops() {
-      return this.$store.getters["mapObjects/getStops"].map(item => {
-        return {
-          text: item.name,
-          value: item.id
-        };
-      });
+      return this.$store.getters["mapObjects/getStops"];
     },
     selectedDestination: {
       get() {
