@@ -1,6 +1,7 @@
 import { enableLogging } from '../src/logger';
 import { Server } from '../src/server';
-import { EnvironmentInfo } from '../src/envInfo';
+import { Controller } from '../src/controller';
+import { EnvironmentInfo, User, Stop } from '../src/envInfo';
 import { SafeEmitter } from '../src/events';
 import { log } from 'fzi-iota-showcase-client';
 import {
@@ -9,6 +10,7 @@ import {
   Vehicle,
   Mover,
 } from 'fzi-iota-showcase-vehicle-mock';
+import { Hash } from '@iota/core/typings/types';
 
 (async () => {
   const info: EnvironmentInfo = {
@@ -28,17 +30,7 @@ import {
         },
       },
     ],
-    users: [
-      {
-        balance: 1000,
-        id: 'Z',
-        name: 'Peter',
-        position: {
-          lat: 49.009525,
-          lng: 8.405141,
-        },
-      },
-    ],
+    users: [],
     stops: [
       {
         id: 'A',
@@ -129,9 +121,24 @@ import {
       },
     ],
   };
+
+  const users = new Map<Hash, User>();
+  const stops = new Map<Hash, Stop>();
+  info.stops.forEach((s) => stops.set(s.id, s));
+  users.set(
+    'EWRTZJHGSDGTRHNGVDISUGHIFVDJFERHUFBGRZEUFSDHFEGBRVHISDJIFUBUHVFDSHFUERIBUJHDRGBCG',
+    {
+      balance: 1000000000,
+      id: 'Z',
+      name: 'Peter',
+      stop: info.stops[0].id,
+      position: info.stops[0].position,
+    },
+  );
   const events = new SafeEmitter();
   enableLogging(events);
-  new Server(events, info).listen();
+  const c = new Controller(events, info, users).setup();
+  new Server(c).listen();
 
   events.onIntern('start', async () => {
     const e: Emitter = {

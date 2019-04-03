@@ -1,12 +1,16 @@
 import { Trytes } from '@iota/core/typings/types';
-import { Position } from './envInfo';
+import { Position, User } from './envInfo';
 import { EventEmitter2, Listener, EventAndListener } from 'eventemitter2';
 
 export class SafeEmitter {
   public static PUBLIC = 'public';
   public static INTERN = 'intern';
 
-  constructor(private readonly events: EventEmitter2 = new EventEmitter2({wildcard: true})) {}
+  constructor(
+    private readonly events: EventEmitter2 = new EventEmitter2({
+      wildcard: true,
+    }),
+  ) {}
 
   public emit(...event: Event) {
     this.events.emit([SafeEmitter.PUBLIC, event[0]], event[1]);
@@ -16,7 +20,10 @@ export class SafeEmitter {
     this.events.emit([SafeEmitter.INTERN, type], ...data);
   }
 
-  public on<T extends Event, D extends T[1]>(type: T[0], listener: (...data: D[]) => void) {
+  public on<T extends Event, D extends T[1]>(
+    type: T[0],
+    listener: (...data: D[]) => void,
+  ) {
     this.events.on([SafeEmitter.PUBLIC, type], listener);
   }
 
@@ -37,22 +44,24 @@ export class SafeEmitter {
 //   console.log(data.id);
 // });
 
-type Event = ['CheckIn', CheckIn] | ['Login', Login] | ['ReservationIssued', ReservationIssued]
-  | ['ReservationExpired', ReservationExpired] | ['BoardingStarted', BoardingStarted]
-  | ['TripStarted', TripStarted] | ['TripFinished', TripFinished] | ['PosUpdated', PosUpdated]
-  | ['Logout', Logout] | ['TransactionIssued', TransactionIssued];
+type Event =
+  | ['CheckIn', CheckIn]
+  | ['Login', Login]
+  | ['ReservationIssued', ReservationIssued]
+  | ['ReservationExpired', ReservationExpired]
+  | ['BoardingStarted', BoardingStarted]
+  | ['TripStarted', TripStarted]
+  | ['TripFinished', TripFinished]
+  | ['PosUpdated', PosUpdated]
+  | ['Logout', Logout]
+  | ['TransactionIssued', TransactionIssued];
 
 export interface CheckIn {
   stopId: Trytes;
   vehicleId: Trytes;
 }
 
-export interface Login {
-  id: Trytes;
-  name: string;
-  position: Position;
-  balance: number;
-}
+export interface Login extends User {}
 
 export interface ReservationIssued {
   userId: Trytes;

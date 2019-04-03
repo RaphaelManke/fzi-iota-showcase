@@ -1,4 +1,4 @@
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
 
 export interface EnvironmentInfo {
@@ -33,6 +33,7 @@ export interface User {
   name: string;
   position: Position;
   balance: number;
+  stop?: Hash;
 }
 
 // login(id) -> wallet, position
