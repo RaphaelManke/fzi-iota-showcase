@@ -29,7 +29,9 @@
         </b-card>
       </b-col>
       <b-col>
-          <b-card header="Route Options" style="height: 100%;">
+          <b-card header="Route Options" style="height: 100%; overflow-y: scroll;"
+          footer-html="<b-button variant='primary' @click='submitRoute'>GO!</b-button>"
+          >
               <b-list-group v-model="tabIndex">
       <b-list-group-item v-for="route in routes" :active="route.id===selectedRoute"
       @click="selectedRoute=route.id" button="true" class="d-flex justify-content-between align-items-center">
@@ -84,6 +86,11 @@ export default {
         result += element + " - ";
       });
       return result;
+    }
+  },
+  methods: {
+    submitRoute() {
+      this.$router.push("route-observer");
     }
   }
 };
