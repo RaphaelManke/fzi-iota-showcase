@@ -2,17 +2,21 @@
   "files.associations": {
     "**/azure-pipelines/**/*.yml": "azure-pipelines"
   },
-
-  "files.eol": "\n",
+  "files.autoSave": "off",
+  "vetur.validation.template": false,
   "eslint.enable": true,
-  "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "javascriptreact", "vue", "vue-html"],
+  "eslint.validate": [
+    { "language": "vue", "autoFix": true },
+    { "language": "html", "autoFix": true },
+    { "language": "javascript", "autoFix": true },
+    { "language": "typescript", "autoFix": true }
+  ],
+  "eslint.autoFixOnSave": true,
   "eslint.run": "onType",
-  "vetur.format.enable": true,
 
+  "editor.formatOnSave": false,
+  "vetur.format.defaultFormatter.html": "prettier",
   "vetur.format.defaultFormatter.js": "prettier",
-  "vetur.format.defaultFormatter.css": "prettier",
-  // relevant for 'prettier-eslint' instead of 'prettier'
   "prettier.eslintIntegration": false,
   "vetur.format.defaultFormatter.less": "prettier",
   "vetur.format.defaultFormatter.postcss": "prettier",
@@ -20,9 +24,8 @@
   // at the time of this writing there is no stylus support by prettier
   "vetur.format.defaultFormatter.stylus": "stylus-supremacy",
   "vetur.format.defaultFormatter.ts": "prettier",
-  "vetur.format.defaultFormatter.html": "none",
 
-  "vetur.validation.style": true,
-  // Validate vue-html in <template> using eslint-plugin-vue
-  "vetur.validation.template": true
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  }
 }
