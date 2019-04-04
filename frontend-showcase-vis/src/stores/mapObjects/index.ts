@@ -18,6 +18,9 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     SOCKET_PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
+    },
+    SOCKET_Login(state: any, user: any) {
+      state.env.users = [...state.env.users, user];
     }
   },
   getters: {
@@ -36,8 +39,11 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     getVehicleById: (state: any) => (id: string) => {
       return state.env.vehicles.find((el: any) => el.id === id);
     },
-    getUserByName: (state: any) => (name: string) => {
-      return state.env.users.find((el: any) => el.paras.name === name);
+    getUsers: (state: any) => {
+      return state.env.users;
+    },
+    getUserById: (state: any) => (id: string) => {
+      return state.env.users.find((el: any) => el.id === id);
     }
   }
 };

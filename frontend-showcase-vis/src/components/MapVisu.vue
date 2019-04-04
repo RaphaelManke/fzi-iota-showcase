@@ -17,7 +17,11 @@
         :id="vehicle.id"
         :key="vehicle.id"
       />
-      <user-object :id="1" :paras="testGuy" />
+      <user-object
+        v-for="user in users"
+        :id="user.id"
+        :key="user.id"
+      />
     </l-map>
   </div>
 </template>
@@ -61,6 +65,9 @@ export default {
     },
     vehicles() {
       return this.$store.getters["mapObjects/getVehicles"];
+    },
+    users() {
+      return this.$store.getters["mapObjects/getUsers"];
     }
   },
   methods: {

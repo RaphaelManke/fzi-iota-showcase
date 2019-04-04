@@ -1,6 +1,6 @@
 <template>
   <l-marker
-    :lat-lng="paras.position"
+    :lat-lng="userData.position"
     :draggable="false"
     :icon="icon"
     z-index-offset="999"
@@ -9,7 +9,7 @@
       :options="{ permanent: true, direction: 'bottom' }"
       z-index-offset="999"
       class="iota_style"
-      >{{ paras.name }}</l-tooltip
+      >{{ userData.name }}</l-tooltip
     >
   </l-marker>
 </template>
@@ -23,13 +23,9 @@ export default {
     LTooltip
   },
   props: {
-    paras: {
-      type: Object,
-      default: () => {}
-    },
     id: {
-      type: Number,
-      default: -1
+      type: String,
+      default: ""
     }
   },
   data() {
@@ -44,7 +40,7 @@ export default {
   },
   computed: {
     userData() {
-      return this.$store.getters["mapObjects/getUserByName"](this.paras.name);
+      return this.$store.getters["mapObjects/getUserById"](this.id);
     }
   }
 };
