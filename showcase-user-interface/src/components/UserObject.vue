@@ -26,10 +26,6 @@ export default {
     paras: {
       type: Object,
       default: () => {}
-    },
-    id: {
-      type: Number,
-      default: -1
     }
   },
   data() {
@@ -41,11 +37,6 @@ export default {
         popupAnchor: [0, -20]
       })
     };
-  },
-  computed: {
-    userData() {
-      return this.$store.getters["mapObjects/getUserByName"](this.paras.name);
-    }
   }
 };
 </script>

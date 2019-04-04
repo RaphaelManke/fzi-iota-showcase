@@ -1,6 +1,6 @@
 <template>
   <div style="height: 40vh">
-    <l-map :zoom="zoom" :center="center" :options="mapOptions">
+    <l-map :zoom="zoom" :center="userInfo.position" :options="mapOptions">
       <l-tile-layer :url="url" :attribution="attribution" />
 
       <stop-object v-for="stop in stops" :id="stop.id" :key="stop.id" />
@@ -17,7 +17,7 @@
         :id="vehicle.id"
         :key="vehicle.id"
       />
-      <user-object :id="1" :paras="testGuy" />
+      <user-object :paras="userInfo" />
     </l-map>
   </div>
 </template>
@@ -42,7 +42,6 @@ export default {
   data() {
     return {
       zoom: 15.5,
-      center: L.latLng(49.0075, 8.402),
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png", // for BW Map: http://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -61,6 +60,9 @@ export default {
     },
     vehicles() {
       return this.$store.getters["mapObjects/getVehicles"];
+    },
+    userInfo() {
+      return this.$store.getters["user/getUserInfo"];
     }
   },
   methods: {
