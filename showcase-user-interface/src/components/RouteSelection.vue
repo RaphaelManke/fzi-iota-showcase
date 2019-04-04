@@ -28,11 +28,13 @@
         <map-visu />
         </b-card>
       </b-col>
-      <b-col>
-          <b-card header="Route Options" style="height: 100%">
+      <b-col v-if="selectedDestination!=''">
+          <b-card header="Route Options">
+            <div style="height: 40vh">
+              <div style="height: 80%; overflow-y: scroll">
             <b-row>
               <b-col>
-              <b-list-group style="height: 32vh; overflow-y: scroll;">
+              <b-list-group>
       <b-list-group-item v-for="route in routes" :active="route.id===selectedRoute"
       @click="selectedRoute=route.id" button=true class="d-flex justify-content-between align-items-center">
           {{route.route}}
@@ -41,11 +43,13 @@
     </b-list-group>
     </b-col>
     </b-row>
+    </div>
     <b-row class="text-center mt-4">
       <b-col>
     <b-button variant='primary' @click='submitRoute' style="width: 100%">GO!</b-button>
        </b-col>
         </b-row>
+        </div>
         </b-card>
       </b-col>
     </b-row>
