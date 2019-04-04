@@ -2,14 +2,9 @@ import Vue from "vue";
 import App from "./App.vue";
 import store from "./stores/store";
 import VueSocketIO from "vue-socket.io";
-import VueRouter from "vue-router";
 import BootstrapVue from "bootstrap-vue";
 import VueResource from "vue-resource";
-
-// import router components
-import Login from "./components/Login.vue";
-import RouteSelection from "./components/RouteSelection.vue";
-import RouteObserver from "./components/RouteObserver.vue";
+import router from "./router";
 
 // import bootstrap globally
 import "bootstrap/dist/css/bootstrap.css";
@@ -37,16 +32,6 @@ Vue.use(
     }
   })
 );
-
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  routes: [
-    { path: "/", component: Login },
-    { path: "/route-selection", component: RouteSelection },
-    { path: "/route-observer", component: RouteObserver }
-  ]
-});
 
 new Vue({
   router,

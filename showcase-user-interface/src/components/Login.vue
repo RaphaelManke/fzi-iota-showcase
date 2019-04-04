@@ -59,9 +59,10 @@ export default {
         })
         .catch(function(response) {
           if (response.status === 406) {
-            alert("You are already logged in!");
+            this.$store.commit("user/updateUserInfo", response.body);
+            this.$router.push("route-selection");
           } else {
-            window.console.log(response);
+            alert(response);
           }
         });
     }
