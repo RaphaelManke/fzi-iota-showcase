@@ -41,7 +41,7 @@ export default {
   },
   data() {
     return {
-      zoom: 15.5,
+      zoom: 16,
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png", // for BW Map: http://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',

@@ -23,12 +23,12 @@
        </b-col>
        </b-row>
     <b-row class="mt-4">
-      <b-col>
+      <b-col cols=8>
         <b-card header="Map">
         <map-visu />
         </b-card>
       </b-col>
-      <b-col v-if="selectedDestination!=''">
+      <b-col>
           <b-card header="Route Options">
             <div style="height: 40vh">
               <div style="height: 80%; overflow-y: scroll">
