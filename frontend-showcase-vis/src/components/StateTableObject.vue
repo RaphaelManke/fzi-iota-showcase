@@ -4,8 +4,7 @@
 
     <!-- representation for vehicles -->
     <div v-if="type === 'tram' || type === 'car'" class="info_container">
-      {{ vehicleData.name }}: Speed {{ vehicleData.info.speed }} Position
-      {{ vehicleData.position }}
+      {{ vehicleData.name }}: Speed {{ vehicleData.info.speed }}
     </div>
 
     <!-- representation for stops -->

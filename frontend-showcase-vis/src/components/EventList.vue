@@ -59,6 +59,6 @@ export default {
 }
 
 ul {
-  margin-left: -8%;
+  margin-left: -5%;
 }
 </style>

@@ -6,7 +6,7 @@ export const user: Module<User, RootState> = {
   state: {
     seed:
       "EWRTZJHGSDGTRHNGVDISUGHIFVDJFERHUFBGRZEUFSDHFEGBRVHISDJIFUBUHVFDSHFUERIBUJHDRGBCG",
-    destination: "Destination...",
+    destination: "",
     info: { loggedIn: false, balance: 0, name: "-" }
   },
   mutations: {
@@ -18,6 +18,11 @@ export const user: Module<User, RootState> = {
     },
     updateUserInfo(state: any, info: any) {
       state.info = info;
+    },
+    userLogout(state: any) {
+      state.seed = "";
+      state.destination = "";
+      state.info = { loggedIn: false, balance: 0, name: "-" };
     }
   },
   getters: {

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <b-container fluid>
     <b-navbar :variant="navbarVariant" type="light">
     <b-navbar-brand href="#">
       <img src="assets/images/iota.png" class="d-inline-block align-top">
@@ -7,11 +7,11 @@
     </b-navbar-brand>
     <b-navbar-nav class="ml-auto">
       <b-nav-text class="mr-sm-2">User: {{userInfo.name}} Balance: {{userInfo.balance}}</b-nav-text>
-      <b-button variant="secondary">Logout</b-button>
+      <b-button variant="secondary" @click="logout">Logout</b-button>
     </b-navbar-nav>
   </b-navbar>
     <router-view />
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -32,6 +32,20 @@ export default {
     userInfo() {
       return this.$store.getters["user/getUserInfo"];
     }
+  },
+  methods: {
+    logout() {
+      this.$http
+        .post(this.$hostname + "/logout", this.seed)
+        .then(function(response) {
+          this.$store.commit("user/userLogout");
+          this.$router.push("/");
+        })
+        .catch(function(response) {
+          this.$store.commit("user/userLogout");
+          this.$router.push("/");
+        });
+    }
   }
 };
 </script>
@@ -39,7 +53,8 @@ export default {
 <style>
 html {
   overflow: hidden;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
 }
 .navbar-brand img {
   height: 30px;
