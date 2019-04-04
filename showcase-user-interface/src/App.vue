@@ -6,7 +6,7 @@
       FZI IOTA SHOWCASE
     </b-navbar-brand>
     <b-navbar-nav class="ml-auto">
-      <b-nav-text class="mr-sm-2">User: {{userInfo.name}} Balance: {{userInfo.balance}}</b-nav-text>
+      <b-nav-text class="mr-sm-2"><b>User:</b> {{userInfo.name}} <b>Balance:</b> {{userInfo.balance}}</b-nav-text>
       <b-button variant="secondary" @click="logout">Logout</b-button>
     </b-navbar-nav>
   </b-navbar>

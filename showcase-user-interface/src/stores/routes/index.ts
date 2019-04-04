@@ -6,7 +6,10 @@ export const routes: Module<RouteStore, RootState> = {
   state: {
     routesAvailable: [
       { id: "A", route: ["A", "B", "C"] },
-      { id: "B", route: ["A", "Peter", "C"] },
+      {
+        id: "B",
+        route: ["A", "Peter", "C", "Markt", "Brunnenstraße"]
+      },
       { id: "C", route: ["A", "B", "C"] },
       { id: "D", route: ["A", "B", "C"] },
       { id: "E", route: ["A", "Peter", "C"] },
@@ -18,7 +21,7 @@ export const routes: Module<RouteStore, RootState> = {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
     },
-    updateRouteSelected(state: any, selected: string) {
+    updateRouteSelectedId(state: any, selected: string) {
       state.routeSelectedId = selected;
     }
   },
@@ -26,8 +29,11 @@ export const routes: Module<RouteStore, RootState> = {
     getRoutesAvailable: (state: any) => {
       return state.routesAvailable;
     },
-    getRouteSelected: (state: any) => {
+    getRouteSelectedId: (state: any) => {
       return state.routeSelectedId;
+    },
+    getRouteById: (state: any) => (id: string) => {
+      return state.routesAvailable.find((el: any) => el.id === id);
     }
   }
 };

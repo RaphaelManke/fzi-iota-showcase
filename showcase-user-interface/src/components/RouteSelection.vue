@@ -25,7 +25,7 @@
     <b-row class="mt-4">
       <b-col cols=8>
         <b-card header="Map">
-        <map-visu />
+        <map-visu style="height: 40vh"/>
         </b-card>
       </b-col>
       <b-col>
@@ -35,8 +35,8 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===selectedRoute"
-      @click="selectedRoute=route.id" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
+      @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
           {{route.route}}
           <b-badge variant="primary" pill>14</b-badge>
       </b-list-group-item>
@@ -46,7 +46,7 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button variant='primary' @click='submitRoute' style="width: 100%">GO!</b-button>
+    <b-button block variant='primary' @click='submitRoute'>GO!</b-button>
        </b-col>
         </b-row>
         </div>
@@ -83,12 +83,12 @@ export default {
         this.$store.commit("user/updateDestination", value);
       }
     },
-    selectedRoute: {
+    selectedRouteId: {
       get() {
-        return this.$store.getters["routes/getRouteSelected"];
+        return this.$store.getters["routes/getRouteSelectedId"];
       },
       set(value) {
-        this.$store.commit("routes/updateRouteSelected", value);
+        this.$store.commit("routes/updateRouteSelectedId", value);
       }
     },
     routeVisu(route) {

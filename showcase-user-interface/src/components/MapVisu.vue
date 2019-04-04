@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 40vh">
+  <div>
     <l-map :zoom="zoom" :center="userInfo.position" :options="mapOptions">
       <l-tile-layer :url="url" :attribution="attribution" />
 

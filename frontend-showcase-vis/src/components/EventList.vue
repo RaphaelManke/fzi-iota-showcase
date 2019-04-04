@@ -24,7 +24,6 @@ export default {
   name: "EventList",
   data() {
     return {
-      events: [],
       mouseOnEvents: false
     };
   },
