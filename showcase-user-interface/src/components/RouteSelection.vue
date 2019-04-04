@@ -7,8 +7,8 @@
                     <b-row>
                     <b-col>
                     Start
-                    <b-form-select v-model="selectedDestination" :options="stops"
-                    value-field="id" text-field="name"
+                    <b-form-select v-model="currentStop.id" :options="[currentStop]"
+                    value-field="id" text-field="name" disabled="true"
                     ></b-form-select>
                     </b-col>
                     <b-col>
@@ -32,7 +32,7 @@
           <b-card header="Route Options" style="height: 100%; overflow-y: scroll;"
           footer-html="<b-button variant='primary' @click='submitRoute'>GO!</b-button>"
           >
-              <b-list-group v-model="tabIndex">
+              <b-list-group>
       <b-list-group-item v-for="route in routes" :active="route.id===selectedRoute"
       @click="selectedRoute=route.id" button="true" class="d-flex justify-content-between align-items-center">
           {{route.route}}
@@ -52,17 +52,17 @@ export default {
   components: {
     MapVisu
   },
-  data() {
-    return {
-      tabIndex: 0
-    };
-  },
   computed: {
     routes() {
       return this.$store.getters["routes/getRoutesAvailable"];
     },
     stops() {
       return this.$store.getters["mapObjects/getStops"];
+    },
+    currentStop() {
+      return this.$store.getters["mapObjects/getStopById"](
+        this.$store.getters["user/getUserInfo"].stop
+      );
     },
     selectedDestination: {
       get() {
