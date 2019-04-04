@@ -22,6 +22,15 @@
             </b-card>
        </b-col>
        </b-row>
+       <b-alert
+      :show="dismissCountDown"
+      dismissible
+      variant="warning"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+    >
+      Please select a destination and route!
+    </b-alert>
     <b-row class="mt-4">
       <b-col cols=8>
         <b-card header="Map">
@@ -63,6 +72,12 @@ export default {
   components: {
     MapVisu
   },
+  data() {
+    return {
+      dismissSecs: 5,
+      dismissCountDown: 0
+    };
+  },
   computed: {
     routes() {
       return this.$store.getters["routes/getRoutesAvailable"];
@@ -100,8 +115,18 @@ export default {
     }
   },
   methods: {
+    showNoRouteAlert() {
+      this.dismissCountDown = this.dismissSecs;
+    },
     submitRoute() {
-      this.$router.push("route-observer");
+      if (this.selectedRouteId !== "") {
+        this.$router.push("route-observer");
+      } else {
+        this.showNoRouteAlert();
+      }
+    },
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown;
     }
   }
 };
