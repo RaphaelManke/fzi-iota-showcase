@@ -21,6 +21,9 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     },
     SOCKET_Login(state: any, user: any) {
       state.env.users = [...state.env.users, user];
+    },
+    SOCKET_Logout(state: any, user: any) {
+      state.env.users = state.env.users.filter((el: any) => el.id !== user.id);
     }
   },
   getters: {

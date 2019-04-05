@@ -31,6 +31,9 @@ export default {
     },
     userInfo() {
       return this.$store.getters["user/getUserInfo"];
+    },
+    seed() {
+      return this.$store.getters["user/getSeed"];
     }
   },
   methods: {

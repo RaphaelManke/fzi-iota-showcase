@@ -21,6 +21,7 @@
         v-for="user in users"
         :id="user.id"
         :key="user.id"
+        v-if="user.loggedIn"
       />
     </l-map>
   </div>
