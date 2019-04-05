@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { Router, Connection } from '../src/router';
+import { Router, Connection, Type } from '../src/router';
 import { log } from 'fzi-iota-showcase-client';
 import { Vehicle } from '../src/vehicle';
 import { Emitter } from '../src/emitter';
@@ -116,11 +116,12 @@ describe('Mover', () => {
     const v = new Vehicle(
       e,
       'SEED',
-      { id: 'A', position: { lat: 49.00954, lng: 8.403885 } },
+      { lat: 49.00954, lng: 8.403885 },
       { co2emission: 0, speed: 83, type: 'tram' },
     );
+    v.stop = 'A';
     const mover = new Mover(v);
-    const routes = router.getRoutes(v.stop!, 'C', v.info.type);
+    const routes = router.getRoutes(v.stop!, 'C', v.info.type as Type);
     await mover.startDriving(routes[0], (stop) =>
       log.info('Reached stop %s', stop),
     );

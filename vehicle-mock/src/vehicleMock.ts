@@ -21,6 +21,7 @@ export class VehicleMock {
 
   constructor(
     private vehicle: Vehicle,
+    private nextStop: Trytes | undefined,
     private capacity: number,
     private price: number,
     private reservationsRate: number,
@@ -34,12 +35,12 @@ export class VehicleMock {
   }
 
   public async setupPayments() {
-    const result = await this.iota.getNewAddress(
-      trytes(getPaymentSeed(this.vehicle.seed)),
-    );
+    const seed = trytes(getPaymentSeed(this.vehicle.seed));
+    const result = await this.iota.getNewAddress(seed);
     if (typeof result === 'string') {
       this.currentAddress = result;
     }
+    return await this.iota.getAccountData(seed);
   }
 
   public async syncTangle() {
@@ -56,7 +57,7 @@ export class VehicleMock {
   }
 
   public async checkInAtCurrentStop() {
-    if (this.vehicle.stop) {
+    if (this.nextStop) {
       if (!this.masterChannel) {
         await this.syncTangle();
       }
@@ -78,13 +79,15 @@ export class VehicleMock {
         this.provider,
         this.vehicle.seed,
         this.masterChannel!,
-        this.vehicle.stop,
+        this.nextStop,
         message,
       );
       this.vehicle.currentTrip = {
         ...result,
         nonce,
       };
+      this.vehicle.stop = this.nextStop;
+      this.nextStop = undefined;
     }
   }
 
