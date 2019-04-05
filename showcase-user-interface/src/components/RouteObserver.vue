@@ -22,7 +22,7 @@
                             </b-row>
                         </b-col>
                         
-                            <b-button variant="primary">Change Route</b-button>
+                            <b-button @click="changeRoute" v-b-toggle.collapse-1 variant="primary">{{changeRouteButtonText()}}</b-button>
                         
                     </b-row>
                 </b-card>
@@ -30,12 +30,15 @@
         </b-row>
         <b-row class="mt-4">
       <b-col>
+          <!-- Map View -->
         <b-card header="Map">
         <map-visu style="height: 40vh"/>
         </b-card>
       </b-col>
       <b-col>
-          <b-card header="Events">
+          <!-- Collapsable route options view-->
+          <b-collapse class="mb-4" id="collapse-1">
+                <b-card header="Route Options">
             <div style="height: 40vh">
               <div style="height: 80%; overflow-y: scroll">
             <b-row>
@@ -43,7 +46,38 @@
               <b-list-group>
       <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
       @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
-          {{route.route}}
+          <b-row>
+            <b-col v-for=" section in route.sections">
+                {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
+            </b-col>
+          </b-row>
+          <b-badge variant="primary" pill>
+            {{routePrice(route.sections)}} 
+            <img src="assets/images/iota.png"/>
+          </b-badge>
+      </b-list-group-item>
+    </b-list-group>
+    </b-col>
+    </b-row>
+    </div>
+    <b-row class="text-center mt-4">
+      <b-col>
+    <b-button v-b-toggle.collapse-1 block variant='primary' @click='submitRoute'>GO!</b-button>
+       </b-col>
+        </b-row>
+        </div>
+        </b-card>       
+            </b-collapse>
+            <!-- Events view -->
+          <b-card  v-if="!changingRoute" header="Events">
+            <div style="height: 40vh">
+              <div style="height: 80%; overflow-y: scroll">
+            <b-row>
+              <b-col>
+              <b-list-group>
+      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
+      @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
+          Events following
           <b-badge variant="primary" pill>14</b-badge>
       </b-list-group-item>
     </b-list-group>
@@ -63,7 +97,15 @@ export default {
   components: {
     MapVisu
   },
+  data() {
+    return {
+      changingRoute: false
+    };
+  },
   computed: {
+    routes() {
+      return this.$store.getters["routes/getRoutesAvailable"];
+    },
     selectedRouteId: {
       get() {
         return this.$store.getters["routes/getRouteSelectedId"];
@@ -74,11 +116,57 @@ export default {
     },
     selectedRoute() {
       return this.$store.getters["routes/getRouteById"](this.selectedRouteId);
+    },
+    currentStop() {
+      return this.$store.getters["mapObjects/getStopById"](
+        this.$store.getters["user/getUserInfo"].stop
+      );
     }
   },
   methods: {
+    changeRouteButtonText() {
+      if (this.changingRoute) {
+        return "Resume observe";
+      } else {
+        return " Change route ";
+      }
+    },
     getImageSrc(imageType) {
       return "assets/images/" + imageType + ".png";
+    },
+    changeRoute() {
+      this.changingRoute = !this.changingRoute;
+      if (changeRoute) {
+        this.$http
+          .get(this.$hostname + "/routes", {
+            params: {
+              start: this.currentStop,
+              destination: value
+            }
+          })
+          .then(function(response) {
+            if (response.status === 200) {
+              this.$store.commit("routes/updateRoutesAvailable", response.body);
+            }
+          })
+          .catch(function(response) {
+            window.console.log(response);
+          });
+      }
+    },
+    routePrice(sections) {
+      let summedPrice = 0;
+      sections.forEach(element => {
+        summedPrice += element.price;
+      });
+      return summedPrice;
+    },
+    submitRoute() {
+      if (this.selectedRouteId !== "") {
+        this.changingRoute = !this.changingRoute;
+      } else {
+        this.showNoRouteAlert();
+      }
     }
   }
 };
