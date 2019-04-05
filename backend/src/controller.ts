@@ -1,7 +1,5 @@
-import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Login, Logout } from './events';
-import { User, EnvironmentInfo } from './envInfo';
-import { Hash } from '@iota/core/typings/types';
+import { EnvironmentInfo } from './envInfo';
 import { Users } from './users';
 
 export class Controller {
