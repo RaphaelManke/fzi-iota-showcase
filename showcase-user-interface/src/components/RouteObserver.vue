@@ -4,11 +4,20 @@
             <b-col>
                 <b-card header="Selected Route">
                     <b-row align-h="center" class="text-center">
-                        <b-col align-self="center" v-for="(stop, index) in selectedRoute.route">
+                        <b-col align-self="center" v-for="(section, index) in selectedRoute.sections">
                             <b-row>
-                                <b-col align-self="center">{{stop}}</b-col>
-                                <b-col align-self="center">
-                                    <b-progress v-if="index + 1 < selectedRoute.route.length" :value="25" variant="success" striped=true></b-progress>
+                                <b-col class="mt-2">
+                                {{section.from}}
+                                </b-col>
+                                <b-col>
+                                    
+                                        <img :src="getImageSrc(section.vehicle.type)"/>
+                                    
+                                <b-progress :max="section.price" :value="0.25*section.price" variant="success" striped=true></b-progress>
+                                    
+                                </b-col>
+                                <b-col class="mt-2">
+                                {{section.to}}
                                 </b-col>
                             </b-row>
                         </b-col>
@@ -66,11 +75,19 @@ export default {
     selectedRoute() {
       return this.$store.getters["routes/getRouteById"](this.selectedRouteId);
     }
+  },
+  methods: {
+    getImageSrc(imageType) {
+      return "assets/images/" + imageType + ".png";
+    }
   }
 };
 </script>
 
-<style>
+<style scoped>
+img {
+  height: 12px;
+}
 </style>
 
 
