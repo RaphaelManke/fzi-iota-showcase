@@ -1,5 +1,5 @@
 export interface RouteStore {
-  routesAvailable: any[];
+  routesAvailable: RouteInfo[];
   routeSelectedId: string;
 }
 

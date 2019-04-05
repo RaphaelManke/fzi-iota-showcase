@@ -71,14 +71,17 @@
             <!-- Events view -->
           <b-card  v-if="!changingRoute" header="Events">
             <div style="height: 40vh">
-              <div style="height: 80%; overflow-y: scroll">
+              <div style="height: 100%; overflow-y: scroll"
+              id="eventList"
+      ref="eventList"
+      @mouseover="mouseOnEvents = true"
+      @mouseleave="mouseOnEvents = false"
+              >
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
-      @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
-          Events following
-          <b-badge variant="primary" pill>14</b-badge>
+      <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
+          {{event.type}} {{event.info}}
       </b-list-group-item>
     </b-list-group>
     </b-col>
@@ -99,10 +102,24 @@ export default {
   },
   data() {
     return {
-      changingRoute: false
+      changingRoute: false,
+      mouseOnEvents: false
     };
   },
   computed: {
+    userInfo() {
+      return this.$store.getters["user/getUserInfo"];
+    },
+    events() {
+      let currEvents = this.$store.getters["events/getEvents"].filter(
+        el => el.relId === this.userInfo.id
+      );
+      /* no idea why this code does not work
+      if (currEvents.length > 20 && !this.mouseOnEvents) {
+        currEvents.shift();
+      }*/
+      return currEvents;
+    },
     routes() {
       return this.$store.getters["routes/getRoutesAvailable"];
     },
@@ -121,6 +138,11 @@ export default {
       return this.$store.getters["mapObjects/getStopById"](
         this.$store.getters["user/getUserInfo"].stop
       );
+    }
+  },
+  updated() {
+    if (!this.mouseOnEvents) {
+      this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
     }
   },
   methods: {
