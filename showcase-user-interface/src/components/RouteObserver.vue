@@ -22,8 +22,6 @@
                             </b-row>
                         </b-col>
                         
-                            <b-button @click="changeRoute" v-b-toggle.collapse-1 variant="primary">{{changeRouteButtonText()}}</b-button>
-                        
                     </b-row>
                 </b-card>
             </b-col>
@@ -31,21 +29,25 @@
         <b-row class="mt-4">
       <b-col>
           <!-- Map View -->
-        <b-card header="Map">
+          <b-card no-body>
+          <b-tabs card>
+        <b-tab title="Map">
         <map-visu style="height: 40vh"/>
+        </b-tab>
+        </b-tabs>
         </b-card>
       </b-col>
       <b-col>
           <!-- Collapsable route options view-->
-          <b-collapse class="mb-4" id="collapse-1">
-                <b-card header="Route Options">
+          <b-card no-body>
+          <b-tabs card>
+                <b-tab title="Route Options" @click="refreshRoutes">
             <div style="height: 40vh">
-              <div style="height: 80%; overflow-y: scroll">
+              <div style="height: 80%; overflow-y: scroll; overflow-x: hidden;">
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
-      @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
                 {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
@@ -62,16 +64,15 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button v-b-toggle.collapse-1 block variant='primary' @click='submitRoute'>GO!</b-button>
+    <b-button block variant='primary' @click="selectedRouteId=route.id">Change route</b-button>
        </b-col>
         </b-row>
         </div>
-        </b-card>       
-            </b-collapse>
+        </b-tab>       
             <!-- Events view -->
-          <b-card  v-if="!changingRoute" header="Events">
+          <b-tab title="Events">
             <div style="height: 40vh">
-              <div style="height: 100%; overflow-y: scroll"
+              <div style="height: 100%; overflow-y: scroll; overflow-x: hidden;"
               id="eventList"
       ref="eventList"
       @mouseover="mouseOnEvents = true"
@@ -88,6 +89,8 @@
     </b-row>
     </div>
         </div>
+        </b-tab>
+        </b-tabs>
         </b-card>
       </b-col>
       </b-row>
@@ -102,7 +105,6 @@ export default {
   },
   data() {
     return {
-      changingRoute: false,
       mouseOnEvents: false
     };
   },
@@ -146,35 +148,25 @@ export default {
     }
   },
   methods: {
-    changeRouteButtonText() {
-      if (this.changingRoute) {
-        return "Resume observe";
-      } else {
-        return " Change route ";
-      }
-    },
     getImageSrc(imageType) {
       return "assets/images/" + imageType + ".png";
     },
-    changeRoute() {
-      this.changingRoute = !this.changingRoute;
-      if (changeRoute) {
-        this.$http
-          .get(this.$hostname + "/routes", {
-            params: {
-              start: this.currentStop,
-              destination: value
-            }
-          })
-          .then(function(response) {
-            if (response.status === 200) {
-              this.$store.commit("routes/updateRoutesAvailable", response.body);
-            }
-          })
-          .catch(function(response) {
-            window.console.log(response);
-          });
-      }
+    refreshRoutes() {
+      this.$http
+        .get(this.$hostname + "/routes", {
+          params: {
+            start: this.currentStop,
+            destination: value
+          }
+        })
+        .then(function(response) {
+          if (response.status === 200) {
+            this.$store.commit("routes/updateRoutesAvailable", response.body);
+          }
+        })
+        .catch(function(response) {
+          window.console.log(response);
+        });
     },
     routePrice(sections) {
       let summedPrice = 0;
@@ -182,13 +174,6 @@ export default {
         summedPrice += element.price;
       });
       return summedPrice;
-    },
-    submitRoute() {
-      if (this.selectedRouteId !== "") {
-        this.changingRoute = !this.changingRoute;
-      } else {
-        this.showNoRouteAlert();
-      }
     }
   }
 };
