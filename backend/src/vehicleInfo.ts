@@ -1,8 +1,9 @@
 import { Trytes } from '@iota/core/typings/types';
 import { Type, Position } from './envInfo';
+import { VehicleInfo as Info } from 'fzi-iota-showcase-client';
 
 export interface VehicleInfo {
-  info: {speed: number, co2emission: number, type: Type};
+  info: Required<Info>;
   name: string;
   id: Trytes;
   position: Position;

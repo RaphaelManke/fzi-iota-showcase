@@ -15,6 +15,9 @@ export function enableLogging(events: SafeEmitter) {
       case 'PosUpdated':
         format = { skip: 'id', entity: 'Vehicle' };
         break;
+      case 'CheckIn':
+        format = { skip: 'vehicleId', entity: 'Vehicle' };
+        break;
       default:
         format = { skip: 'userId', entity: 'User' };
         break;
@@ -32,10 +35,12 @@ export function enableLogging(events: SafeEmitter) {
           r[p] = v;
         });
       const typePadding =
-        !data.id || data.id.length < 10
-          ? ' '.repeat(10 - (data.id ? data.id.length : 0))
+        !data[format.skip] || data[format.skip].length < 10
+          ? ' '.repeat(10 - (data[format.skip] ? data[format.skip].length : 0))
           : '';
-      const prefix = `${format.entity} ${data.id}${typePadding} ${type[1]}`;
+      const prefix = `${format.entity} ${data[format.skip]}${typePadding} ${
+        type[1]
+      }`;
 
       if (Object.keys(r).length > 0) {
         // const padding =
