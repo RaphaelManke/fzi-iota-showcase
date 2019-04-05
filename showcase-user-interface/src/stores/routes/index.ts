@@ -4,17 +4,7 @@ import { RootState } from "../types";
 export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
-    routesAvailable: [
-      { id: "A", route: ["A", "B", "C"] },
-      {
-        id: "B",
-        route: ["A", "Peter", "C", "Markt", "Brunnenstraße"]
-      },
-      { id: "C", route: ["A", "B", "C"] },
-      { id: "D", route: ["A", "B", "C"] },
-      { id: "E", route: ["A", "Peter", "C"] },
-      { id: "F", route: ["A", "B", "C"] }
-    ],
+    routesAvailable: [],
     routeSelectedId: ""
   },
   mutations: {

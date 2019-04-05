@@ -46,8 +46,15 @@
               <b-list-group>
       <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
       @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
-          {{route.route}}
-          <b-badge variant="primary" pill>14</b-badge>
+          <b-row>
+            <b-col v-for=" section in route.sections">
+                {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
+            </b-col>
+          </b-row>
+          <b-badge variant="primary" pill>
+            {{routePrice(route.sections)}} 
+            <img src="assets/images/iota.png"/>
+          </b-badge>
       </b-list-group-item>
     </b-list-group>
     </b-col>
@@ -96,6 +103,21 @@ export default {
       },
       set(value) {
         this.$store.commit("user/updateDestination", value);
+        this.$http
+          .get(this.$hostname + "/routes", {
+            params: {
+              start: this.currentStop,
+              destination: value
+            }
+          })
+          .then(function(response) {
+            if (response.status === 200) {
+              this.$store.commit("routes/updateRoutesAvailable", response.body);
+            }
+          })
+          .catch(function(response) {
+            window.console.log(response);
+          });
       }
     },
     selectedRouteId: {
@@ -105,16 +127,12 @@ export default {
       set(value) {
         this.$store.commit("routes/updateRouteSelectedId", value);
       }
-    },
-    routeVisu(route) {
-      let result = "";
-      route.forEach(element => {
-        result += element + " - ";
-      });
-      return result;
     }
   },
   methods: {
+    getImageSrc(imageType) {
+      return "assets/images/" + imageType + ".png";
+    },
     showNoRouteAlert() {
       this.dismissCountDown = this.dismissSecs;
     },
@@ -127,7 +145,21 @@ export default {
     },
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
+    },
+    routePrice(sections) {
+      let summedPrice = 0;
+      sections.forEach(element => {
+        summedPrice += element.price;
+      });
+      return summedPrice;
     }
   }
 };
 </script>
+
+<style scoped>
+img {
+  height: 12px;
+}
+</style>
+
