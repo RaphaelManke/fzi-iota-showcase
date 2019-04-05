@@ -18,7 +18,14 @@
       />
     </div>
 
-    <div class="table_wrapper"></div>
+    <div class="table_wrapper">
+      <state-table-object
+        v-for="user in users"
+        :id="user.id"
+        :key="user.id"
+        type="male"
+      />
+    </div>
 
     <div class="table_wrapper"></div>
   </div>
@@ -38,6 +45,9 @@ export default {
     },
     vehicles() {
       return this.$store.getters["mapObjects/getVehicles"];
+    },
+    users() {
+      return this.$store.getters["mapObjects/getUsers"];
     }
   }
 };
@@ -46,12 +56,14 @@ export default {
 <style scoped>
 .table_wrapper {
   display: flex;
-  border: solid 1px gray;
 }
 
 #table_container {
   display: grid;
   grid-template-columns: auto auto auto auto;
   height: 30vh;
+  margin-top: 20px;
+  border: solid 2px black;
+  border-radius: 5px;
 }
 </style>

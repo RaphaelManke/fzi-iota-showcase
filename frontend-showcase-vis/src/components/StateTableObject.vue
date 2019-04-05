@@ -11,6 +11,11 @@
     <div v-if="type === 'stop'" class="info_container">
       {{ stopData.name }}
     </div>
+
+    <!-- representation for stops -->
+    <div v-if="type === 'male'" class="info_container">
+      Name: {{ userData.name }}
+    </div>
   </div>
 </template>
 
@@ -37,17 +42,15 @@ export default {
     },
     stopData() {
       return this.$store.getters["mapObjects/getStopById"](this.id);
+    },
+    userData() {
+      return this.$store.getters["mapObjects/getUserById"](this.id);
     }
   }
 };
 </script>
 
 <style scoped>
-p {
-  margin: 0;
-  padding: 0;
-}
-
 img {
   max-height: 100%;
 }
@@ -61,6 +64,7 @@ img {
   flex-wrap: wrap;
   margin: auto;
   border: groove 2px;
+  border-radius: 5px;
   height: 4vh;
 }
 </style>

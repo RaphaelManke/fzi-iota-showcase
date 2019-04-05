@@ -53,6 +53,7 @@ export default {
   overflow-y: scroll;
   overflow-x: hidden;
   border: solid 2px black;
+  border-radius: 5px;
   margin-left: 7%;
   flex-grow: 1;
 }
