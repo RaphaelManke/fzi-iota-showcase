@@ -54,6 +54,7 @@
     "@iota/core": "^1.0.0-beta.11",
     "@iota/mam": "^0.5.0",
     "extend": "^3.0.2",
+    "flash.lib.js": "github:cr0ssing/flash.lib.js",
     "mam.ts": "^0.1.6",
     "raam.client.js": "^0.7.3",
     "supports-color": "^5.5.0",
