@@ -6,7 +6,7 @@ import { Trytes } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
-import { VehicleMock } from 'fzi-iota-showcase-vehicle-mock';
+import { VehicleMock, Router, Type } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 
 export class Controller {
@@ -42,6 +42,21 @@ export class Controller {
       vehicles,
       users: [],
     };
+  }
+
+  public getRoutes(start: Trytes, destination: Trytes) {
+    const r = new Router(this.env.connections);
+    // TODO
+    return r.getRoutes(start, destination, 'tram');
+  }
+
+  public startTrip(vehicleId: Trytes, start: Trytes, destination: Trytes) {
+    const v = this.vehicles.get(vehicleId);
+    if (v) {
+      const r = new Router(this.env.connections);
+      const [route] = r.getRoutes(start, destination, v.info.info.type as Type);
+      v.mock.startTrip(route).then(() => v.mock.checkInAtCurrentStop());
+    }
   }
 
   public async setup() {
