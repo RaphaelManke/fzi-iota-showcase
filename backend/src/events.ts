@@ -88,6 +88,8 @@ export interface BoardingStarted {
 export interface TripStarted {
   userId: Trytes;
   vehicleId: Trytes;
+  start: Trytes;
+  destination: Trytes;
 }
 
 export interface TripFinished {

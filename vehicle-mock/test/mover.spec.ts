@@ -112,6 +112,12 @@ describe('Mover', () => {
       checkedIn(stop) {
         log.debug('Vehicle checked in at: %s', stop);
       },
+      tripStarted(dest) {
+        log.debug('Trip started');
+      },
+      tripFinished(dest) {
+        log.debug('Trip finished');
+      },
     };
     const v = new Vehicle(
       e,

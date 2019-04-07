@@ -93,29 +93,23 @@ export class Server {
 
     this.app.get('/routes', (req, res) => {
       if (req.query.start && req.query.destination) {
-        const fake: RouteInfo = {
-          start: 'A',
-          destination: 'B',
-          sections: [
-            {
-              from: 'A',
-              to: 'B',
-              vehicle: {
-                id: 'ABC',
-                type: 'tram',
-              },
-              price: 900000,
-              departure: new Date(),
-              arrival: new Date(Date.now() + 1000 * 60 * 5),
-              distance: 5,
-            },
-          ],
-        };
-        res.json([fake]);
+        res.json(
+          this.controller.getRoutes(
+            this.controller.env.stops[0].id,
+            this.controller.env.stops[2].id,
+          ),
+        );
       } else {
         res.status(400);
         res.send();
       }
+    });
+
+    this.app.post('/trip', (req, res) => {
+      const b = JSON.parse(req.body);
+      const user = this.controller.users.getBySeed(b.seed);
+      this.controller.startTrip(b.vehicle, b.start, b.destination);
+      res.send();
     });
 
     this.server.listen(3000);

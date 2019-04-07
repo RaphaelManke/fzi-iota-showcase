@@ -9,7 +9,7 @@ export class Vehicle {
   private mPosition: Position;
 
   constructor(
-    private emitter: Emitter,
+    public emitter: Emitter,
     public seed: Trytes,
     position: Position,
     public info: { type: string; speed: number; co2emission: number },

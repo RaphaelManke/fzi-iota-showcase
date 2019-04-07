@@ -91,11 +91,19 @@ export class VehicleMock {
     }
   }
 
-  public startTrip(
+  public async startTrip(
     route: Route,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
-    return this.mover.startDriving(route, onStop);
+    this.vehicle.emitter.tripStarted(route.stops[route.stops.length - 1].id);
+    const dest = await this.mover.startDriving(route, (stop) => {
+      this.nextStop = stop;
+      if (onStop) {
+        onStop(stop);
+      }
+    });
+    this.vehicle.emitter.tripFinished(dest);
+    return dest;
   }
 
   public stopTripAtNextStop() {
