@@ -47,7 +47,7 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="route in routes" :active="route.id===locallySelectedRouteId" @click="locallySelectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
                 {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
@@ -64,7 +64,7 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button block variant='primary' @click="selectedRouteId=route.id">Change route</b-button>
+    <b-button block variant='primary' @click="selectedRouteId=locallySelectedRouteId">Change route</b-button>
        </b-col>
         </b-row>
         </div>
@@ -105,7 +105,8 @@ export default {
   },
   data() {
     return {
-      mouseOnEvents: false
+      mouseOnEvents: false,
+      locallySelectedRouteId: this.selectedRouteId
     };
   },
   computed: {
