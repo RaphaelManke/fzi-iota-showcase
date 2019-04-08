@@ -1,0 +1,17 @@
+[
+  {
+    "id": "EKSYUIQTOLEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
+    "name": "Marktplatz",
+    "position": { "lat": 49.009525, "lng": 8.405141 }
+  },
+  {
+    "id": "LOLNPNSPKSYVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
+    "name": "Kronenplatz",
+    "position": { "lat": 49.00938, "lng": 8.408518 }
+  },
+  {
+    "id": "XAAEPTQHJ9LMGORYBXIDPXHNYAKDHGJTIICTPPCNGPKC9JHNBSQLM9EQGPKOAWSAVXQPUHJCEYFDFXCXM",
+    "name": "Rüppurer Tor",
+    "position": { "lat": 49.005752, "lng": 8.41036 }
+  }
+]

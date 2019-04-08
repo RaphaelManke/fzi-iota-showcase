@@ -1,4 +1,3 @@
-import { Type } from './envInfo';
 import * as fs from 'fs';
 import { Hash, Trytes } from '@iota/core/typings/types';
 
