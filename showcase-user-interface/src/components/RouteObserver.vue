@@ -7,7 +7,7 @@
                         <b-col align-self="center" v-for="(section, index) in selectedRoute.sections">
                             <b-row>
                                 <b-col class="mt-2">
-                                {{section.from}}
+                                {{getStop(section.from).name}}
                                 </b-col>
                                 <b-col>
                                     
@@ -17,7 +17,7 @@
                                     
                                 </b-col>
                                 <b-col class="mt-2">
-                                {{section.to}}
+                                {{getStop(section.to).name}}
                                 </b-col>
                             </b-row>
                         </b-col>
@@ -50,7 +50,7 @@
       <b-list-group-item v-for="route in routes" :active="route.id===locallySelectedRouteId" @click="locallySelectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
-                {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
+                {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
             </b-col>
           </b-row>
           <b-badge variant="primary" pill>
@@ -149,6 +149,9 @@ export default {
     }
   },
   methods: {
+    getStop(id) {
+      return this.$store.getters["mapObjects/getStopById"](id);
+    },
     getImageSrc(imageType) {
       return "assets/images/" + imageType + ".png";
     },

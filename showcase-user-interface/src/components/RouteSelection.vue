@@ -48,7 +48,7 @@
       @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
-                {{section.from}} <img :src="getImageSrc(section.vehicle.type)"/> {{section.to}}
+                {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
             </b-col>
           </b-row>
           <b-badge variant="primary" pill>
@@ -130,6 +130,9 @@ export default {
     }
   },
   methods: {
+    getStop(id) {
+      return this.$store.getters["mapObjects/getStopById"](id);
+    },
     getImageSrc(imageType) {
       return "assets/images/" + imageType + ".png";
     },
