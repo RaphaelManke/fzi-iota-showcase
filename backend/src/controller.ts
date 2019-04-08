@@ -15,6 +15,7 @@ import { VehicleInfo } from './vehicleInfo';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
 import { VehicleMock, Router, Type } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
+import { RouteInfo } from './routeInfo';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -52,9 +53,28 @@ export class Controller {
   }
 
   public getRoutes(start: Trytes, destination: Trytes) {
-    const r = new Router(this.env.connections);
+    const router = new Router(this.env.connections);
     // TODO
-    return r.getRoutes(start, destination, 'tram');
+    return router.getRoutes(start, destination, 'tram').map(
+      (r): RouteInfo => ({
+        start,
+        destination,
+        sections: [
+          {
+            departure: new Date(),
+            arrival: new Date(Date.now() + 1000 * 60),
+            distance: 4,
+            from: start,
+            to: destination,
+            price: 2,
+            vehicle: {
+              id: this.env.vehicles[0].id,
+              type: 'tram',
+            },
+          },
+        ],
+      }),
+    );
   }
 
   public startTrip(
