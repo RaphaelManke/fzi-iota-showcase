@@ -6,6 +6,7 @@ import { SafeEmitter, Login } from './events';
 import { EnvironmentInfo, User } from './envInfo';
 import { Controller } from './controller';
 import { RouteInfo } from './routeInfo';
+import { Trytes } from '@iota/core/typings/types';
 
 export class Server {
   private io: SocketIO.Server;
@@ -21,13 +22,24 @@ export class Server {
   public listen() {
     this.io.on('connection', (client: SocketIO.Socket) => {
       log.info('Connected to websocket client.');
+      const accept: Trytes[] = [];
+      const deny: Trytes[] = [];
       this.controller.events.onAny((event: any, data: any) => {
-        if (event[0] === SafeEmitter.PUBLIC) {
+        const id = getId(event, data);
+        if (
+          event[0] === SafeEmitter.PUBLIC &&
+          (accept.length === 0 || accept.indexOf(id) > -1) &&
+          deny.indexOf(id) === -1
+        ) {
           client.emit(event[1], data);
         }
       });
-      client.on('start', () => {
-        this.controller.events.emitIntern('start');
+
+      client.on('accept', (...data: Trytes[]) => {
+        accept.push(...data);
+      });
+      client.on('deny', (...data: any) => {
+        deny.push(...data);
       });
     });
 
@@ -128,4 +140,25 @@ export class Server {
     this.server.listen(3000);
     log.info('Listening on port 3000');
   }
+}
+
+function getId(type: string[], data: any) {
+  let prop;
+  switch (type[1]) {
+    case 'Login':
+    case 'Logout':
+    case 'PosUpdated':
+      prop = 'id';
+      break;
+    case 'TransactionIssued':
+      prop = 'from';
+      break;
+    case 'CheckIn':
+      prop = 'vehicleId';
+      break;
+    default:
+      prop = 'userId';
+      break;
+  }
+  return data[prop];
 }

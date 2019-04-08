@@ -141,36 +141,6 @@ import { getNextId } from '../src/idSupplier';
   await c.setup();
 
   new Server(c).listen();
-
-  events.onIntern('start', async () => {
-    // const e: Emitter = {
-    //   posUpdated(pos) {
-    //     info.vehicles[0].position = pos;
-    //     events.emit('PosUpdated', { id: 'ABC', position: pos });
-    //   },
-    // };
-    // const v = new Vehicle(e, 'SEED', info.stops[0], {
-    //   co2emission: 0,
-    //   speed: 83,
-    //   type: 'tram',
-    // });
-    // const mover = new Mover(v);
-    // const router = new Router(info.connections);
-    // const route = router.getRoutes(v.stop!, 'C', v.info.type)[0];
-    // mover
-    //   .startDriving(route, (stop) => log.info('Reached stop %s', stop))
-    //   .then((end) => log.info('Stopped at %s', end));
-    // setTimeout(() => mover.stopDrivingAtNextStop(), 2000);
-    setInterval(
-      () =>
-        events.emit('TransactionIssued', {
-          amount: 1000000 + Math.round(Math.random() * 999000000),
-          from: 'Z',
-          to: 'ABC',
-        }),
-      2000,
-    );
-  });
 })();
 
 function generateSeed(length = 81) {
