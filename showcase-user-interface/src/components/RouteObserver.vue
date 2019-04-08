@@ -148,6 +148,9 @@ export default {
       this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
     }
   },
+  mounted() {
+    map.invalidateSize();
+  },
   methods: {
     getStop(id) {
       return this.$store.getters["mapObjects/getStopById"](id);
