@@ -32,11 +32,6 @@ export default {
         this.$store.commit("mapObjects/initState", env.body);
       });
     }
-  },
-
-  created() {
-    // start the simulation in the backend
-    this.$socket.emit("start");
   }
 };
 </script>
