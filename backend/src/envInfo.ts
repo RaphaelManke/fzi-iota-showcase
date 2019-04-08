@@ -1,4 +1,4 @@
-import { Trytes, Hash } from '@iota/core/typings/types';
+import { Trytes } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
 import { Login } from './events';
 
@@ -27,18 +27,15 @@ export interface Position {
   lat: number;
 }
 
+export interface Trip {
+  user: Trytes;
+  vehicle: Trytes;
+  destination: Trytes;
+}
+
 export type Type = 'car' | 'bike' | 'tram';
 
 export interface User extends Login {
   loggedIn: boolean;
+  trip?: Trip;
 }
-
-// login(id) -> wallet, position
-
-// getStops()
-
-// getConnection()
-
-// getCheckIn()
-
-// reserveVehicle()

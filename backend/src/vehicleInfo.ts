@@ -1,5 +1,5 @@
 import { Trytes } from '@iota/core/typings/types';
-import { Type, Position } from './envInfo';
+import { Position, Trip } from './envInfo';
 import { VehicleInfo as Info } from 'fzi-iota-showcase-client';
 
 export interface VehicleInfo {
@@ -10,9 +10,4 @@ export interface VehicleInfo {
   checkIn?: Trytes;
   trip?: Trip;
   balance: number;
-}
-
-export interface Trip {
-  userId: Trytes;
-  destination: Trytes;
 }

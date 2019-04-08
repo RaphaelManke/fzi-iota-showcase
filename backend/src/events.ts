@@ -95,6 +95,7 @@ export interface TripStarted {
 export interface TripFinished {
   userId: Trytes;
   vehicleId: Trytes;
+  destination: Trytes;
 }
 
 export interface PosUpdated {

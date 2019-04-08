@@ -107,9 +107,22 @@ export class Server {
 
     this.app.post('/trip', (req, res) => {
       const b = JSON.parse(req.body);
+      const vehicle = this.controller.env.vehicles.find(
+        (v) => b.vehicle === v.id,
+      );
       const user = this.controller.users.getBySeed(b.seed);
-      this.controller.startTrip(b.vehicle, b.start, b.destination);
-      res.send();
+      if (user) {
+        if (vehicle) {
+          this.controller.startTrip(vehicle, user, b.start, b.destination);
+          res.send();
+        } else {
+          res.status(404);
+          res.send('Vehicle not found');
+        }
+      } else {
+        res.status(404);
+        res.send('User not found');
+      }
     });
 
     this.server.listen(3000);
