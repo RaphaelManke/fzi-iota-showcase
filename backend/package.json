@@ -26,9 +26,11 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@types/minimist": "^1.2.0",
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
     "fzi-iota-showcase-vehicle-mock": "alpha",
+    "minimist": "^1.2.0",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {

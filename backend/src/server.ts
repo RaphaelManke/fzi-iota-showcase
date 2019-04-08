@@ -125,14 +125,24 @@ export class Server {
       const user = this.controller.users.getBySeed(b.seed);
       if (user) {
         if (vehicle) {
-          this.controller.startTrip(vehicle, user, b.start, b.destination);
-          res.send();
+          if (this.controller.env.stops.find((s) => s.id === b.start)) {
+            if (this.controller.env.stops.find((s) => s.id === b.destination)) {
+              this.controller.startTrip(vehicle, user, b.start, b.destination);
+              res.send();
+            } else {
+              res.status(400);
+              res.send('Destination stop not found');
+            }
+          } else {
+            res.status(400);
+            res.send('Start stop not found');
+          }
         } else {
-          res.status(404);
+          res.status(400);
           res.send('Vehicle not found');
         }
       } else {
-        res.status(404);
+        res.status(400);
         res.send('User not found');
       }
     });

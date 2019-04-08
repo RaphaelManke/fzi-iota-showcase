@@ -52,7 +52,7 @@ export class Controller {
     };
   }
 
-  public getRoutes(start: Trytes, destination: Trytes) {
+  public getRoutes(start: Trytes, destination: Trytes): RouteInfo[] {
     const router = new Router(this.env.connections);
     // TODO
     return router.getRoutes(start, destination, 'tram').map(

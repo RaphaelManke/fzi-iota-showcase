@@ -1,146 +1,54 @@
 import { enableLogging } from '../src/logger';
 import { Server } from '../src/server';
 import { Controller } from '../src/controller';
-import { User, Connection } from '../src/envInfo';
+import { User, Connection, Stop } from '../src/envInfo';
 import { Users } from '../src/users';
 import { SafeEmitter } from '../src/events';
 import { log } from 'fzi-iota-showcase-client';
 import { Hash } from '@iota/core/typings/types';
 import { VehicleDescription } from '../src/vehicleImporter';
 import { getNextId } from '../src/idSupplier';
+import { readVehicles } from '../src/vehicleImporter';
+import * as minimist from 'minimist';
+import * as fs from 'fs';
 
 (async () => {
-  const stops = [
-    {
-      id: generateSeed(),
-      name: 'Marktplatz',
-      position: {
-        lat: 49.009525,
-        lng: 8.405141,
+  try {
+    const args = minimist(process.argv.slice(2), {
+      default: {
+        vehicles: './vehicles.json',
+        stops: './stops.json',
+        connections: './connections.json',
+        users: './users.json',
       },
-    },
-    {
-      id: generateSeed(),
-      name: 'Kronenplatz',
-      position: {
-        lat: 49.00938,
-        lng: 8.408518,
-      },
-    },
-    {
-      id: generateSeed(),
-      name: 'Rüppurer Tor',
-      position: {
-        lat: 49.005752,
-        lng: 8.41036,
-      },
-    },
-  ];
-  const connections: Connection[] = [
-    {
-      from: stops[0].id,
-      to: stops[1].id,
-      type: 'tram',
-      path: [
-        {
-          lat: 49.00954,
-          lng: 8.403885,
-        },
-        {
-          lat: 49.00938,
-          lng: 8.408518,
-        },
-      ],
-    },
-    {
-      from: stops[1].id,
-      to: stops[2].id,
-      type: 'tram',
-      path: [
-        {
-          lat: 49.00938,
-          lng: 8.408518,
-        },
-        {
-          lat: 49.009304,
-          lng: 8.410162,
-        },
-        {
-          lat: 49.007649,
-          lng: 8.409987,
-        },
-        {
-          lat: 49.005752,
-          lng: 8.41036,
-        },
-      ],
-    },
-    {
-      from: stops[1].id,
-      to: stops[2].id,
-      type: 'car',
-      path: [
-        {
-          lat: 49.00938,
-          lng: 8.408518,
-        },
-        {
-          lat: 49.009304,
-          lng: 8.410262,
-        },
-        {
-          lat: 49.007649,
-          lng: 8.410087,
-        },
-        {
-          lat: 49.005752,
-          lng: 8.41046,
-        },
-      ],
-    },
-  ];
+    });
 
-  const vehicles: VehicleDescription[] = [
-    {
-      seed: generateSeed(),
-      name: 'Lukas',
-      channelCapacity: 10,
-      stop: stops[0].id,
-      price: 90000000,
-      reservationRate: 4000000,
-      type: 'tram',
-      co2emission: 90000,
-      speed: 50,
-      maxReservations: 100,
-    },
-  ];
+    const stops: Stop[] = JSON.parse(fs.readFileSync(args.stops).toString());
+    const connections: Connection[] = JSON.parse(
+      fs.readFileSync(args.connections).toString(),
+    );
+    const vehicles: VehicleDescription[] = readVehicles(args.vehicles);
+    // TODO
+    vehicles.forEach((v) => (v.seed = generateSeed()));
+    const users = Users.fromFile(args.users);
 
-  const seeds = new Map<Hash, User>();
-  seeds.set(
-    'EWRTZJHGSDGTRHNGVDISUGHIFVDJFERHUFBGRZEUFSDHFEGBRVHISDJIFUBUHVFDSHFUERIBUJHDRGBCG',
-    {
-      balance: 1000000000,
-      id: getNextId(),
-      name: 'Peter',
-      stop: stops[0].id,
-      position: stops[0].position,
-      loggedIn: false,
-    },
-  );
-  const users = new Users(seeds);
-  const events = new SafeEmitter();
-  enableLogging(events);
-  const c = new Controller(
-    events,
-    stops,
-    connections,
-    vehicles,
-    users,
-    'https://nodes.devnet.iota.org',
-  );
-  await c.setup();
+    const events = new SafeEmitter();
+    enableLogging(events);
 
-  new Server(c).listen();
+    const c = new Controller(
+      events,
+      stops,
+      connections,
+      vehicles,
+      users,
+      'https://nodes.devnet.iota.org',
+    );
+    await c.setup();
+
+    new Server(c).listen();
+  } catch (e) {
+    log.error(e);
+  }
 })();
 
 function generateSeed(length = 81) {
