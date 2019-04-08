@@ -13,6 +13,7 @@ import {
 } from 'fzi-iota-showcase-vehicle-client';
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
+import { State } from './tripState';
 
 export class VehicleMock {
   private mover: Mover;
@@ -85,6 +86,7 @@ export class VehicleMock {
       this.vehicle.currentTrip = {
         ...result,
         nonce,
+        state: State.CHECKED_IN,
       };
       this.vehicle.stop = this.nextStop;
       this.nextStop = undefined;
@@ -95,15 +97,17 @@ export class VehicleMock {
     route: Route,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
-    this.vehicle.emitter.tripStarted(route.stops[route.stops.length - 1].id);
-    const dest = await this.mover.startDriving(route, (stop) => {
-      this.nextStop = stop;
-      if (onStop) {
-        onStop(stop);
-      }
-    });
-    this.vehicle.emitter.tripFinished(dest);
-    return dest;
+    if (this.vehicle.currentTrip) {
+      this.vehicle.currentTrip.state = State.DEPARTED;
+      return await this.mover.startDriving(route, (stop) => {
+        this.nextStop = stop;
+        if (onStop) {
+          onStop(stop);
+        }
+      });
+    } else {
+      throw new Error('Vehicle is not checked in.');
+    }
   }
 
   public stopTripAtNextStop() {

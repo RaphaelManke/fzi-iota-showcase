@@ -5,8 +5,4 @@ export interface Emitter {
   posUpdated(position: Position): void;
 
   checkedIn(stop: Trytes): void;
-
-  tripStarted(destination: Trytes): void;
-
-  tripFinished(destination: Trytes): void;
 }

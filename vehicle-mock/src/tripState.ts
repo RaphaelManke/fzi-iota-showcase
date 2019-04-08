@@ -8,4 +8,15 @@ export interface TripState {
   reservationChannel: MamWriter;
   welcomeMessage: StopWelcomeMessage;
   nonce: Trytes;
+  state: State;
+}
+
+export enum State {
+  CHECKED_IN,
+
+  RESERVED,
+
+  DEPARTED,
+
+  FINISHED,
 }
