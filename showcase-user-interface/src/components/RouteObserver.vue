@@ -135,7 +135,7 @@ export default {
       }
     },
     selectedRoute() {
-      return this.$store.getters["routes/getRouteById"](this.selectedRouteId);
+      return this.$store.getters["routes/getRouteSelected"];
     },
     currentStop() {
       return this.$store.getters["mapObjects/getStopById"](

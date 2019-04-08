@@ -130,6 +130,17 @@ export default {
     }
   },
   methods: {
+    getNextTrip() {
+      let trip = this.$store.getters["routes/getRouteSelected"].sections.find(
+        section => section.from === this.$store.getters["user/getUserInfo"].stop
+      );
+      return {
+        seed: this.$store.getters["user/getSeed"],
+        vehicle: trip.vehicle.id,
+        start: trip.from,
+        destination: trip.to
+      };
+    },
     getStop(id) {
       return this.$store.getters["mapObjects/getStopById"](id);
     },
@@ -141,7 +152,16 @@ export default {
     },
     submitRoute() {
       if (this.selectedRouteId !== "") {
-        this.$router.push("route-observer");
+        this.$http
+          .post(this.$hostname + "/trip", this.getNextTrip())
+          .then(function(response) {
+            if (response.status === 200) {
+              this.$router.push("route-observer");
+            }
+          })
+          .catch(function(response) {
+            window.console.log(response);
+          });
       } else {
         this.showNoRouteAlert();
       }

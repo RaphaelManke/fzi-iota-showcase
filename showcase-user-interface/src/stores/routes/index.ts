@@ -24,6 +24,11 @@ export const routes: Module<RouteStore, RootState> = {
     },
     getRouteById: (state: any) => (id: string) => {
       return state.routesAvailable.find((el: any) => el.id === id);
+    },
+    getRouteSelected(state: any) {
+      return state.routesAvailable.find(
+        (el: any) => el.id === state.routeSelectedId
+      );
     }
   }
 };
