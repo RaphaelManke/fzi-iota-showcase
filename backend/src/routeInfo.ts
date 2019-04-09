@@ -1,5 +1,4 @@
 import { Trytes } from '@iota/core/typings/types';
-import { Type } from './envInfo';
 
 export interface RouteInfo {
   start: Trytes; // stop
@@ -10,7 +9,7 @@ export interface RouteInfo {
 export interface Section {
   vehicle: {
     id: Trytes;
-    type: Type;
+    type: string;
   };
   from: Trytes; // stop
   to: Trytes; // stop

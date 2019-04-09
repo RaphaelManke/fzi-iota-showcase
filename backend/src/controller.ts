@@ -16,6 +16,7 @@ import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
 import { VehicleMock, PathFinder } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
+import { Router } from './router';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -57,28 +58,8 @@ export class Controller {
     destination: Trytes,
     types: string[],
   ): RouteInfo[] {
-    const pathFinder = new PathFinder(this.env.connections);
-    // TODO
-    return pathFinder.getPaths(start, destination, types).map(
-      (r): RouteInfo => ({
-        start,
-        destination,
-        sections: [
-          {
-            departure: new Date(),
-            arrival: new Date(Date.now() + 1000 * 60),
-            distance: 4,
-            from: start,
-            to: destination,
-            price: 2,
-            vehicle: {
-              id: this.env.vehicles[0].id,
-              type: 'tram',
-            },
-          },
-        ],
-      }),
-    );
+    const r = new Router(this.env.connections, this.env.vehicles);
+    return r.getRoutes(start, destination, types);
   }
 
   public startTrip(

@@ -16,7 +16,7 @@ export interface Stop {
 }
 
 export interface Connection {
-  type: Type;
+  type: string;
   from: Trytes;
   to: Trytes;
   path: Position[];
@@ -32,8 +32,6 @@ export interface Trip {
   vehicle: Trytes;
   destination: Trytes;
 }
-
-export type Type = 'car' | 'bike' | 'tram';
 
 export interface User extends Login {
   loggedIn: boolean;
