@@ -64,7 +64,7 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button block variant='primary' @click="selectedRouteIndex=locallySelectedRouteInde">Change route</b-button>
+    <b-button block variant='primary' @click="selectedRouteIndex=locallySelectedRouteIndex">Change route</b-button>
        </b-col>
         </b-row>
         </div>
@@ -106,8 +106,11 @@ export default {
   data() {
     return {
       mouseOnEvents: false,
-      locallySelectedRouteIndex: this.selectedRouteIndex
+      locallySelectedRouteIndex: 0
     };
+  },
+  created() {
+    this.locallySelectedRouteIndex = this.selectedRouteIndex;
   },
   computed: {
     userInfo() {
