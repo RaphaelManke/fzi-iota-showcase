@@ -1,5 +1,5 @@
 import { Trytes } from '@iota/core/typings/types';
-import { Emitter } from './emitter';
+import { Observer } from './observer';
 import { Position } from './position';
 import { TripState } from './tripState';
 
@@ -9,7 +9,7 @@ export class Vehicle {
   private mPosition: Position;
 
   constructor(
-    public emitter: Emitter,
+    public observer: Observer,
     public seed: Trytes,
     position: Position,
     public info: { type: string; speed: number; co2emission: number },
@@ -20,7 +20,7 @@ export class Vehicle {
   set stop(stop: Trytes | undefined) {
     this.mStop = stop;
     if (stop && this.currentTrip) {
-      this.emitter.checkedIn(stop, this.currentTrip.checkInMessage);
+      this.observer.checkedIn(stop, this.currentTrip.checkInMessage);
     }
   }
 
@@ -31,7 +31,7 @@ export class Vehicle {
   set position(pos: Position) {
     this.mPosition = pos;
     this.mStop = undefined;
-    this.emitter.posUpdated(pos);
+    this.observer.posUpdated(pos);
   }
 
   get position() {

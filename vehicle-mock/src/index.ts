@@ -1,5 +1,5 @@
 export { Vehicle } from './vehicle';
-export { Emitter } from './emitter';
+export { Observer } from './observer';
 export { Position } from './position';
 export * from './pathFinder';
 export { Mover } from './mover';
