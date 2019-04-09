@@ -15,7 +15,6 @@ export const events: Module<EventStore, RootState> = {
       state.events.push({ type: "transaction", relId: data.from, info: data });
     },
     SOCKET_TripStarted(state: any, data: any) {
-      window.console.log("entered");
       if (state.events.length > state.max_length) {
         state.events.shift();
       }
