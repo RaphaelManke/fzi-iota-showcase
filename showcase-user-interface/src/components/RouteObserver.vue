@@ -77,7 +77,9 @@
               <b-col>
               <b-list-group>
       <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
-          {{event.type}} {{event.info}}
+          <div v-if="event.type==='tripStarted'">Trip from {{getStop(event.info.start).name}} to {{getStop(event.info.destination).name}} started</div>
+          <div v-if="event.type==='tripFinished'">Arrived at {{getStop(event.info.destination).name}}</div>
+          <div v-if="event.type==='transaction'">{{event.info.amount)}} iotas transfered</div>
       </b-list-group-item>
     </b-list-group>
     </b-col>

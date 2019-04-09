@@ -4,17 +4,36 @@ import { RootState } from "../types";
 export const events: Module<EventStore, RootState> = {
   namespaced: true,
   state: {
-    events: []
+    events: [],
+    max_length: 100
   },
   mutations: {
     SOCKET_TransactionIssued(state: any, data: any) {
-      if (state.events.length > 100) {
+      if (state.events.length > state.max_length) {
         state.events.shift();
       }
-      state.events = [
-        ...state.events,
-        { type: "transaction", relId: data.from, info: data }
-      ];
+      state.events.push({ type: "transaction", relId: data.from, info: data });
+    },
+    SOCKET_TripStarted(state: any, data: any) {
+      window.console.log("entered");
+      if (state.events.length > state.max_length) {
+        state.events.shift();
+      }
+      state.events.push({
+        type: "tripStarted",
+        relId: data.userId,
+        info: data
+      });
+    },
+    SOCKET_TripFinished(state: any, data: any) {
+      if (state.events.length > state.max_length) {
+        state.events.shift();
+      }
+      state.events.push({
+        type: "tripFinished",
+        relId: data.userId,
+        info: data
+      });
     }
   },
   getters: {
