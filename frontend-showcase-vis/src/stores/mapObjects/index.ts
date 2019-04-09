@@ -18,45 +18,35 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     SOCKET_PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
+      if (vehicle.trip !== undefined) {
+        const user = state.env.users.find(
+          (el: any) => el.id === vehicle.trip.userId
+        );
+        user.position = data.position;
+      }
     },
     SOCKET_Login(state: any, user: any) {
-      state.env.users = [...state.env.users, user];
+      state.env.users.push(user);
     },
     SOCKET_Logout(state: any, user: any) {
       state.env.users = state.env.users.filter((el: any) => el.id !== user.id);
     },
     // things got a bit messy because vuex does not update pops properly
     SOCKET_TripStarted(state: any, data: any) {
-      const user = state.env.users.find((el: any) => el.id == data.userId);
-      const newUsers = state.env.users.filter(
-        (el: any) => el.id === data.userId
-      );
-      user.trip = data;
-      state.env.users = [newUsers, user];
-      const vehicle = state.env.vehicles.find(
-        (el: any) => el.id == data.vehicleId
-      );
-      const newVehicles = state.env.users.filter(
-        (el: any) => el.id === data.vehicleId
-      );
-      vehicle.trip = data;
-      state.env.vehicles = [newVehicles, vehicle];
+      const newUsers = [...state.env.users];
+      newUsers.find((el: any) => el.id === data.userId).trip = data;
+      state.env.users = newUsers;
+      const newVehicles = [...state.env.vehicles];
+      newVehicles.find((el: any) => el.id === data.vehicleId).trip = data;
+      state.env.vehicles = newVehicles;
     },
     SOCKET_TripFinished(state: any, data: any) {
-      const user = state.env.users.find((el: any) => el.id == data.userId);
-      const newUsers = state.env.users.filter(
-        (el: any) => el.id === data.userId
-      );
-      user.trip = undefined;
-      state.env.users = [newUsers, user];
-      const vehicle = state.env.vehicles.find(
-        (el: any) => el.id == data.vehicleId
-      );
-      const newVehicles = state.env.users.filter(
-        (el: any) => el.id === data.vehicleId
-      );
-      vehicle.trip = undefined;
-      state.env.vehicles = [newVehicles, vehicle];
+      const newUsers = [...state.env.users];
+      newUsers.find((el: any) => el.id === data.userId).trip = undefined;
+      state.env.users = newUsers;
+      const newVehicles = [...state.env.vehicles];
+      newVehicles.find((el: any) => el.id === data.vehicleId).trip = undefined;
+      state.env.vehicles = newVehicles;
     }
   },
   getters: {

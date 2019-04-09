@@ -14,7 +14,8 @@
 
     <!-- representation for stops -->
     <div v-if="type === 'male'" class="info_container">
-      Name: {{ userData.name }}
+      {{ userData.name }} 
+      <span v-if="userData.trip"> trippin'</span>
     </div>
   </div>
 </template>

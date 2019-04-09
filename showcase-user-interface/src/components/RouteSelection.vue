@@ -32,7 +32,7 @@
       Please select a destination and route!
     </b-alert>
     <b-row class="mt-4">
-      <b-col cols=8>
+      <b-col>
         <b-card header="Map">
         <map-visu style="height: 40vh"/>
         </b-card>
