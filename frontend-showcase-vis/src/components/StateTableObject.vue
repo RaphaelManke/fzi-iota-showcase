@@ -4,8 +4,8 @@
 
     <!-- representation for vehicles -->
     <div v-if="type === 'tram' || type === 'car'" class="info_container">
-      {{ vehicleData.name }}: 
-      <span v-if="userData.trip"> Current passenger: {{getUserById(userData.trip.userId).name}}</span>
+      {{ vehicleData.name }} 
+      <span v-if="vehicleData.trip"> Current passenger: {{getUserById(vehicleData.trip.userId).name}}</span>
     </div>
 
     <!-- representation for stops -->
