@@ -51,10 +51,7 @@ export class PathFinder {
         return [
           {
             waypoints: con.path,
-            stops: [
-              { id: s, index },
-              { id: d, index: index + con.path.length - 1 },
-            ],
+            connections: [con],
           },
         ];
       }
@@ -77,7 +74,7 @@ export class PathFinder {
               ? c.path.slice(0, c.path.length - 1)
               : c.path;
             return {
-              stops: [{ id: s, index }, ...path.stops],
+              connections: [c, ...path.connections],
               waypoints: [...front, ...path.waypoints],
             };
           });
@@ -151,7 +148,7 @@ export interface PathResult {
 
 export interface Path {
   waypoints: Position[];
-  stops: Array<{ id: Trytes; index: number }>;
+  connections: Connection[];
 }
 export interface Connection {
   from: Trytes;
