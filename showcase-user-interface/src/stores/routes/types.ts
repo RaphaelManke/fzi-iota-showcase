@@ -1,6 +1,6 @@
 export interface RouteStore {
   routesAvailable: RouteInfo[];
-  routeSelectedId: string;
+  routeSelectedIndex: number;
 }
 
 export interface RouteInfo {

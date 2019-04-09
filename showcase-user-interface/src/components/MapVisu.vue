@@ -45,7 +45,6 @@ export default {
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png", // for BW Map: http://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      testGuy: { position: [49.0091, 8.381], name: "Peter", type: "male" },
       mapOptions: {
         zoomSnap: 0.25
       }

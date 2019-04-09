@@ -44,8 +44,8 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===selectedRouteId"
-      @click="selectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="(route, index) in routes" :active="index===selectedRouteIndex"
+      @click="selectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
                 {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
@@ -120,12 +120,12 @@ export default {
           });
       }
     },
-    selectedRouteId: {
+    selectedRouteIndex: {
       get() {
-        return this.$store.getters["routes/getRouteSelectedId"];
+        return this.$store.getters["routes/getRouteSelectedIndex"];
       },
       set(value) {
-        this.$store.commit("routes/updateRouteSelectedId", value);
+        this.$store.commit("routes/updateRouteSelectedIndex", value);
       }
     }
   },
@@ -151,7 +151,7 @@ export default {
       this.dismissCountDown = this.dismissSecs;
     },
     submitRoute() {
-      if (this.selectedRouteId !== "") {
+      if (this.selectedRouteIndex !== "") {
         this.$http
           .post(this.$hostname + "/trip", this.getNextTrip())
           .then(function(response) {

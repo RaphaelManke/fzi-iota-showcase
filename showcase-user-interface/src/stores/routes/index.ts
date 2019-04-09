@@ -5,13 +5,13 @@ export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
     routesAvailable: [],
-    routeSelectedId: ""
+    routeSelectedIndex: 0
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
     },
-    updateRouteSelectedId(state: any, selected: string) {
+    updateRouteSelectedIndex(state: any, selected: string) {
       state.routeSelectedId = selected;
     }
   },
@@ -19,16 +19,14 @@ export const routes: Module<RouteStore, RootState> = {
     getRoutesAvailable: (state: any) => {
       return state.routesAvailable;
     },
-    getRouteSelectedId: (state: any) => {
-      return state.routeSelectedId;
+    getRouteSelectedIndex: (state: any) => {
+      return state.routeSelectedIndex;
     },
     getRouteById: (state: any) => (id: string) => {
       return state.routesAvailable.find((el: any) => el.id === id);
     },
     getRouteSelected(state: any) {
-      return state.routesAvailable.find(
-        (el: any) => el.id === state.routeSelectedId
-      );
+      return state.routesAvailable[state.routeSelectedIndex];
     }
   }
 };
