@@ -111,10 +111,16 @@ export class Server {
 
     this.app.get('/routes', (req, res) => {
       if (req.query.start && req.query.destination) {
+        const array = (input: any | any[]): any[] =>
+          Array.isArray(input) ? input : [input];
+        const types = req.query.types
+          ? array(req.query.types)
+          : ['tram', 'car', 'bike'];
         res.json(
           this.controller.getRoutes(
             this.controller.env.stops[0].id,
             this.controller.env.stops[2].id,
+            types,
           ),
         );
       } else {

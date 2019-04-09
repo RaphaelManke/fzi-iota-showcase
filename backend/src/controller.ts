@@ -52,10 +52,14 @@ export class Controller {
     };
   }
 
-  public getRoutes(start: Trytes, destination: Trytes): RouteInfo[] {
+  public getRoutes(
+    start: Trytes,
+    destination: Trytes,
+    types: string[],
+  ): RouteInfo[] {
     const pathFinder = new PathFinder(this.env.connections);
     // TODO
-    return pathFinder.getPaths(start, destination, ['tram']).map(
+    return pathFinder.getPaths(start, destination, types).map(
       (r): RouteInfo => ({
         start,
         destination,
