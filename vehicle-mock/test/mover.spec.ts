@@ -117,7 +117,7 @@ describe('Mover', () => {
       e,
       'SEED',
       { lat: 49.00954, lng: 8.403885 },
-      { co2emission: 0, speed: 83, type: 'tram' },
+      { co2emission: 0, speed: 100, type: 'tram' },
     );
     v.stop = 'A';
     const mover = new Mover(v);
