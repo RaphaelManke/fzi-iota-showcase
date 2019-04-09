@@ -23,6 +23,21 @@ export const user: Module<User, RootState> = {
       state.seed = "";
       state.destination = "";
       state.info = { loggedIn: false, balance: 0, name: "-" };
+    },
+    SOCKET_PosUpdated(state: any, data: any) {
+      if (
+        state.info.trip !== undefined &&
+        state.info.trip.vehicleId === data.id
+      ) {
+        state.info.position = data.position;
+      }
+    },
+    // things got a bit messy because vuex does not update pops properly
+    SOCKET_TripStarted(state: any, data: any) {
+      state.info.trip = data;
+    },
+    SOCKET_TripFinished(state: any) {
+      state.info.trip = undefined;
     }
   },
   getters: {
