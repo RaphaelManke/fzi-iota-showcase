@@ -19,6 +19,9 @@ export const user: Module<User, RootState> = {
     updateUserInfo(state: any, info: any) {
       state.info = info;
     },
+    setLogin(state: any, value: boolean) {
+      state.info.loggedIn = value;
+    },
     userLogout(state: any) {
       state.seed = "";
       state.destination = "";
