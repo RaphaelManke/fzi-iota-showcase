@@ -2,9 +2,10 @@
 FROM node:lts-alpine as build-stage
 # install additional build dependecies
 RUN apk add --no-cache --virtual .gyp \
-        python \
-        make \
-        g++ 
+    python \
+    make \
+    git \
+    g++ 
 
 WORKDIR /app
 
