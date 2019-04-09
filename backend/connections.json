@@ -4,7 +4,7 @@
     "to": "LOLNPNSPKSYVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
     "type": "tram",
     "path": [
-      { "lat": 49.00954, "lng": 8.403885 },
+      { "lat": 49.009525, "lng": 8.405141 },
       { "lat": 49.00938, "lng": 8.408518 }
     ]
   },
@@ -27,7 +27,7 @@
       { "lat": 49.00938, "lng": 8.408518 },
       { "lat": 49.009304, "lng": 8.410262 },
       { "lat": 49.007649, "lng": 8.410087 },
-      { "lat": 49.005752, "lng": 8.41046 }
+      { "lat": 49.005752, "lng": 8.41036 }
     ]
   }
 ]

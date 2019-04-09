@@ -5,10 +5,22 @@
     "channelCapacity": 10,
     "stop": "EKSYUIQTOLEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
     "price": 90000000,
-    "reservationRate": 4000000,
+    "reservationRate": 1000000,
     "type": "tram",
     "co2emission": 90000,
-    "speed": 50,
+    "speed": 35,
     "maxReservations": 100
+  },
+  {
+    "seed": "",
+    "name": "Tessy",
+    "channelCapacity": 10,
+    "stop": "LOLNPNSPKSYVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
+    "price": 180000000,
+    "reservationRate": 6000000,
+    "type": "car",
+    "co2emission": 900000,
+    "speed": 50,
+    "maxReservations": 1
   }
 ]
