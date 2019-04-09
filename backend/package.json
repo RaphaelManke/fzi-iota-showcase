@@ -22,11 +22,11 @@
   "license": "ISC",
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./src/main.ts",
+    "localTest": "mocha --reporter spec --inspect",
     "dev": "nodemon",
     "build": "tsc"
   },
   "dependencies": {
-    "@types/minimist": "^1.2.0",
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
     "fzi-iota-showcase-vehicle-mock": "alpha",
@@ -34,9 +34,13 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/express": "^4.16.1",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "^5.2.6",
     "@types/node": "7.0.22",
     "@types/socket.io": "^2.1.2",
-    "@types/express": "^4.16.1",
+    "chai": "^4.2.0",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.10",
