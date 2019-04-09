@@ -1,12 +1,12 @@
-import { enableLogging } from '../src/logger';
-import { Server } from '../src/server';
-import { Controller } from '../src/controller';
-import { Connection, Stop } from '../src/envInfo';
-import { Users } from '../src/users';
-import { SafeEmitter } from '../src/events';
+import { enableLogging } from './logger';
+import { Server } from './server';
+import { Controller } from './controller';
+import { Connection, Stop } from './envInfo';
+import { Users } from './users';
+import { SafeEmitter } from './events';
 import { log } from 'fzi-iota-showcase-client';
-import { VehicleDescription } from '../src/vehicleImporter';
-import { readVehicles } from '../src/vehicleImporter';
+import { VehicleDescription } from './vehicleImporter';
+import { readVehicles } from './vehicleImporter';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
 
