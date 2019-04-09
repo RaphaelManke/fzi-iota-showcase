@@ -2,10 +2,8 @@ import * as express from 'express';
 import * as socketio from 'socket.io';
 import * as http from 'http';
 import { log } from 'fzi-iota-showcase-client';
-import { SafeEmitter, Login } from './events';
-import { EnvironmentInfo, User } from './envInfo';
+import { SafeEmitter } from './events';
 import { Controller } from './controller';
-import { RouteInfo } from './routeInfo';
 import { Trytes } from '@iota/core/typings/types';
 
 export class Server {
@@ -42,6 +40,7 @@ export class Server {
         deny.push(...data);
       });
     });
+    log.info('Configured websocket server.');
 
     this.app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
@@ -146,9 +145,10 @@ export class Server {
         res.send('User not found');
       }
     });
+    log.info('Configured HTTP server.');
 
     this.server.listen(3000);
-    log.info('Listening on port 3000');
+    log.info('Listening on port 3000.');
   }
 }
 
