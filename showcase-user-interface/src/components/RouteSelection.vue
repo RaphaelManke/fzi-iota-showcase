@@ -151,9 +151,10 @@ export default {
       this.dismissCountDown = this.dismissSecs;
     },
     submitRoute() {
-      if (this.selectedRouteIndex !== "") {
+      var trip = this.getNextTrip();
+      if (trip !== undefined) {
         this.$http
-          .post(this.$hostname + "/trip", this.getNextTrip())
+          .post(this.$hostname + "/trip", trip)
           .then(function(response) {
             if (response.status === 200) {
               this.$router.push("route-observer");
