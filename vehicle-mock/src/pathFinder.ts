@@ -32,7 +32,7 @@ export class PathFinder {
     if (cached.length > 0) {
       return cached;
     }
-    const innerGetPath = (
+    const innerGetPaths = (
       s: Trytes,
       d: Trytes,
       index: number,
@@ -63,13 +63,13 @@ export class PathFinder {
         .filter((c) => !visited.has(c.to))
         .map((c) => {
           // paths from stop connected to s to dest
-          const paths = innerGetPath(
+          const backPaths = innerGetPaths(
             c.to,
             dest,
             index + c.path.length - 1,
             new Set<Trytes>(visited),
           );
-          return paths.map((path) => {
+          return backPaths.map((path) => {
             const front = posEquals(
               c.path[c.path.length - 1],
               path.waypoints[0],
@@ -91,7 +91,7 @@ export class PathFinder {
       return innerPaths;
     };
 
-    const paths = innerGetPath(start, dest, 0, new Set<Trytes>()).sort(
+    const paths = innerGetPaths(start, dest, 0, new Set<Trytes>()).sort(
       (a, b) => a.waypoints.length - b.waypoints.length,
     );
     this.cached.push({ start, dest, types, paths });
