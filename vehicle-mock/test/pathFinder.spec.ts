@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { Trytes } from '@iota/core/typings/types';
 import { PathFinder, Connection } from '../src/pathFinder';
-import { Position } from '../src/position';
 import { log } from 'fzi-iota-showcase-client';
 
 describe('PathFinder', () => {

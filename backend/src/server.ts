@@ -4,6 +4,7 @@ import * as http from 'http';
 import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter } from './events';
 import { Controller } from './controller';
+import { trytes } from '@iota/converter';
 import { Trytes } from '@iota/core/typings/types';
 
 export class Server {
@@ -65,7 +66,13 @@ export class Server {
     });
 
     this.app.get('/env', (req, res) => {
-      res.json(this.controller.env);
+      res.contentType('application/json');
+      res.charset = 'utf-8';
+      res.send(
+        JSON.stringify(this.controller.env, (key, value) =>
+          value instanceof Int8Array ? trytes(value) : value,
+        ),
+      );
     });
 
     this.app.post('/login', (req, res) => {

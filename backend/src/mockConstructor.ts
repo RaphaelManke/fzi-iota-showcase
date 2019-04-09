@@ -5,7 +5,7 @@ import { API } from '@iota/core';
 import { VehicleDescription } from './vehicleImporter';
 import {
   VehicleMock,
-  Emitter,
+  Observer,
   Vehicle as MockedVehicle,
 } from 'fzi-iota-showcase-vehicle-mock';
 import { VehicleInfo } from './vehicleInfo';
@@ -36,9 +36,9 @@ export class MockConstructor {
 
     const events = this.events;
 
-    const e: Emitter = {
-      checkedIn(stop) {
-        info.checkIn = stop;
+    const e: Observer = {
+      checkedIn(stop, checkInMessage) {
+        info.checkIn = { stop, message: checkInMessage };
         events.emit('CheckIn', { stopId: stop, vehicleId: info.id });
       },
 
