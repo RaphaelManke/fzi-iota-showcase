@@ -13,7 +13,7 @@ import { Trytes } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
-import { VehicleMock, Router, Type } from 'fzi-iota-showcase-vehicle-mock';
+import { VehicleMock, PathFinder } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
 
@@ -53,9 +53,9 @@ export class Controller {
   }
 
   public getRoutes(start: Trytes, destination: Trytes): RouteInfo[] {
-    const router = new Router(this.env.connections);
+    const pathFinder = new PathFinder(this.env.connections);
     // TODO
-    return router.getRoutes(start, destination, 'tram').map(
+    return pathFinder.getPaths(start, destination, ['tram']).map(
       (r): RouteInfo => ({
         start,
         destination,
@@ -85,8 +85,8 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      const r = new Router(this.env.connections);
-      const [route] = r.getRoutes(start, destination, v.info.info.type as Type);
+      const r = new PathFinder(this.env.connections);
+      const [route] = r.getPaths(start, destination, [v.info.info.type]);
       v.mock
         .startTrip(route)
         .then(() =>

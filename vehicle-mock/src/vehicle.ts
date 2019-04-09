@@ -19,8 +19,8 @@ export class Vehicle {
 
   set stop(stop: Trytes | undefined) {
     this.mStop = stop;
-    if (stop) {
-      this.emitter.checkedIn(stop);
+    if (stop && this.currentTrip) {
+      this.emitter.checkedIn(stop, this.currentTrip.checkInMessage);
     }
   }
 
