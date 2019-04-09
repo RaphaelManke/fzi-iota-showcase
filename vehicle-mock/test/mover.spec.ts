@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { Router, Connection, Type } from '../src/router';
+import { PathFinder, Connection } from '../src/pathFinder';
 import { log } from 'fzi-iota-showcase-client';
 import { Vehicle } from '../src/vehicle';
 import { Emitter } from '../src/emitter';
@@ -104,7 +104,7 @@ describe('Mover', () => {
       },
     ];
 
-    const router = new Router(connections);
+    const pathFinder = new PathFinder(connections);
     const e: Emitter = {
       posUpdated(pos) {
         log.debug('%O', pos);
@@ -121,8 +121,8 @@ describe('Mover', () => {
     );
     v.stop = 'A';
     const mover = new Mover(v);
-    const routes = router.getRoutes(v.stop!, 'C', v.info.type as Type);
-    await mover.startDriving(routes[0], (stop) =>
+    const paths = pathFinder.getPaths(v.stop!, 'C', [v.info.type]);
+    await mover.startDriving(paths[0], (stop) =>
       log.info('Reached stop %s', stop),
     );
     log.info('Arrived');

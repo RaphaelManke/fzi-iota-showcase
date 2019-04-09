@@ -1,6 +1,6 @@
 import { Vehicle } from './vehicle';
 import { Trytes } from '@iota/core/typings/types';
-import { Route } from './router';
+import { Path } from './pathFinder';
 import { interpolate, toGeo } from './interpolator';
 import { getDistance } from 'geolib';
 
@@ -14,15 +14,15 @@ export class Mover {
   constructor(private vehicle: Vehicle) {}
 
   public startDriving(
-    route: Route,
+    paths: Path,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
     return new Promise((resolve, reject) => {
-      if (this.vehicle.stop !== route.stops[0].id) {
-        reject(new Error('Vehicle is not at the start of the given route'));
+      if (this.vehicle.stop !== paths.stops[0].id) {
+        reject(new Error('Vehicle is not at the start of the given path'));
       }
 
-      let { i, next, current } = this.nextSegment(0, route);
+      let { i, next, current } = this.nextSegment(0, paths);
       let driven = 0;
       let nextStop = 1;
       this.continue = true;
@@ -34,9 +34,9 @@ export class Mover {
         if (getDistance(toGeo(pos), toGeo(next)) < Mover.REACHED_THRESHOLD) {
           let stop = false;
           // reached stop ?
-          if (route.stops[nextStop].index === i) {
+          if (paths.stops[nextStop].index === i) {
             if (onStop) {
-              onStop(route.stops[nextStop].id);
+              onStop(paths.stops[nextStop].id);
             }
 
             nextStop++;
@@ -46,13 +46,13 @@ export class Mover {
           }
 
           // path points left ?
-          if (i < route.path.length - 1 && !stop) {
-            ({ current, next, i } = this.nextSegment(i, route));
+          if (i < paths.waypoints.length - 1 && !stop) {
+            ({ current, next, i } = this.nextSegment(i, paths));
             driven = 0;
           } else {
             // arrived
             clearInterval(this.interval!);
-            resolve(route.stops[nextStop - 1].id);
+            resolve(paths.stops[nextStop - 1].id);
           }
         }
       };
@@ -66,12 +66,12 @@ export class Mover {
     }
   }
 
-  private nextSegment(i: number, route: Route) {
+  private nextSegment(i: number, path: Path) {
     i++;
     return {
       i,
-      current: route.path[i - 1],
-      next: route.path[i],
+      current: path.waypoints[i - 1],
+      next: path.waypoints[i],
     };
   }
 }
