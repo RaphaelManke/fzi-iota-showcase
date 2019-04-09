@@ -3,7 +3,7 @@ import 'mocha';
 import { PathFinder, Connection } from '../src/pathFinder';
 import { log } from 'fzi-iota-showcase-client';
 import { Vehicle } from '../src/vehicle';
-import { Emitter } from '../src/emitter';
+import { Observer } from '../src/observer';
 import { Mover } from '../src/mover';
 
 describe('Mover', () => {
@@ -105,7 +105,7 @@ describe('Mover', () => {
     ];
 
     const pathFinder = new PathFinder(connections);
-    const e: Emitter = {
+    const e: Observer = {
       posUpdated(pos) {
         log.debug('%O', pos);
       },

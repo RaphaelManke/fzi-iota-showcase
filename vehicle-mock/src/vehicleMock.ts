@@ -67,7 +67,7 @@ export class VehicleMock {
       }
 
       const nonce = this.generateNonce();
-      const message: CheckInMessage = {
+      const checkInMessage: CheckInMessage = {
         hashedNonce: this.hash(nonce),
         vehicleId: this.masterChannel!.channelRoot,
         vehicleInfo: this.vehicle.info,
@@ -81,12 +81,13 @@ export class VehicleMock {
         this.vehicle.seed,
         this.masterChannel!,
         this.nextStop,
-        message,
+        checkInMessage,
       );
       this.vehicle.currentTrip = {
         ...result,
         nonce,
         state: State.CHECKED_IN,
+        checkInMessage,
       };
       this.vehicle.stop = this.nextStop;
       this.nextStop = undefined;
