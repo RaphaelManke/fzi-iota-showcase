@@ -1,6 +1,6 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
-import { Route } from './router';
+import { Path } from './pathFinder';
 import { Trytes, Hash } from '@iota/core/typings/types';
 import { API, composeAPI } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
@@ -94,12 +94,12 @@ export class VehicleMock {
   }
 
   public async startTrip(
-    route: Route,
+    path: Path,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
     if (this.vehicle.currentTrip) {
       this.vehicle.currentTrip.state = State.DEPARTED;
-      return await this.mover.startDriving(route, (stop) => {
+      return await this.mover.startDriving(path, (stop) => {
         this.nextStop = stop;
         if (onStop) {
           onStop(stop);

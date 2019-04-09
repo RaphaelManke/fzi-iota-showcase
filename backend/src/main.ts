@@ -21,6 +21,7 @@ import * as fs from 'fs';
       },
     });
 
+    log.info('Reading environment settings from files...');
     const stops: Stop[] = JSON.parse(fs.readFileSync(args.stops).toString());
     const connections: Connection[] = JSON.parse(
       fs.readFileSync(args.connections).toString(),

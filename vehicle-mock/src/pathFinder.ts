@@ -1,12 +1,12 @@
 import { Position } from './position';
 import { Trytes } from '@iota/core/typings/types';
 
-export class Router {
+export class PathFinder {
   private conntectedTo = new Map<Trytes, Set<Connection>>();
 
   constructor(
     connections: Connection[],
-    private readonly cached: RouteResult[] = [],
+    private readonly cached: PathResult[] = [],
   ) {
     const stops = new Set([
       ...connections.map((c) => c.from),
@@ -26,8 +26,9 @@ export class Router {
     });
   }
 
-  public getRoutes(start: Trytes, dest: Trytes, type: Type): Route[] {
-    const cached = this.getCached(start, dest, type);
+  public getPaths(start: Trytes, dest: Trytes, types: string[]): Path[] {
+    const typesSet = new Set<Trytes>(types);
+    const cached = this.getCached(start, dest, types);
     if (cached.length > 0) {
       return cached;
     }
@@ -36,20 +37,20 @@ export class Router {
       d: Trytes,
       index: number,
       visited: Set<Trytes>,
-    ): Route[] => {
+    ): Path[] => {
       const cons = this.conntectedTo.get(s);
       visited.add(s);
       // no connections from s
       if (!cons) {
         return [];
       }
-      const arr = Array.from(cons).filter((c) => c.type === type);
+      const arr = Array.from(cons).filter((c) => typesSet.has(c.type));
       const [con] = arr.filter((c) => c.to === d);
       // direct connection from s to d
       if (con) {
         return [
           {
-            path: con.path,
+            waypoints: con.path,
             stops: [
               { id: s, index },
               { id: d, index: index + con.path.length - 1 },
@@ -58,7 +59,7 @@ export class Router {
         ];
       }
 
-      const innerRoutes: Route[] = arr
+      const innerPaths: Path[] = arr
         .filter((c) => !visited.has(c.to))
         .map((c) => {
           // paths from stop connected to s to dest
@@ -69,36 +70,39 @@ export class Router {
             new Set<Trytes>(visited),
           );
           return paths.map((path) => {
-            const front = equals(c.path[c.path.length - 1], path.path[0])
+            const front = posEquals(
+              c.path[c.path.length - 1],
+              path.waypoints[0],
+            )
               ? c.path.slice(0, c.path.length - 1)
               : c.path;
             return {
               stops: [{ id: s, index }, ...path.stops],
-              path: [...front, ...path.path],
+              waypoints: [...front, ...path.waypoints],
             };
           });
         })
         .reduce((acc, v) => {
           v.forEach((p) => acc.push(p));
           return acc;
-        }, new Array<Route>())
-        .sort((a, b) => a.path.length - b.path.length);
+        }, new Array<Path>())
+        .sort((a, b) => a.waypoints.length - b.waypoints.length);
 
-      return innerRoutes;
+      return innerPaths;
     };
 
-    const routes = innerGetPath(start, dest, 0, new Set<Trytes>()).sort(
-      (a, b) => a.path.length - b.path.length,
+    const paths = innerGetPath(start, dest, 0, new Set<Trytes>()).sort(
+      (a, b) => a.waypoints.length - b.waypoints.length,
     );
-    this.cached.push({ start, dest, type, routes });
-    return routes;
+    this.cached.push({ start, dest, types, paths });
+    return paths;
   }
 
-  public getCached(start: Trytes, dest: Trytes, type: Type) {
+  public getCached(start: Trytes, dest: Trytes, types: string[]) {
     const result = this.cached.find(
-      (r) => r.start === start && r.dest === dest && r.type === type,
+      (r) => r.start === start && r.dest === dest && arrayEquals(r.types, types),
     );
-    return result ? result.routes : [];
+    return result ? result.paths : [];
   }
 
   private add = (id: Trytes, to: Connection[]) => {
@@ -109,26 +113,49 @@ export class Router {
   }
 }
 
-function equals(a: Position, b: Position) {
+function arrayEquals(a: any[], b: any[]) {
+  if (!a) {
+    return !b;
+  }
+
+  // compare lengths - can save a lot of time
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0, l = a.length; i < l; i++) {
+    // Check if we have nested arrays
+    if (a[i] instanceof Array && b[i] instanceof Array) {
+      // recurse into the nested arrays
+      if (!arrayEquals(a[i], b[i])) {
+        return false;
+      }
+    } else if (a[i] !== b[i]) {
+      // Warning - two different object instances will never be equal: {x:20} != {x:20}
+      return false;
+    }
+  }
+  return true;
+}
+
+function posEquals(a: Position, b: Position) {
   return a.lat === b.lat && a.lng === b.lng;
 }
 
-export type Type = 'car' | 'bike' | 'tram';
-
-export interface RouteResult {
+export interface PathResult {
   start: Trytes;
   dest: Trytes;
-  routes: Route[];
-  type: Type;
+  paths: Path[];
+  types: string[];
 }
 
-export interface Route {
-  path: Position[];
+export interface Path {
+  waypoints: Position[];
   stops: Array<{ id: Trytes; index: number }>;
 }
 export interface Connection {
   from: Trytes;
   to: Trytes;
   path: Position[];
-  type: Type;
+  type: string;
 }
