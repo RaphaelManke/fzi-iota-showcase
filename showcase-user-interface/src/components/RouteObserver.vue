@@ -28,13 +28,8 @@
         </b-row>
         <b-row class="mt-4">
       <b-col>
-          <!-- Map View -->
-          <b-card no-body>
-          <b-tabs card>
-        <b-tab title="Map">
+        <b-card header="Map" style="height: 100%">
         <map-visu style="height: 40vh"/>
-        </b-tab>
-        </b-tabs>
         </b-card>
       </b-col>
       <b-col>
