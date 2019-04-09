@@ -18,6 +18,17 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     SOCKET_PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
+    },
+    // things got a bit messy because vuex does not update pops properly
+    SOCKET_TripStarted(state: any, data: any) {
+      const newVehicles = [...state.env.vehicles];
+      newVehicles.find((el: any) => el.id === data.vehicleId).trip = data;
+      state.env.vehicles = newVehicles;
+    },
+    SOCKET_TripFinished(state: any, data: any) {
+      const newVehicles = [...state.env.vehicles];
+      newVehicles.find((el: any) => el.id === data.vehicleId).trip = undefined;
+      state.env.vehicles = newVehicles;
     }
   },
   getters: {
