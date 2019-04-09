@@ -48,13 +48,32 @@ describe('PathFinder', () => {
           },
         ],
       },
+      {
+        from: 'B',
+        to: 'C',
+        type: 'tram',
+        path: [
+          {
+            lat: 10,
+            lng: 0,
+          },
+          {
+            lat: 10,
+            lng: 5,
+          },
+          {
+            lat: 10,
+            lng: 10,
+          },
+        ],
+      },
     ];
     const r = new PathFinder(cons);
     let p = r.getPaths('A', 'B', ['car']); // easy
     let a = expect(p).to.exist;
     log.info('%o', p);
 
-    p = r.getPaths('A', 'C', ['car']);
+    p = r.getPaths('A', 'C', ['car', 'tram']);
     a = expect(p).to.exist;
     log.info('%o', p);
 

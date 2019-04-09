@@ -7,6 +7,14 @@
     {
       "type": "node",
       "request": "attach",
+      "name": "Attach to Mocha",
+      "port": 9229,
+      "restart": true,
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "attach",
       "name": "Attach to Process",
       "port": 5858,
       "restart": true,
