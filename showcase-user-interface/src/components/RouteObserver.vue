@@ -47,7 +47,7 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="route in routes" :active="route.id===locallySelectedRouteId" @click="locallySelectedRouteId=route.id" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <b-col v-for=" section in route.sections">
                 {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
@@ -64,7 +64,7 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button block variant='primary' @click="selectedRouteId=locallySelectedRouteId">Change route</b-button>
+    <b-button block variant='primary' @click="selectedRouteIndex=locallySelectedRouteInde">Change route</b-button>
        </b-col>
         </b-row>
         </div>
@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       mouseOnEvents: false,
-      locallySelectedRouteId: this.selectedRouteId
+      locallySelectedRouteIndex: this.selectedRouteIndex
     };
   },
   computed: {
@@ -126,12 +126,12 @@ export default {
     routes() {
       return this.$store.getters["routes/getRoutesAvailable"];
     },
-    selectedRouteId: {
+    selectedRouteIndex: {
       get() {
-        return this.$store.getters["routes/getRouteSelectedId"];
+        return this.$store.getters["routes/getRouteSelectedIndex"];
       },
       set(value) {
-        this.$store.commit("routes/updateRouteSelectedId", value);
+        this.$store.commit("routes/updateRouteSelectedIndex", value);
       }
     },
     selectedRoute() {

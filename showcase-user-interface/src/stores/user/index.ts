@@ -32,7 +32,6 @@ export const user: Module<User, RootState> = {
         state.info.position = data.position;
       }
     },
-    // things got a bit messy because vuex does not update pops properly
     SOCKET_TripStarted(state: any, data: any) {
       state.info.trip = data;
     },
