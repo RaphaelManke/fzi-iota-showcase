@@ -18,6 +18,12 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     SOCKET_PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
+      if (vehicle.trip !== undefined) {
+        const user = state.env.users.find(
+          (el: any) => el.id === vehicle.trip.userId
+        );
+        user.position = data.position;
+      }
     },
     SOCKET_Login(state: any, user: any) {
       state.env.users.push(user);
