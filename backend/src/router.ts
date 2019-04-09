@@ -17,6 +17,7 @@ export class Router {
     start: Trytes,
     destination: Trytes,
     types: string[],
+    departureTime = new Date(),
   ): RouteInfo[] {
     const paths = this.pathFinder.getPaths(start, destination, types);
     const routes: RouteInfo[][] = paths.map((p) => {
@@ -38,7 +39,7 @@ export class Router {
       }
       reducedConnections.push(cur);
 
-      return this.buildRoutes(reducedConnections).map((sa) => ({
+      return this.buildRoutes(reducedConnections, departureTime).map((sa) => ({
         start,
         destination,
         sections: sa,
@@ -50,7 +51,10 @@ export class Router {
     }, []);
   }
 
-  private buildRoutes(remainingConnections: Connection[]): Section[][] {
+  private buildRoutes(
+    remainingConnections: Connection[],
+    start: Date,
+  ): Section[][] {
     const c = remainingConnections[0];
     const vehicles = this.vehicles
       .filter((v) => v.checkIn)
@@ -62,7 +66,12 @@ export class Router {
     );
     const sections = vehicles.map(
       (v): Section => {
-        const departure = v.checkIn!.message.validFrom || new Date();
+        const validFrom = v.checkIn!.message.validFrom;
+        const departure = validFrom
+          ? validFrom.getTime() > start.getTime()
+            ? validFrom
+            : start
+          : start;
         const secs = (distance * 1000) / v.info.speed;
         const arrival = new Date(departure.getTime() + secs);
 
@@ -84,7 +93,7 @@ export class Router {
     } else {
       const result: Section[][] = [];
       for (const head of sections) {
-        for (const s of this.buildRoutes(remain)) {
+        for (const s of this.buildRoutes(remain, head.arrival)) {
           result.push([head, ...s]);
         }
       }
