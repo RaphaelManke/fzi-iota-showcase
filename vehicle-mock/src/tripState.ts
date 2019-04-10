@@ -10,6 +10,7 @@ export interface TripState {
   checkInMessage: CheckInMessage;
   nonce: Trytes;
   state: State;
+  stop: Trytes;
 }
 
 export enum State {

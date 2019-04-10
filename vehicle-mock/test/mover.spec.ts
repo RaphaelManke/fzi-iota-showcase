@@ -112,19 +112,18 @@ describe('Mover', () => {
       checkedIn(stop) {
         log.debug('Vehicle checked in at: %s', stop);
       },
+      reachedStop(stop) {
+        log.info('Vehicle reached stop %s', stop);
+      },
     };
-    const v = new Vehicle(
-      e,
-      'SEED',
-      { lat: 49.00954, lng: 8.403885 },
-      { co2emission: 0, speed: 100, type: 'tram' },
-    );
-    v.stop = 'A';
+    const v = new Vehicle(e, 'SEED', { lat: 49.00954, lng: 8.403885 }, 'A', {
+      co2emission: 0,
+      speed: 100,
+      type: 'tram',
+    });
     const mover = new Mover(v);
     const paths = pathFinder.getPaths(v.stop!, 'C', [v.info.type]);
-    await mover.startDriving(paths[0], (stop) =>
-      log.info('Reached stop %s', stop),
-    );
+    await mover.startDriving(paths[0], (stop) => e.reachedStop(stop));
     log.info('Arrived');
   });
 });

@@ -22,7 +22,6 @@ export class VehicleMock {
 
   constructor(
     private vehicle: Vehicle,
-    private nextStop: Trytes | undefined,
     private capacity: number,
     private price: number,
     private reservationsRate: number,
@@ -58,7 +57,7 @@ export class VehicleMock {
   }
 
   public async checkInAtCurrentStop() {
-    if (this.nextStop) {
+    if (this.vehicle.stop) {
       if (!this.masterChannel) {
         await this.syncTangle();
       }
@@ -80,17 +79,16 @@ export class VehicleMock {
         this.provider,
         this.vehicle.seed,
         this.masterChannel!,
-        this.nextStop,
+        this.vehicle.stop,
         checkInMessage,
       );
-      this.vehicle.currentTrip = {
+      this.vehicle.trip = {
         ...result,
         nonce,
         state: State.CHECKED_IN,
         checkInMessage,
+        stop: this.vehicle.stop,
       };
-      this.vehicle.stop = this.nextStop;
-      this.nextStop = undefined;
     }
   }
 
@@ -98,10 +96,10 @@ export class VehicleMock {
     path: Path,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
-    if (this.vehicle.currentTrip) {
-      this.vehicle.currentTrip.state = State.DEPARTED;
+    if (this.vehicle.trip) {
+      this.vehicle.trip.state = State.DEPARTED;
       return await this.mover.startDriving(path, (stop) => {
-        this.nextStop = stop;
+        this.vehicle.stop = stop;
         if (onStop) {
           onStop(stop);
         }

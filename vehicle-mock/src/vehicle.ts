@@ -4,7 +4,7 @@ import { Position } from './position';
 import { TripState } from './tripState';
 
 export class Vehicle {
-  public currentTrip: TripState | undefined;
+  private currentTrip: TripState | undefined;
   private mStop: Trytes | undefined;
   private mPosition: Position;
 
@@ -12,15 +12,28 @@ export class Vehicle {
     public observer: Observer,
     public seed: Trytes,
     position: Position,
+    stop: Trytes,
     public info: { type: string; speed: number; co2emission: number },
   ) {
     this.mPosition = position;
+    this.stop = stop;
+  }
+
+  set trip(trip: TripState | undefined) {
+    this.currentTrip = trip;
+    if (trip) {
+      this.observer.checkedIn(trip.stop, trip.checkInMessage);
+    }
+  }
+
+  get trip() {
+    return this.currentTrip;
   }
 
   set stop(stop: Trytes | undefined) {
     this.mStop = stop;
-    if (stop && this.currentTrip) {
-      this.observer.checkedIn(stop, this.currentTrip.checkInMessage);
+    if (stop) {
+      this.observer.reachedStop(stop);
     }
   }
 

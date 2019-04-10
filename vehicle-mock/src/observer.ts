@@ -6,4 +6,6 @@ export interface Observer {
   posUpdated(position: Position): void;
 
   checkedIn(stop: Trytes, checkIn: CheckInMessage): void;
+
+  reachedStop(stop: Trytes): void;
 }
