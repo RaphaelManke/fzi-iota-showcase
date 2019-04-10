@@ -18,7 +18,7 @@ export const routes: Module<RouteStore, RootState> = {
         JSON.stringify(state.routesAvailable[state.routeSelectedIndex])
       );
       state.routeSelected.sections.forEach((el: any) => {
-        el.duration = parseInt(
+        el.duration = Math.round(
           (Date.parse(el.arrival) - Date.parse(el.departure)) / 500
         );
         el.passed_count = 0;
