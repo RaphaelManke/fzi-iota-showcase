@@ -12,7 +12,7 @@ export const routes: Module<RouteStore, RootState> = {
       state.routesAvailable = route;
     },
     updateRouteSelectedIndex(state: any, selected: string) {
-      state.routeSelectedId = selected;
+      state.routeSelectedIndex = selected;
     }
   },
   getters: {
