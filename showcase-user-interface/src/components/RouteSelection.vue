@@ -22,15 +22,6 @@
             </b-card>
        </b-col>
        </b-row>
-       <b-alert
-      :show="dismissCountDown"
-      dismissible
-      variant="warning"
-      @dismissed="dismissCountDown=0"
-      @dismiss-count-down="countDownChanged"
-    >
-      Please select a destination and route!
-    </b-alert>
     <b-row class="mt-4">
       <b-col>
         <b-card header="Map">
@@ -38,6 +29,16 @@
         </b-card>
       </b-col>
       <b-col>
+        <b-alert
+      :show="dismissCountDown"
+      dismissible
+      variant="warning"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+      style="position: fixed; z-index: 9999;"
+    >
+      Please select a destination and route!
+    </b-alert>
           <b-card header="Route Options">
             <div style="height: 40vh">
               <div style="height: 80%; overflow-y: scroll">
@@ -125,15 +126,21 @@ export default {
         return this.$store.getters["routes/getRouteSelectedIndex"];
       },
       set(value) {
-        this.$store.commit("routes/updateRouteSelectedIndex", value);
+        this.$store.commit("routes/updateRouteSelected", value);
       }
     }
   },
   methods: {
     getNextTrip() {
-      let trip = this.$store.getters["routes/getRouteSelected"].sections.find(
-        section => section.from === this.$store.getters["user/getUserInfo"].stop
-      );
+      let trip = undefined;
+      try {
+        trip = this.$store.getters["routes/getRouteSelected"].sections.find(
+          section =>
+            section.from === this.$store.getters["user/getUserInfo"].stop
+        );
+      } catch (err) {
+        return undefined;
+      }
       return {
         seed: this.$store.getters["user/getSeed"],
         vehicle: trip.vehicle.id,

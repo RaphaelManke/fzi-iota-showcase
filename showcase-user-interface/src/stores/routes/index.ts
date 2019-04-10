@@ -5,14 +5,29 @@ export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
     routesAvailable: [],
-    routeSelectedIndex: 0
+    routeSelectedIndex: -1,
+    routeSelected: undefined
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
     },
-    updateRouteSelectedIndex(state: any, selected: string) {
-      state.routeSelectedId = selected;
+    updateRouteSelected(state: any, selected: string) {
+      state.routeSelectedIndex = selected;
+      state.routeSelected = JSON.parse(
+        JSON.stringify(state.routesAvailable[state.routeSelectedIndex])
+      );
+      state.routeSelected.sections.forEach((el: any) => {
+        el.duration = parseInt(
+          (Date.parse(el.arrival) - Date.parse(el.departure)) / 500
+        );
+        el.passed_count = 0;
+      });
+    },
+    SOCKET_PosUpdated(state: any, data: any) {
+      state.routeSelected.sections.find(
+        (sec: any) => sec.vehicle.id === data.id
+      ).passed_count++;
     }
   },
   getters: {
@@ -26,7 +41,7 @@ export const routes: Module<RouteStore, RootState> = {
       return state.routesAvailable.find((el: any) => el.id === id);
     },
     getRouteSelected(state: any) {
-      return state.routesAvailable[state.routeSelectedIndex];
+      return state.routeSelected;
     }
   }
 };

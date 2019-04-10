@@ -13,7 +13,7 @@
                                     
                                         <img :src="getImageSrc(section.vehicle.type)"/>
                                     
-                                <b-progress :max="section.price" :value="0.25*section.price" variant="success" striped=true></b-progress>
+                                <b-progress :max="section.duration" :value="section.passed_count" variant="success" striped=true></b-progress>
                                     
                                 </b-col>
                                 <b-col class="mt-2">
@@ -33,7 +33,7 @@
         </b-card>
       </b-col>
       <b-col>
-          <!-- Collapsable route options view-->
+          <!-- Route options view-->
           <b-card no-body>
           <b-tabs card>
                 <b-tab title="Route Options" @click="refreshRoutes">
@@ -131,7 +131,7 @@ export default {
         return this.$store.getters["routes/getRouteSelectedIndex"];
       },
       set(value) {
-        this.$store.commit("routes/updateRouteSelectedIndex", value);
+        this.$store.commit("routes/updateRouteSelected", value);
       }
     },
     selectedRoute() {
