@@ -177,6 +177,7 @@ function getId(type: string[], data: any) {
       prop = 'from';
       break;
     case 'CheckIn':
+    case 'ReachedStop':
       prop = 'vehicleId';
       break;
     default:

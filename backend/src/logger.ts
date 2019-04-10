@@ -15,6 +15,7 @@ export function enableLogging(events: SafeEmitter) {
       case 'PosUpdated':
         format = { skip: 'id', entity: 'Vehicle' };
         break;
+      case 'ReachedStop':
       case 'CheckIn':
         format = { skip: 'vehicleId', entity: 'Vehicle' };
         break;

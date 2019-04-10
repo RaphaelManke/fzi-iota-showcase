@@ -1,5 +1,5 @@
 import { Trytes, Hash } from '@iota/core/typings/types';
-import { Position, User } from './envInfo';
+import { Position } from './envInfo';
 import { EventEmitter2, Listener, EventAndListener } from 'eventemitter2';
 
 export class SafeEmitter {
@@ -46,6 +46,7 @@ export class SafeEmitter {
 
 export type Event =
   | ['CheckIn', CheckIn]
+  | ['ReachedStop', ReachedStop]
   | ['Login', Login]
   | ['ReservationIssued', ReservationIssued]
   | ['ReservationExpired', ReservationExpired]
@@ -55,6 +56,11 @@ export type Event =
   | ['PosUpdated', PosUpdated]
   | ['Logout', Logout]
   | ['TransactionIssued', TransactionIssued];
+
+export interface ReachedStop {
+  stopId: Trytes;
+  vehicleId: Trytes;
+}
 
 export interface CheckIn {
   stopId: Trytes;

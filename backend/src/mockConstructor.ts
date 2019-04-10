@@ -46,11 +46,20 @@ export class MockConstructor {
         info.position = pos;
         events.emit('PosUpdated', { id: info.id, position: pos });
       },
+
+      reachedStop(stop) {
+        events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
+      },
     };
 
     const mock = new VehicleMock(
-      new MockedVehicle(e, v.seed, this.stops.get(v.stop)!.position, info.info),
-      v.stop,
+      new MockedVehicle(
+        e,
+        v.seed,
+        this.stops.get(v.stop)!.position,
+        v.stop,
+        info.info,
+      ),
       v.channelCapacity,
       v.price,
       v.reservationRate,
