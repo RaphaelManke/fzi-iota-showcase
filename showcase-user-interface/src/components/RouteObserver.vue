@@ -2,7 +2,7 @@
     <b-container fluid>
         <b-row class="mt-4">
             <b-col>
-                <b-card header="Selected Route">
+                <b-card id="routecard" header="Selected Route">
                     <b-row align-h="center" class="text-center">
                         <b-col align-self="center" v-for="(section, index) in selectedRoute.sections">
                             <b-row>
@@ -24,6 +24,9 @@
                         
                     </b-row>
                 </b-card>
+                <b-popover :show.sync="!userInfo.trip" target="routecard" title="Resume Route?">
+        Hello <strong>World!</strong>
+      </b-popover>
             </b-col>
         </b-row>
         <b-row class="mt-4">
@@ -159,8 +162,8 @@ export default {
       this.$http
         .get(this.$hostname + "/routes", {
           params: {
-            start: this.currentStop,
-            destination: value
+            start: this.$store.getters["user/getUserInfo"].stop,
+            destination: this.$store.getters["user/getDestination"]
           }
         })
         .then(function(response) {
@@ -178,7 +181,8 @@ export default {
         summedPrice += element.price;
       });
       return summedPrice;
-    }
+    },
+    showResumeRouteAlert() {}
   }
 };
 </script>

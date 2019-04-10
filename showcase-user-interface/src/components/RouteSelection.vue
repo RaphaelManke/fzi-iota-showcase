@@ -107,7 +107,7 @@ export default {
         this.$http
           .get(this.$hostname + "/routes", {
             params: {
-              start: this.currentStop,
+              start: this.$store.getters["user/getUserInfo"].stop,
               destination: value
             }
           })
