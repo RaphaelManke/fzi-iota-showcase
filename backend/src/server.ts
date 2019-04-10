@@ -118,8 +118,8 @@ export class Server {
           : ['tram', 'car', 'bike'];
         res.json(
           this.controller.getRoutes(
-            this.controller.env.stops[0].id,
-            this.controller.env.stops[2].id,
+            req.query.start,
+            req.query.destination,
             types,
           ),
         );
