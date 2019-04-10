@@ -13,6 +13,7 @@ export interface Section {
   };
   from: Trytes; // stop
   to: Trytes; // stop
+  intermediateStops: Trytes[];
   departure: Date; // timestamp
   arrival: Date; // timestamp
   price: number;

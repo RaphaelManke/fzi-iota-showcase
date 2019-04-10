@@ -1,4 +1,4 @@
-import { PathFinder } from 'fzi-iota-showcase-vehicle-mock';
+import { PathFinder, Path } from 'fzi-iota-showcase-vehicle-mock';
 import { Connection } from './envInfo';
 import { VehicleInfo } from './vehicleInfo';
 import { Trytes } from '@iota/core/typings/types';
@@ -21,38 +21,50 @@ export class Router {
   ): RouteInfo[] {
     const paths = this.pathFinder.getPaths(start, destination, types);
     const routes: RouteInfo[][] = paths.map((p) => {
-      const reducedConnections = [];
-      let cur = p.connections[0];
-      for (let i = 1; i < p.connections.length; i++) {
-        const c = p.connections[i];
-        if (cur.type === c.type) {
-          cur = {
-            from: cur.from,
-            to: c.to,
-            type: c.type,
-            path: [...cur.path, ...c.path],
-          };
-        } else {
-          reducedConnections.push(cur);
-          cur = c;
-        }
-      }
-      reducedConnections.push(cur);
+      const reducedConnections = this.reduceConnections(p);
 
-      return this.buildRoutes(reducedConnections, departureTime).map((sa) => ({
-        start,
-        destination,
-        sections: sa,
-      }));
+      return this.buildSections(reducedConnections, departureTime).map(
+        (sections) => ({
+          start,
+          destination,
+          sections,
+        }),
+      );
     });
+
     return routes.reduce((acc, v) => {
       acc.push(...v);
       return acc;
     }, []);
   }
 
-  private buildRoutes(
-    remainingConnections: Connection[],
+  private reduceConnections(p: Path) {
+    const reducedConnections: ReducedConnection[] = [];
+    let cur: ReducedConnection = {
+      ...p.connections[0],
+      intermediateStops: [],
+    };
+    for (let i = 1; i < p.connections.length; i++) {
+      const c = p.connections[i];
+      if (cur.type === c.type) {
+        cur = {
+          from: cur.from,
+          to: c.to,
+          type: c.type,
+          path: [...cur.path, ...c.path],
+          intermediateStops: [...cur.intermediateStops, c.from],
+        };
+      } else {
+        reducedConnections.push(cur);
+        cur = { ...c, intermediateStops: [] };
+      }
+    }
+    reducedConnections.push(cur);
+    return reducedConnections;
+  }
+
+  private buildSections(
+    remainingConnections: ReducedConnection[],
     start: Date,
   ): Section[][] {
     const c = remainingConnections[0];
@@ -80,6 +92,7 @@ export class Router {
           price: v.checkIn!.message.price,
           from: c.from,
           to: c.to,
+          intermediateStops: c.intermediateStops,
           distance,
           departure,
           arrival,
@@ -93,11 +106,15 @@ export class Router {
     } else {
       const result: Section[][] = [];
       for (const head of sections) {
-        for (const s of this.buildRoutes(remain, head.arrival)) {
+        for (const s of this.buildSections(remain, head.arrival)) {
           result.push([head, ...s]);
         }
       }
       return result;
     }
   }
+}
+
+interface ReducedConnection extends Connection {
+  intermediateStops: Trytes[];
 }
