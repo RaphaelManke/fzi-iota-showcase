@@ -50,7 +50,6 @@
     "all": false
   },
   "dependencies": {
-    "fzi-iota-showcase-client": "alpha",
     "fzi-iota-showcase-vehicle-client": "alpha",
     "geolib": "^2.0.24",
     "vector2d": "^3.0.0"
