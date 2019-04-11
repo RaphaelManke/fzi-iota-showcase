@@ -3,11 +3,11 @@
     :lat-lng="vehicleData.position"
     :draggable="false"
     :icon="vehicleIcon"
-    z-index-offset="999"
+    :z-index-offset="prioityZIndex"
   >
     <l-tooltip
       :options="{ permanent: true, direction: 'bottom' }"
-      z-index-offset="999"
+      :z-index-offset="prioityZIndex"
       class="iota_style"
     >
       {{ vehicleData.name }}
@@ -28,6 +28,11 @@ export default {
       type: String,
       default: ""
     }
+  },
+  data() {
+    return {
+      prioityZIndex: 9999
+    };
   },
   computed: {
     vehicleData() {
