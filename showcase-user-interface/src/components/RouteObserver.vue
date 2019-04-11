@@ -65,7 +65,7 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button block variant='primary' @click="selectedRouteIndex=locallySelectedRouteIndex">Change route</b-button>
+    <b-button block variant='primary' @click="changeRoute">Change route</b-button>
        </b-col>
         </b-row>
         </div>
@@ -161,6 +161,12 @@ export default {
     }
   },
   methods: {
+    changeRoute() {
+      this.selectedRouteIndex = this.locallySelectedRouteIndex;
+      if (this.$store.getters["user/getUserInfo"].trip === undefined) {
+        this.resumeRoute();
+      }
+    },
     finishRoute() {
       this.$store.commit("routes/routeFinished");
       this.$router.push("route-selection");
@@ -170,9 +176,10 @@ export default {
       try {
         trip = this.$store.getters["routes/getRouteSelected"].sections.find(
           section =>
-            section.from === this.$store.getters["user/getUserInfo"].stop
+            section.from === this.$store.getters["user/getCurrentStopId"]
         );
       } catch (err) {
+        window.console.error(err);
         return undefined;
       }
       return {
