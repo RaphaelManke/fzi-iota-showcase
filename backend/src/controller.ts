@@ -66,11 +66,29 @@ export class Controller {
     vehicleInfo: VehicleInfo,
     user: User,
     start: Trytes,
+    intermediateStops: Trytes[],
     destination: Trytes,
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      const r = new PathFinder(this.env.connections);
+      const forType = this.env.connections.filter(
+        (c) => c.type === vehicleInfo.info.type,
+      );
+      const connections: Connection[] = [];
+      const stops = [start, ...intermediateStops, destination];
+      for (let i = 0; i < stops.length - 1; i++) {
+        const from = stops[i];
+        const to = stops[i + 1];
+        const found = forType.find((c) => c.from === from && c.to === to);
+        if (found) {
+          connections.push(found);
+        } else {
+          throw new Error(
+            'No connection from ' + from + ' to ' + to + ' found',
+          );
+        }
+      }
+      const r = new PathFinder(connections);
       const [route] = r.getPaths(start, destination, [v.info.info.type]);
       v.mock
         .startTrip(route)

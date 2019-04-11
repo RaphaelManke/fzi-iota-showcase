@@ -139,22 +139,42 @@ export class Server {
         if (vehicle) {
           if (this.controller.env.stops.find((s) => s.id === b.start)) {
             if (this.controller.env.stops.find((s) => s.id === b.destination)) {
-              this.controller.startTrip(vehicle, user, b.start, b.destination);
-              res.send();
+              if (
+                b.intermediateStops.every((s: Trytes) =>
+                  this.controller.env.stops.find((f) => f.id === s),
+                )
+              ) {
+                try {
+                  this.controller.startTrip(
+                    vehicle,
+                    user,
+                    b.start,
+                    b.intermediateStops,
+                    b.destination,
+                  );
+                  res.send();
+                } catch (e) {
+                  res.status(400);
+                  res.send('No route found.');
+                }
+              } else {
+                res.status(404);
+                res.send('Intermediate stop not found');
+              }
             } else {
-              res.status(400);
+              res.status(404);
               res.send('Destination stop not found');
             }
           } else {
-            res.status(400);
+            res.status(404);
             res.send('Start stop not found');
           }
         } else {
-          res.status(400);
+          res.status(404);
           res.send('Vehicle not found');
         }
       } else {
-        res.status(400);
+        res.status(404);
         res.send('User not found');
       }
     });
