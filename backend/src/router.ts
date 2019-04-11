@@ -23,13 +23,13 @@ export class Router {
     const routes: RouteInfo[][] = paths.map((p) => {
       const reducedConnections = this.reduceConnections(p);
 
-      return this.buildSections(reducedConnections, departureTime).map(
-        (sections) => ({
+      return this.buildSections(reducedConnections, departureTime)
+        .filter((s) => s.length > 0)
+        .map((sections) => ({
           start,
           destination,
           sections,
-        }),
-      );
+        }));
     });
 
     return routes.reduce((acc, v) => {
