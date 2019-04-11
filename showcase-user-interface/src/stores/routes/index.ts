@@ -24,6 +24,11 @@ export const routes: Module<RouteStore, RootState> = {
         el.passed_count = 0;
       });
     },
+    routeFinished(state: any) {
+      state.routeSelected = undefined;
+      state.routeSelectedIndex = -1;
+      state.routesAvailable = [];
+    },
     SOCKET_PosUpdated(state: any, data: any) {
       state.routeSelected.sections.find(
         (sec: any) => sec.vehicle.id === data.id

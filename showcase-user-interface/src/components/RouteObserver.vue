@@ -162,6 +162,7 @@ export default {
   },
   methods: {
     finishRoute() {
+      this.$store.commit("routes/routeFinished");
       this.$router.push("route-selection");
     },
     getNextTrip() {
