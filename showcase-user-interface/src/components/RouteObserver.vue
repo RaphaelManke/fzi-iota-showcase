@@ -16,20 +16,20 @@
                                 <b-progress :max="section.duration" :value="section.passed_count" variant="success" striped=true></b-progress>
                                     
                                 </b-col>
-                                <b-col :id="section.from" class="mt-2">
+                                <b-col :id="section.to" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
+                                <b-popover v-if="destination!==''" :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Resume Route?">
+        <b-button variant="primary" @click="resumeRoute">Resume</b-button>
+      </b-popover>
+      <b-popover v-else :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Route ended">
+        <b-button variant="primary" @click="finishRoute">Finish route</b-button>
+      </b-popover>
                             </b-row>
                         </b-col>
                         
                     </b-row>
                 </b-card>
-                <b-popover v-if="destination!==''" :show.sync="!userInfo.trip" :target="currentStopId" placement="top" title="Resume Route?">
-        <b-button variant="primary" @click="resumeRoute">Resume</b-button>
-      </b-popover>
-      <b-popover v-else :show.sync="!userInfo.trip" :target="currentStopId" placement="top" title="Route ended">
-        <b-button variant="primary" @click="finishRoute">Finish route</b-button>
-      </b-popover>
             </b-col>
         </b-row>
         <b-row class="mt-4">
