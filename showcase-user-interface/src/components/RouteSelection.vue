@@ -145,7 +145,8 @@ export default {
         seed: this.$store.getters["user/getSeed"],
         vehicle: trip.vehicle.id,
         start: trip.from,
-        destination: trip.to
+        destination: trip.to,
+        intermediateStops: trip.intermediateStops
       };
     },
     getStop(id) {

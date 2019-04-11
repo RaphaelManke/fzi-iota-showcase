@@ -24,8 +24,9 @@
                         
                     </b-row>
                 </b-card>
-                <b-popover :show.sync="!userInfo.trip" target="routecard" title="Resume Route?">
+                <b-popover :show.sync="!userInfo.trip" target="routecard" placement="bottom" title="Resume Route?">
         Hello <strong>World!</strong>
+        <b-button @click="resumeRoute">Resume</b-button>
       </b-popover>
             </b-col>
         </b-row>
@@ -152,6 +153,36 @@ export default {
     }
   },
   methods: {
+    getNextTrip() {
+      let trip = undefined;
+      try {
+        trip = this.$store.getters["routes/getRouteSelected"].sections.find(
+          section =>
+            section.from === this.$store.getters["user/getUserInfo"].stop
+        );
+      } catch (err) {
+        return undefined;
+      }
+      return {
+        seed: this.$store.getters["user/getSeed"],
+        vehicle: trip.vehicle.id,
+        start: trip.from,
+        destination: trip.to,
+        intermediateStops: trip.intermediateStops
+      };
+    },
+    resumeRoute() {
+      var trip = this.getNextTrip();
+      if (trip !== undefined) {
+        this.$http
+          .post(this.$hostname + "/trip", trip)
+          .catch(function(response) {
+            window.console.log(response);
+          });
+      } else {
+        alert("Trip not definded");
+      }
+    },
     getStop(id) {
       return this.$store.getters["mapObjects/getStopById"](id);
     },
