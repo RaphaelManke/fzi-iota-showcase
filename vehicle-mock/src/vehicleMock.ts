@@ -97,13 +97,17 @@ export class VehicleMock {
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
     if (this.vehicle.trip) {
-      this.vehicle.trip.state = State.DEPARTED;
-      return await this.mover.startDriving(path, (stop) => {
-        this.vehicle.stop = stop;
-        if (onStop) {
-          onStop(stop);
-        }
-      });
+      if (this.vehicle.stop === path.connections[0].from) {
+        this.vehicle.trip.state = State.DEPARTED;
+        return await this.mover.startDriving(path, (stop) => {
+          this.vehicle.stop = stop;
+          if (onStop) {
+            onStop(stop);
+          }
+        });
+      } else {
+        throw new Error('Vehicle is not at the start of the given path');
+      }
     } else {
       throw new Error('Vehicle is not checked in.');
     }

@@ -155,7 +155,7 @@ export class Server {
                   res.send();
                 } catch (e) {
                   res.status(400);
-                  res.send('No route found.');
+                  res.send(e.message || e);
                 }
               } else {
                 res.status(404);
