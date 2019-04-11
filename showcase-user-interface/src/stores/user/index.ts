@@ -38,6 +38,9 @@ export const user: Module<User, RootState> = {
     SOCKET_TripFinished(state: any, data: any) {
       state.info.trip = undefined;
       state.info.stop = data.destination;
+      if (state.info.stop === state.destination) {
+        state.destination = "";
+      }
     }
   },
   getters: {
@@ -52,6 +55,9 @@ export const user: Module<User, RootState> = {
     },
     isLoggedIn: (state: any) => {
       return state.info.loggedIn;
+    },
+    getCurrentStopId: (state: any) => {
+      return state.info.stop;
     }
   }
 };

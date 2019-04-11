@@ -16,7 +16,7 @@
                                 <b-progress :max="section.duration" :value="section.passed_count" variant="success" striped=true></b-progress>
                                     
                                 </b-col>
-                                <b-col class="mt-2">
+                                <b-col :id="section.from" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
                             </b-row>
@@ -24,9 +24,11 @@
                         
                     </b-row>
                 </b-card>
-                <b-popover :show.sync="!userInfo.trip" target="routecard" placement="bottom" title="Resume Route?">
-        Hello <strong>World!</strong>
-        <b-button @click="resumeRoute">Resume</b-button>
+                <b-popover v-if="destination!==''" :show.sync="!userInfo.trip" :target="currentStopId" placement="top" title="Resume Route?">
+        <b-button variant="primary" @click="resumeRoute">Resume</b-button>
+      </b-popover>
+      <b-popover v-else :show.sync="!userInfo.trip" :target="currentStopId" placement="top" title="Route ended">
+        <b-button variant="primary" @click="finishRoute">Finish route</b-button>
       </b-popover>
             </b-col>
         </b-row>
@@ -143,8 +145,14 @@ export default {
     },
     currentStop() {
       return this.$store.getters["mapObjects/getStopById"](
-        this.$store.getters["user/getUserInfo"].stop
+        this.$store.getters["user/getCurrentStopId"]
       );
+    },
+    currentStopId() {
+      return this.$store.getters["user/getCurrentStopId"];
+    },
+    destination() {
+      return this.$store.getters["user/getDestination"];
     }
   },
   updated() {
@@ -153,6 +161,9 @@ export default {
     }
   },
   methods: {
+    finishRoute() {
+      this.$router.push("route-selection");
+    },
     getNextTrip() {
       let trip = undefined;
       try {

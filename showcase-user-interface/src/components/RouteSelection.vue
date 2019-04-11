@@ -95,7 +95,7 @@ export default {
     },
     currentStop() {
       return this.$store.getters["mapObjects/getStopById"](
-        this.$store.getters["user/getUserInfo"].stop
+        this.$store.getters["user/getCurrentStopId"]
       );
     },
     selectedDestination: {
