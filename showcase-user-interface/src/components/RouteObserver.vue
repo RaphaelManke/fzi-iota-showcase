@@ -19,7 +19,7 @@
                                 <b-col :id="section.to" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
-                                <b-popover v-if="destination!==''" :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Resume Route?">
+                                <b-popover v-if="destination!==section.to&&destination!==''" :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Resume Route?">
         <b-button variant="primary" @click="resumeRoute">Resume</b-button>
       </b-popover>
       <b-popover v-else :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Route ended">
