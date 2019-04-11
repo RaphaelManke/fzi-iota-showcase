@@ -74,6 +74,16 @@ export class Controller {
       const forType = this.env.connections.filter(
         (c) => c.type === vehicleInfo.info.type,
       );
+      forType.push(
+        ...forType.map(
+          (c): Connection => ({
+            from: c.to,
+            to: c.from,
+            path: Array.from(c.path).reverse(),
+            type: c.type,
+          }),
+        ),
+      );
       const connections: Connection[] = [];
       const stops = [start, ...intermediateStops, destination];
       for (let i = 0; i < stops.length - 1; i++) {
