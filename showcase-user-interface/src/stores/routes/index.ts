@@ -19,7 +19,7 @@ export const routes: Module<RouteStore, RootState> = {
       );
       state.routeSelected.sections.forEach((el: any) => {
         el.duration = Math.round(
-          (Date.parse(el.arrival) - Date.parse(el.departure)) / 500
+          (Date.parse(el.arrival) - Date.parse(el.departure)) / 500 - 1
         );
         el.passed_count = 0;
       });
@@ -33,6 +33,7 @@ export const routes: Module<RouteStore, RootState> = {
       state.routeSelected.sections.find(
         (sec: any) => sec.vehicle.id === data.id
       ).passed_count++;
+      state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
     }
   },
   getters: {
