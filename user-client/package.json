@@ -48,7 +48,7 @@
     "all": false
   },
   "dependencies": {
-    "fzi-iota-showcase-client": "0.0.2-alpha.164"
+    "fzi-iota-showcase-client": "alpha"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
