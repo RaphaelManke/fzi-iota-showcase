@@ -74,7 +74,7 @@
       <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <template v-for=" section in route.sections">
-                <b-col>{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
+                <b-col class="no-space-break">{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col class="no-space-break" v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
             </template>
           </b-row>
           <b-badge variant="primary" pill>
@@ -168,9 +168,9 @@ export default {
   },
   methods: {
     formatIota(iotas) {
-      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(2) + "Gi";
-      if (iotas > 1000000) return (iotas / 1000000).toFixed(2) + "Mi";
-      if (iotas > 1000) return (iotas / 1000).toFixed(2) + "Ki";
+      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + "Gi";
+      if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + "Mi";
+      if (iotas > 1000) return (iotas / 1000).toFixed(0) + "Ki";
       return iotas;
     },
     changeRoute() {
