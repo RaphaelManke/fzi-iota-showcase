@@ -6,9 +6,7 @@ import VueResource from "vue-resource";
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$hostname = Vue.config.productionTip
-  ? "192.168.178.72:3000"
-  : "http://localhost:3000";
+Vue.prototype.$hostname = process.env.VUE_APP_BACKEND_URL;
 
 // enable http requests
 Vue.use(VueResource);
