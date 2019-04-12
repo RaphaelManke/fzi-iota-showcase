@@ -55,6 +55,10 @@ export interface VehicleAuthenticationMessage {
   sendAuth: boolean;
 }
 
+export interface UserAuthenticationMessage {
+  nonce: Trytes;
+}
+
 export interface DestinationMessage {
   nonce?: Trytes;
   destStop: Hash;
@@ -94,3 +98,7 @@ export interface CreditsExaustedMessage {
 }
 
 export interface ClosePaymentChannelMessage {}
+
+export interface CancelBoardingMessage {
+  reason?: string;
+}
