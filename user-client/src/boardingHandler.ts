@@ -1,5 +1,3 @@
-
-
 export class BoardingHandler {
   private iState = State.OPENED;
 
@@ -12,5 +10,5 @@ export enum State {
   OPENED,
   VEHICLE_AUTHENTICATED,
   ROUTE_PRICED,
-  
+  PAYMENT_CHANNEL_OPENED,
 }
