@@ -2,14 +2,13 @@ import { Trytes, Hash } from '@iota/core/typings/types';
 
 export interface PaymentChannel<DIGEST, MULTISIG_ADDRESS, BUNDLE> {
   state: PaymentChannelState;
+  rootAddress: Hash;
 
   open(
     settlementAddress: Hash,
     userIndex: number,
-    seed: number,
+    seed: Hash,
     signersCount: number,
-    settlement: Hash,
-    digests: DIGEST[],
     depth: number,
     security: number,
   ): void;
@@ -20,24 +19,29 @@ export interface PaymentChannel<DIGEST, MULTISIG_ADDRESS, BUNDLE> {
 
   applyTransaction(signedBundles: BUNDLE[]): void;
 
-  attachCurrentBundle(): Hash;
+  attachCurrentBundle(): Promise<Hash>;
 
   buildNewBranch(
     allDigests: DIGEST[],
     multisigAddress: MULTISIG_ADDRESS,
-  ): MULTISIG_ADDRESS[];
+  ): Promise<MULTISIG_ADDRESS[]>;
 
   createTransaction(
     amount: number,
     address: Hash,
     onCreateNewBranch: (multisig: MULTISIG_ADDRESS, generate: number) => void,
-  ): { bundles: BUNDLE[]; signedBundles: BUNDLE[] };
+  ): Promise<{ bundles: BUNDLE[]; signedBundles: BUNDLE[] }>;
 
   createCloseTransaction(): { bundles: BUNDLE[]; signedBundles: BUNDLE[] };
 
   signTransaction(bundles: BUNDLE[], signedBundles: BUNDLE[]): any[];
 
-  createDigests(amount: number): DIGEST[];
+  extractTransfers(
+    bundles: BUNDLE[],
+    fromIndex: number,
+  ): Array<{ value: number; address: Hash }>;
+
+  createDigests(amount?: number): DIGEST[];
 }
 
 export enum PaymentChannelState {
@@ -55,10 +59,6 @@ export interface VehicleAuthenticationMessage {
   sendAuth: boolean;
 }
 
-export interface UserAuthenticationMessage {
-  nonce: Trytes;
-}
-
 export interface DestinationMessage {
   nonce?: Trytes;
   destStop: Hash;
@@ -71,9 +71,9 @@ export interface PriceMessage {
 export interface OpenPaymentChannelMessage {
   userIndex: number;
   settlement: Hash;
-  digests: any[]; // TODO
   depth: number;
   security: number;
+  digests: any[];
 }
 
 export interface DepositSentMessage {
@@ -81,11 +81,22 @@ export interface DepositSentMessage {
   amount: number;
 }
 
-export interface TransactionCreatedMessage {}
+export interface TransactionCreatedMessage {
+  bundles: any[];
+  signedBundles: any[];
+  close: boolean;
+}
 
-export interface TransactionSignedMessage {}
+export interface TransactionSignedMessage {
+  signedBundles: any[];
+  value: number;
+  close: boolean;
+}
 
-export interface CreatedNewBranchMessage {}
+export interface CreatedNewBranchMessage {
+  digests: any[];
+  multisig: any;
+}
 
 export interface CreditsLeftMessage {
   amount: number;
@@ -97,7 +108,9 @@ export interface CreditsExaustedMessage {
   minimumAmount: number;
 }
 
-export interface ClosePaymentChannelMessage {}
+export interface ClosePaymentChannelMessage {
+  bundleHash: Hash;
+}
 
 export interface CancelBoardingMessage {
   reason?: string;
