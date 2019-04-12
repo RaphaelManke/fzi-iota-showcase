@@ -45,16 +45,15 @@ export class PathFinder {
         return [];
       }
       const arr = Array.from(cons).filter((c) => typesSet.has(c.type));
-      const direct = arr.filter((c) => c.to === d);
+      const directCon = arr.filter((c) => c.to === d);
       // direct connections from s to d
-      if (direct.length > 0) {
-        return direct.map((c) => ({
-          waypoints: c.path,
-          connections: [c],
-        }));
-      }
+      const direct = directCon.map((c) => ({
+        waypoints: c.path,
+        connections: [c],
+      }));
 
       const innerPaths: Path[] = arr
+        .filter((c) => c.to !== d) // exclude direct connections
         .filter((c) => !visited.has(c.to))
         .map((c) => {
           // paths from stop connected to s to dest
@@ -83,7 +82,7 @@ export class PathFinder {
         }, new Array<Path>())
         .sort((a, b) => a.waypoints.length - b.waypoints.length);
 
-      return innerPaths;
+      return [...direct, ...innerPaths];
     };
 
     const paths = innerGetPaths(start, dest, 0, new Set<Trytes>()).sort(
