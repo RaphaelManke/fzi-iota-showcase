@@ -1,11 +1,13 @@
 {
   "name": "fzi-iota-showcase-user-client",
   "version": "0.0.1",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "description": "",
   "files": [
     "out",
     "src"
   ],
-  "description": "",
   "keywords": [
     "iota",
     "dlt",

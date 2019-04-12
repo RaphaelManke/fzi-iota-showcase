@@ -4,11 +4,12 @@ import { Controller } from './controller';
 import { Connection, Stop } from './envInfo';
 import { Users } from './users';
 import { SafeEmitter } from './events';
-import { log } from 'fzi-iota-showcase-client';
+import { log, createAttachToTangle } from 'fzi-iota-showcase-client';
 import { VehicleDescription } from './vehicleImporter';
 import { readVehicles } from './vehicleImporter';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
+import { composeAPI } from '@iota/core';
 
 (async () => {
   try {
@@ -31,7 +32,15 @@ import * as fs from 'fs';
     vehicles
       .filter((v) => v.seed.length === 0)
       .forEach((v) => (v.seed = generateSeed()));
-    const users = Users.fromFile(args.users);
+
+    const provider = 'https://nodes.devnet.iota.org';
+    const iota = composeAPI({
+      provider,
+      attachToTangle: createAttachToTangle(),
+    });
+
+    const users = Users.fromFile(args.users, { iota });
+    await users.initUsers();
 
     const events = new SafeEmitter();
     enableLogging(events);
@@ -42,7 +51,8 @@ import * as fs from 'fs';
       connections,
       vehicles,
       users,
-      'https://nodes.devnet.iota.org',
+      provider,
+      iota,
     );
     await c.setup();
 
