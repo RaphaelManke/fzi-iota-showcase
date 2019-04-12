@@ -25,6 +25,10 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
         user.position = data.position;
       }
     },
+    SOCKET_CheckIn(state: any, data: any) {
+      const veh = state.env.vehicles.find((v: any) => v.id === data.vehicleId);
+      veh.checkIn.stop = data.stopId;
+    },
     SOCKET_Login(state: any, user: any) {
       state.env.users.push(user);
     },
@@ -38,6 +42,9 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
       state.env.users = newUsers;
       const newVehicles = [...state.env.vehicles];
       newVehicles.find((el: any) => el.id === data.vehicleId).trip = data;
+      newVehicles.find(
+        (el: any) => el.id === data.vehicleId
+      ).checkIn.stop = undefined;
       state.env.vehicles = newVehicles;
     },
     SOCKET_TripFinished(state: any, data: any) {

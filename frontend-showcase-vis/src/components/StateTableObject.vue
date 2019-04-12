@@ -4,8 +4,9 @@
 
     <!-- representation for vehicles -->
     <div v-if="type === 'tram' || type === 'car' || type === 'bike'" class="info_container">
-      {{ vehicleData.name }} 
-      <span v-if="vehicleData.trip"> Current passenger: {{getUserById(vehicleData.trip.userId).name}}</span>
+      <strong>{{ vehicleData.name }} </strong>
+      <span v-if="vehicleData.trip"> Passenger: {{getUserById(vehicleData.trip.userId).name}}</span>
+      <span v-if="vehicleData.checkIn.stop"> checked in at {{getStopById(vehicleData.checkIn.stop).name}}</span>
     </div>
 
     <!-- representation for stops -->
@@ -55,6 +56,9 @@ export default {
     },
     getUserById(id) {
       return this.$store.getters["mapObjects/getUserById"](id);
+    },
+    getStopById(id) {
+      return this.$store.getters["mapObjects/getStopById"](id);
     }
   }
 };
