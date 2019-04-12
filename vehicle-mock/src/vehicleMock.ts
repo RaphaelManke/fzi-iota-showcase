@@ -4,13 +4,19 @@ import { Path } from './pathFinder';
 import { Trytes, Hash } from '@iota/core/typings/types';
 import { API, composeAPI } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
-import { createAttachToTangle, CheckInMessage } from 'fzi-iota-showcase-client';
+import {
+  createAttachToTangle,
+  CheckInMessage,
+  FlashMock,
+} from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
   addMetaInfo,
   publishMetaInfoRoot,
   publishCheckIn,
   getPaymentSeed,
+  BoardingHandler,
+  Sender,
 } from 'fzi-iota-showcase-vehicle-client';
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
@@ -94,6 +100,7 @@ export class VehicleMock {
         state: State.CHECKED_IN,
         checkInMessage,
         stop: this.vehicle.stop,
+        reservations: [],
       };
     }
   }
@@ -104,6 +111,34 @@ export class VehicleMock {
   ): Promise<Trytes> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
+        const sender: Sender = {
+          authenticate(nonce, sendAuth) {},
+          cancelBoarding(reason) {},
+          closePaymentChannel(bundleHash) {},
+          creditsExausted(minimumAmount) {},
+          creditsLeft(amount, distance, millis) {},
+          depositSent(hash, amount) {},
+          openPaymentChannel(userIndex, settlement, depth, security, digest) {},
+          priced(price) {},
+          signedTransaction(signedBundles, value, close) {},
+        };
+        const distance = 4;
+        const b = new BoardingHandler(
+          this.vehicle.trip.nonce,
+          this.vehicle.trip.reservations,
+          'SETTLEMENTADDRESS', // TODO
+          this.price,
+          this.vehicle.info.speed,
+          () => ({ price: this.price * distance, distance }),
+          async (value, address) => {
+            return ''; // TODO
+          },
+          async (bundleHash) => {
+            return (await this.iota.getBundle(bundleHash))[0]; // TODO
+          },
+          new FlashMock(),
+          sender,
+        );
         this.vehicle.trip.state = State.DEPARTED;
         return await this.mover.startDriving(path, (stop) => {
           this.vehicle.stop = stop;

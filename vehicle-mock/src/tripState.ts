@@ -1,6 +1,10 @@
 import { RAAM } from 'raam.client.js';
 import { MamWriter } from 'mam.ts';
-import { StopWelcomeMessage, CheckInMessage } from 'fzi-iota-showcase-client';
+import {
+  StopWelcomeMessage,
+  CheckInMessage,
+  Reservation,
+} from 'fzi-iota-showcase-client';
 import { Trytes } from '@iota/core/typings/types';
 
 export interface TripState {
@@ -8,6 +12,7 @@ export interface TripState {
   reservationChannel: MamWriter;
   welcomeMessage: StopWelcomeMessage;
   checkInMessage: CheckInMessage;
+  reservations: Reservation[];
   nonce: Trytes;
   state: State;
   stop: Trytes;
