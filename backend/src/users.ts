@@ -54,11 +54,11 @@ export class Users {
 
   public async initUsers() {
     await Promise.all(
-      Array.from(this.bySeed.entries()).map(([seed, u]) =>
+      Array.from(this.bySeed.entries()).map(([, { info, state }]) =>
         (async () => {
-          log.info('Init user %s', u.info.id);
-          const result = await u.state.getAccountData();
-          u.info.balance = result.balance;
+          log.info('Init user %s', info.id);
+          const result = await state.getAccountData();
+          info.balance = result.balance;
         })(),
       ),
     );

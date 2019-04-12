@@ -4,7 +4,6 @@ import { VehicleInfo } from './vehicleInfo';
 import { Trytes } from '@iota/core/typings/types';
 import { RouteInfo, Section } from './routeInfo';
 import { getPathLength } from 'geolib';
-import { access } from 'fs';
 
 export class Router {
   private pathFinder: PathFinder;
@@ -106,8 +105,10 @@ export class Router {
     } else {
       const result: Section[][] = [];
       for (const head of sections) {
-        for (const s of this.buildSections(remain, head.arrival)) {
-          result.push([head, ...s]);
+        for (const tail of this.buildSections(remain, head.arrival).filter(
+          (s) => s.length > 0,
+        )) {
+          result.push([head, ...tail]);
         }
       }
       return result;

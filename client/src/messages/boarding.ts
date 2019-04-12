@@ -9,7 +9,7 @@ export interface PaymentChannel<DIGEST, MULTISIG_ADDRESS, BUNDLE> {
     seed: number,
     signersCount: number,
     settlement: Hash,
-    digests: DIGEST[], // TODO
+    digests: DIGEST[],
     depth: number,
     security: number,
   ): void;
