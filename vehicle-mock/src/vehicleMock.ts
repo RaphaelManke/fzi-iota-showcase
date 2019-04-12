@@ -8,6 +8,7 @@ import { createAttachToTangle, CheckInMessage } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
   addMetaInfo,
+  publishMetaInfoRoot,
   publishCheckIn,
   getPaymentSeed,
 } from 'fzi-iota-showcase-vehicle-client';
@@ -52,7 +53,12 @@ export class VehicleMock {
     await this.masterChannel.syncChannel();
     if (this.masterChannel.cursor === 0) {
       // publish meta info
-      await addMetaInfo(this.provider, this.vehicle.seed, this.vehicle.info);
+      const { root } = await addMetaInfo(
+        this.provider,
+        this.vehicle.seed,
+        this.vehicle.info,
+      );
+      await publishMetaInfoRoot(this.masterChannel, root);
     }
   }
 
