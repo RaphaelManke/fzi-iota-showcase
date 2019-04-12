@@ -39,9 +39,32 @@
         </b-card>
       </b-col>
       <b-col>
-          <!-- Route options view-->
           <b-card no-body>
           <b-tabs card>
+              <!-- Events view -->
+          <b-tab title="Events">
+            <div style="height: 40vh">
+              <div style="height: 100%; overflow-y: scroll; overflow-x: hidden;"
+              id="eventList"
+      ref="eventList"
+      @mouseover="mouseOnEvents = true"
+      @mouseleave="mouseOnEvents = false"
+              >
+            <b-row>
+              <b-col>
+              <b-list-group>
+      <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
+          <div v-if="event.type==='tripStarted'">Trip from {{getStop(event.info.start).name}} to {{getStop(event.info.destination).name}} started</div>
+          <div v-if="event.type==='tripFinished'">Arrived at {{getStop(event.info.destination).name}}</div>
+          <div v-if="event.type==='transaction'">{{event.info.amount}} iotas transfered</div>
+      </b-list-group-item>
+    </b-list-group>
+    </b-col>
+    </b-row>
+    </div>
+        </div>
+        </b-tab>
+        <!-- Route options view-->
                 <b-tab title="Route Options" @click="refreshRoutes">
             <div style="height: 40vh">
               <div style="height: 80%; overflow-y: scroll; overflow-x: hidden;">
@@ -76,29 +99,6 @@
         </b-row>
         </div>
         </b-tab>       
-            <!-- Events view -->
-          <b-tab title="Events">
-            <div style="height: 40vh">
-              <div style="height: 100%; overflow-y: scroll; overflow-x: hidden;"
-              id="eventList"
-      ref="eventList"
-      @mouseover="mouseOnEvents = true"
-      @mouseleave="mouseOnEvents = false"
-              >
-            <b-row>
-              <b-col>
-              <b-list-group>
-      <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
-          <div v-if="event.type==='tripStarted'">Trip from {{getStop(event.info.start).name}} to {{getStop(event.info.destination).name}} started</div>
-          <div v-if="event.type==='tripFinished'">Arrived at {{getStop(event.info.destination).name}}</div>
-          <div v-if="event.type==='transaction'">{{event.info.amount}} iotas transfered</div>
-      </b-list-group-item>
-    </b-list-group>
-    </b-col>
-    </b-row>
-    </div>
-        </div>
-        </b-tab>
         </b-tabs>
         </b-card>
       </b-col>
