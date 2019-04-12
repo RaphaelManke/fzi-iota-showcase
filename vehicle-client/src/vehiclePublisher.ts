@@ -62,7 +62,7 @@ export async function createMasterChannel(
   return masterChannel;
 }
 
-async function publishMetaInfoRoot(
+export async function publishMetaInfoRoot(
   masterChannel: RAAM,
   root: string,
 ): Promise<{ hash: Hash; masterChannel: RAAM }> {

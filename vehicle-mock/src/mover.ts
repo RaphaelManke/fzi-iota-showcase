@@ -43,12 +43,13 @@ export class Mover {
               onStop(con.to);
             }
 
-            conIndex++;
-            if (conIndex < path.connections.length) {
-              con = path.connections[conIndex];
-            }
-
-            if (!this.continue) {
+            // don't set next connection if trip was stopped. else wrong stop is returned
+            if (this.continue) {
+              conIndex++;
+              if (conIndex < path.connections.length) {
+                con = path.connections[conIndex];
+              }
+            } else {
               stop = true;
             }
           }

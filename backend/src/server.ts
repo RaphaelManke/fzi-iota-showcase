@@ -129,6 +129,28 @@ export class Server {
       }
     });
 
+    this.app.post('/stopTripAtNextStop', (req, res) => {
+      const b = JSON.parse(req.body);
+      const user = this.controller.users.getBySeed(b.seed);
+      if (user) {
+        if (user.trip) {
+          try {
+            this.controller.stopTripOnNextStop(user.trip.vehicle);
+            res.send();
+          } catch (e) {
+            res.status(400);
+            res.send(e.message || e);
+          }
+        } else {
+          res.status(400);
+          res.send('User is not on a trip');
+        }
+      } else {
+        res.status(404);
+        res.send('User not found');
+      }
+    });
+
     this.app.post('/trip', (req, res) => {
       const b = JSON.parse(req.body);
       const vehicle = this.controller.env.vehicles.find(
