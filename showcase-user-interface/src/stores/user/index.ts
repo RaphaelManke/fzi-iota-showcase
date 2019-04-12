@@ -34,6 +34,7 @@ export const user: Module<User, RootState> = {
     },
     SOCKET_TripStarted(state: any, data: any) {
       state.info.trip = data;
+      state.info.stop = data.destination;
     },
     SOCKET_TripFinished(state: any, data: any) {
       state.info.trip = undefined;

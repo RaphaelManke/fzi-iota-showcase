@@ -65,8 +65,14 @@
     </div>
     <b-row class="text-center mt-4">
       <b-col>
-    <b-button block variant='primary' @click="changeRoute">Change route</b-button>
-       </b-col>
+    <b-button block variant='primary' @click="refreshRoutes">Refresh routes</b-button>
+    </b-col>
+    <b-col>
+    <b-button block variant='warning' @click="changeRoute">Change route</b-button>
+    </b-col>
+    <b-col>
+    <b-button block variant='danger'>Halt at next Stop</b-button>
+    </b-col>
         </b-row>
         </div>
         </b-tab>       
@@ -162,9 +168,11 @@ export default {
   },
   methods: {
     changeRoute() {
-      this.selectedRouteIndex = this.locallySelectedRouteIndex;
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {
+        this.selectedRouteIndex = this.locallySelectedRouteIndex;
         this.resumeRoute();
+      } else {
+        alert("Wait till arrival to change the route");
       }
     },
     finishRoute() {
@@ -182,6 +190,7 @@ export default {
         window.console.error(err);
         return undefined;
       }
+      if (trip === undefined) return undefined;
       return {
         seed: this.$store.getters["user/getSeed"],
         vehicle: trip.vehicle.id,
@@ -199,7 +208,8 @@ export default {
             window.console.log(response);
           });
       } else {
-        alert("Trip not definded");
+        this.refreshRoutes();
+        alert("Trip not definded. \n Please select another route!");
       }
     },
     getStop(id) {
