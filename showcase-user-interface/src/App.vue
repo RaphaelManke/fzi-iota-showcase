@@ -65,4 +65,8 @@ html {
 .navbar-brand img {
   height: 30px;
 }
+
+.no-space-break {
+  white-space: nowrap;
+}
 </style>
