@@ -102,11 +102,11 @@ export class Controller {
       const [route] = r.getPaths(start, destination, [v.info.info.type]);
       v.mock
         .startTrip(route)
-        .then(() =>
+        .then((stop) =>
           this.events.emit('TripFinished', {
             vehicleId: vehicleInfo.id,
             userId: user.id,
-            destination,
+            destination: stop,
           }),
         )
         .then(() => v.mock.checkInAtCurrentStop());
@@ -116,6 +116,15 @@ export class Controller {
         start,
         destination,
       });
+    }
+  }
+
+  public stopTripOnNextStop(vehicleId: Trytes) {
+    const v = this.vehicles.get(vehicleId);
+    if (v) {
+      v.mock.stopTripAtNextStop();
+    } else {
+      throw new Error('Vehicle not found');
     }
   }
 
