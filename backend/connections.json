@@ -25,9 +25,44 @@
     "type": "car",
     "path": [
       { "lat": 49.00938, "lng": 8.408518 },
-      { "lat": 49.009304, "lng": 8.410262 },
+      { "lat": 49.00948, "lng": 8.408518 },
+      { "lat": 49.009404, "lng": 8.410262 },
       { "lat": 49.007649, "lng": 8.410087 },
+      { "lat": 49.005752, "lng": 8.41046 },
       { "lat": 49.005752, "lng": 8.41036 }
+    ]
+  },
+  {
+    "from": "RUPPURERTORMGORYBXIDPXHNYAKDHGJTIICTPPCNGPKC9JHNBSQLM9EQGPKOAWSAVXQPUHJCEYFDFXCXM",
+    "to": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
+    "type": "car",
+    "path": [
+      { "lat": 49.005752, "lng": 8.41036 },
+      { "lat": 49.006052, "lng": 8.41011 },
+      { "lat": 49.005599, "lng": 8.40686 },
+      { "lat": 49.005529, "lng": 8.40354 },
+      { "lat": 49.005489, "lng": 8.39477 }
+    ]
+  },
+  {
+    "from": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
+    "to": "ECECENTER9NNUZXGGLYDJREWW9ZZAAZO9QHZKVINEASTVTDCPRRLNMBPFXBXQJTISHHVXFBGPYWGX9WVP",
+    "type": "bike",
+    "path": [
+      { "lat": 49.005489, "lng": 8.39477 },
+      { "lat": 49.005904, "lng": 8.39481 },
+      { "lat": 49.008614, "lng": 8.3981 },
+      { "lat": 49.006902, "lng": 8.40364 }
+    ]
+  },
+  {
+    "from": "ECECENTER9NNUZXGGLYDJREWW9ZZAAZO9QHZKVINEASTVTDCPRRLNMBPFXBXQJTISHHVXFBGPYWGX9WVP",
+    "to": "MARKTPLATZEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
+    "type": "bike",
+    "path": [
+      { "lat": 49.006902, "lng": 8.40364 },
+      { "lat": 49.009529, "lng": 8.40394 },
+      { "lat": 49.009525, "lng": 8.405141 }
     ]
   }
 ]

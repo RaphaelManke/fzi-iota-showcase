@@ -3,7 +3,7 @@
     <img :src="image_url" />
 
     <!-- representation for vehicles -->
-    <div v-if="type === 'tram' || type === 'car'" class="info_container">
+    <div v-if="type === 'tram' || type === 'car' || type === 'bike'" class="info_container">
       {{ vehicleData.name }} 
       <span v-if="vehicleData.trip"> Current passenger: {{getUserById(vehicleData.trip.userId).name}}</span>
     </div>

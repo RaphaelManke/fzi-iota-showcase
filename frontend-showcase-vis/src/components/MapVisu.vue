@@ -77,6 +77,8 @@ export default {
           return "#ff0000";
         case "tram":
           return "#EAC02B";
+        case "bike":
+          return "#7ae047";
       }
     }
   }
