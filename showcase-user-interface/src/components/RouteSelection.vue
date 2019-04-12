@@ -48,9 +48,9 @@
       <b-list-group-item v-for="(route, index) in routes" :active="index===selectedRouteIndex"
       @click="selectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
-            <b-col v-for=" section in route.sections">
-                {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
-            </b-col>
+            <template v-for=" section in route.sections">
+                <b-col>{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col v-if="section.to===selectedDestination">{{getStop(section.to).name}}</b-col>
+            </template>
           </b-row>
           <b-badge variant="primary" pill>
             {{formatIota(routePrice(route.sections))}} 

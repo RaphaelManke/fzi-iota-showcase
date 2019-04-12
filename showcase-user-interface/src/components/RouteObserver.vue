@@ -4,9 +4,9 @@
             <b-col>
                 <b-card id="routecard" header="Selected Route">
                     <b-row align-h="center" class="text-center">
-                        <b-col align-self="center" v-for="(section, index) in selectedRoute.sections">
-                            <b-row>
-                                <b-col class="mt-2">
+                        <template align-self="center" v-for="(section, index) in selectedRoute.sections">
+                            
+                                <b-col :id="section.from" class="mt-2">
                                 {{getStop(section.from).name}}
                                 </b-col>
                                 <b-col>
@@ -16,17 +16,17 @@
                                 <b-progress :max="section.duration" :value="section.passed_count" variant="success" striped=true></b-progress>
                                     
                                 </b-col>
-                                <b-col :id="section.to" class="mt-2">
+                                <b-col v-if="section.to===destination" :id="section.to" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
-                                <b-popover v-if="destination!==section.to&&destination!==''" :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Resume Route?">
+                                <b-popover :show.sync="!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
         <b-button variant="primary" @click="resumeRoute">Resume</b-button>
       </b-popover>
-      <b-popover v-else :show.sync="!userInfo.trip&&currentStopId===section.to" :target="section.to" placement="top" title="Route ended">
+      <b-popover v-if="destination===section.to" :show.sync="!userInfo.trip&&currentStopId===destination" :target="section.to" placement="top" title="Route ended">
         <b-button variant="primary" @click="finishRoute">Finish route</b-button>
       </b-popover>
-                            </b-row>
-                        </b-col>
+                            
+                        </template>
                         
                     </b-row>
                 </b-card>
@@ -73,9 +73,9 @@
               <b-list-group>
       <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
-            <b-col v-for=" section in route.sections">
-                {{getStop(section.from).name}} <img :src="getImageSrc(section.vehicle.type)"/> {{getStop(section.to).name}}
-            </b-col>
+            <template v-for=" section in route.sections">
+                <b-col>{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
+            </template>
           </b-row>
           <b-badge variant="primary" pill>
             {{formatIota(routePrice(route.sections))}} 
@@ -182,6 +182,7 @@ export default {
       }
     },
     finishRoute() {
+      this.$store.commit("user/routeFinished");
       this.$store.commit("routes/routeFinished");
       this.$router.push("route-selection");
     },

@@ -24,6 +24,9 @@ export const user: Module<User, RootState> = {
       state.destination = "";
       state.info = { loggedIn: false, balance: 0, name: "-" };
     },
+    routeFinished(state: any) {
+      state.destination = "";
+    },
     SOCKET_PosUpdated(state: any, data: any) {
       if (
         state.info.trip !== undefined &&
@@ -39,9 +42,6 @@ export const user: Module<User, RootState> = {
     SOCKET_TripFinished(state: any, data: any) {
       state.info.trip = undefined;
       state.info.stop = data.destination;
-      if (state.info.stop === state.destination) {
-        state.destination = "";
-      }
     }
   },
   getters: {
