@@ -1,25 +1,27 @@
 <template>
-  <div id="state_object">
-    <img :src="image_url" />
+  <b-card>
+    
+      
+    <b-card-img :src="image_url" />
 
     <!-- representation for vehicles -->
-    <div v-if="type === 'tram' || type === 'car' || type === 'bike'" class="info_container">
-      <strong>{{ vehicleData.name }} </strong>
-      <span v-if="vehicleData.trip"> Passenger: {{getUserById(vehicleData.trip.userId).name}}</span>
-      <span v-if="vehicleData.checkIn.stop"> checked in at {{getStopById(vehicleData.checkIn.stop).name}}</span>
-    </div>
+    <b-list-group v-if="type === 'tram' || type === 'car' || type === 'bike'">
+      <b-list-group-item>Name: {{ vehicleData.name }}</b-list-group-item>
+      <b-list-group-item v-if="vehicleData.trip"> Passenger: {{getUserById(vehicleData.trip.userId).name}}</b-list-group-item>
+      <b-list-group-item v-if="vehicleData.checkIn.stop"> Stop: {{getStopById(vehicleData.checkIn.stop).name}}</b-list-group-item>
+    </b-list-group>
 
-    <!-- representation for stops -->
-    <div v-if="type === 'stop'" class="info_container">
+    <!-- representation for stops 
+    <b-col v-if="type === 'stop'">
       {{ stopData.name }}
-    </div>
+    </b-col>-->
 
     <!-- representation for users -->
-    <div v-if="type === 'male'" class="info_container">
-      {{ userData.name }} 
-      <span v-if="userData.trip"> currently in {{getVehicleById(userData.trip.vehicleId).name}}</span>
-    </div>
-  </div>
+    <b-list-group v-if="type === 'male'">
+      <b-list-group-item>Name: {{ userData.name }}</b-list-group-item>
+      <b-list-group-item v-if="userData.trip"> Vehicle: {{getVehicleById(userData.trip.vehicleId).name}}</b-list-group-item>
+    </b-list-group>
+  </b-card>
 </template>
 
 <script>
@@ -65,20 +67,16 @@ export default {
 </script>
 
 <style scoped>
-img {
-  max-height: 100%;
+.card-img {
+  height: 20px;
+  width: auto;
+}
+.card-body {
+  padding: 0 0.25em;
 }
 
-.info_container {
-  margin: auto;
-}
-
-#state_object {
-  display: flex;
-  flex-wrap: wrap;
-  margin: auto;
-  border: groove 2px;
-  border-radius: 5px;
-  height: 4vh;
+.list-group-item {
+  padding: 0;
+  border: none;
 }
 </style>

@@ -1,22 +1,20 @@
 <template>
-  <div id="eventListContainer">
-    <h2 style="text-align: center; margin: 0;">
-      Transactions
-    </h2>
-
-    <div
-      id="eventList"
+  <b-card header="Transactions" style="height: 100%">
+    <div style="height: 100%; overflow-y: scroll; overflow-x: hidden;"
+              id="eventList"
       ref="eventList"
-      @mouseover="mouseOnEvents = true"
-      @mouseleave="mouseOnEvents = false"
-    >
-      <ul>
-        <li v-for="transaction in transactionData">
-          {{ transaction }}
-        </li>
-      </ul>
+              >
+            <b-row>
+              <b-col>
+              <b-list-group>
+      <b-list-group-item v-for="transaction in transactionData" class="d-flex justify-content-between align-items-center">
+          {{transaction}}
+      </b-list-group-item>
+    </b-list-group>
+    </b-col>
+    </b-row>
     </div>
-  </div>
+  </b-card>
 </template>
 
 <script>
@@ -33,32 +31,8 @@ export default {
     }
   },
   updated() {
-    if (!this.mouseOnEvents) {
-      this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
-    }
+    this.$refs.eventList.scrollTop = this.$refs.eventList.scrollHeight;
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-#eventListContainer {
-  display: flex;
-  flex-flow: column;
-  height: 70vh;
-}
-
-#eventList {
-  position: relative;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  border: solid 2px black;
-  border-radius: 5px;
-  margin-left: 7%;
-  flex-grow: 1;
-}
-
-ul {
-  margin-left: -5%;
-}
-</style>

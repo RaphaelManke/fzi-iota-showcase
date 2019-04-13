@@ -1,34 +1,38 @@
 <template>
-  <div id="table_container">
-    <div class="table_wrapper">
+  <b-card style="height: 30vh">
+    <b-row>
+    <b-col>
+      <div class="table_wrapper">
       <state-table-object
         v-for="vehicle in vehicles"
         :id="vehicle.id"
         :key="vehicle.id"
         :type="vehicle.info.type"
       />
-    </div>
+      </div>
+    </b-col>
 
-    <div class="table_wrapper">
+    <!--<b-col>
       <state-table-object
         v-for="stop in stops"
         :id="stop.id"
         :key="stop.id"
         type="stop"
       />
-    </div>
+    </b-col>-->
 
-    <div class="table_wrapper">
+    <b-col>
+      <div class="table_wrapper">
       <state-table-object
         v-for="user in users"
         :id="user.id"
         :key="user.id"
         type="male"
       />
-    </div>
-
-    <div class="table_wrapper"></div>
-  </div>
+      </div>
+    </b-col>
+    </b-row>
+  </b-card>
 </template>
 
 <script>
@@ -56,14 +60,5 @@ export default {
 <style scoped>
 .table_wrapper {
   display: flex;
-}
-
-#table_container {
-  display: grid;
-  grid-template-columns: auto auto auto auto;
-  height: 30vh;
-  margin-top: 20px;
-  border: solid 2px black;
-  border-radius: 5px;
 }
 </style>

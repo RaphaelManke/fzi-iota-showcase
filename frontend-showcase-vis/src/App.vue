@@ -1,10 +1,13 @@
 <template>
   <div id="app">
-    <div id="top">
-      <map-visu />
-
+    <b-row no-gutters="true">
+      <b-col cols="9">
+      <map-visu/>
+      </b-col>
+      <b-col>
       <event-list />
-    </div>
+      </b-col>
+    </b-row>
 
     <state-table />
   </div>
@@ -42,14 +45,6 @@ html {
 }
 
 #app {
-  position: relative;
-  display: flex;
-  flex-flow: column;
   height: 100vh;
-}
-
-#top {
-  display: grid;
-  grid-template-columns: auto 20%;
 }
 </style>
