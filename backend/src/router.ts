@@ -88,7 +88,7 @@ export class Router {
 
         return {
           vehicle: { id: v.id, type: v.info.type },
-          price: v.checkIn!.message.price,
+          price: v.checkIn!.message.price * distance,
           from: c.from,
           to: c.to,
           intermediateStops: c.intermediateStops,
