@@ -1,5 +1,5 @@
 <template>
-  <div id="mapVisu">
+  <b-card id="mapVisu" header="FZI IOTA showcase">
     <l-map :zoom="zoom" :center="center" :options="mapOptions">
       <l-tile-layer :url="url" :attribution="attribution" />
 
@@ -21,10 +21,9 @@
         v-for="user in users"
         :id="user.id"
         :key="user.id"
-        v-if="user.loggedIn&&!user.trip"
       />
     </l-map>
-  </div>
+  </b-card>
 </template>
 
 <script>
@@ -67,7 +66,9 @@ export default {
       return this.$store.getters["mapObjects/getVehicles"];
     },
     users() {
-      return this.$store.getters["mapObjects/getUsers"];
+      return this.$store.getters["mapObjects/getUsers"].filter(
+        user => user.loggedIn && !user.trip
+      );
     }
   },
   methods: {
@@ -104,8 +105,5 @@ export default {
 
 #mapVisu {
   height: 70vh;
-  -webkit-box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
-  -moz-box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
-  box-shadow: 7px 7px 12px 1px rgba(173, 173, 173, 0.8);
 }
 </style>
