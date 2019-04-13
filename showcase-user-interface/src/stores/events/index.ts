@@ -8,6 +8,9 @@ export const events: Module<EventStore, RootState> = {
     max_length: 100
   },
   mutations: {
+    routeFinished(state: any) {
+      state.events = [];
+    },
     SOCKET_TransactionIssued(state: any, data: any) {
       if (state.events.length > state.max_length) {
         state.events.shift();

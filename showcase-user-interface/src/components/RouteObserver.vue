@@ -184,6 +184,7 @@ export default {
     finishRoute() {
       this.$store.commit("user/routeFinished");
       this.$store.commit("routes/routeFinished");
+      this.$store.commit("events/routeFinished");
       this.$router.push("route-selection");
     },
     getNextTrip() {
