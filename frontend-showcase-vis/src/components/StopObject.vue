@@ -1,7 +1,7 @@
 <template>
   <l-marker :lat-lng="stopData.position" :draggable="false" :icon="icon">
     <l-tooltip
-      :options="{ permanent: true, direction: 'top', offset: [0, -25] }"
+      :options="{ permanent: true, direction: 'top', offset: [0, -10] }"
       class="iota_style"
       >{{ stopData.name }}</l-tooltip
     >
@@ -27,9 +27,8 @@ export default {
     return {
       icon: L.icon({
         iconUrl: "assets/images/stop.png",
-        iconSize: [40, 40],
-        iconAnchor: [20, 30],
-        popupAnchor: [0, -20]
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
       })
     };
   },
