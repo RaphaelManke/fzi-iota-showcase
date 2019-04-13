@@ -13,7 +13,7 @@
                                     
                                         <img :src="getImageSrc(section.vehicle.type)"/>
                                     
-                                <b-progress :max="section.duration" :value="section.passed_count" variant="success" striped=true></b-progress>
+                                <b-progress :max="section.duration" :value="section.passed_count" variant="success" :striped="internTrue"></b-progress>
                                     
                                 </b-col>
                                 <b-col v-if="section.to===destination" :id="section.to" class="mt-2">
@@ -71,7 +71,7 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" :button="internTrue" class="d-flex justify-content-between align-items-center">
           <b-row>
             <template v-for=" section in route.sections">
                 <b-col class="no-space-break">{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col class="no-space-break" v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
@@ -94,7 +94,7 @@
     <b-button block variant='warning' @click="changeRoute">Change route</b-button>
     </b-col>
     <b-col>
-    <b-button block variant='danger'>Halt at next Stop</b-button>
+    <b-button block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
     </b-col>
         </b-row>
         </div>
@@ -115,7 +115,8 @@ export default {
   data() {
     return {
       mouseOnEvents: false,
-      locallySelectedRouteIndex: 0
+      locallySelectedRouteIndex: 0,
+      internTrue: true
     };
   },
   created() {
@@ -167,6 +168,18 @@ export default {
     }
   },
   methods: {
+    haltAtNextStop() {
+      this.$http
+        .post(this.$hostname + "/stopTripAtNextStop", {
+          seed: this.$store.getters["user/getSeed"]
+        })
+        .then(function(response) {
+          window.console.log(response);
+        })
+        .catch(function(response) {
+          window.console.log(response);
+        });
+    },
     formatIota(iotas) {
       if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + "Gi";
       if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + "Mi";
