@@ -78,9 +78,9 @@ export class Server {
     this.app.post('/login', (req, res) => {
       const user = this.controller.users.getBySeed(req.body);
       if (user) {
-        if (!user.loggedIn) {
-          user.loggedIn = true;
-          this.controller.events.emit('Login', user);
+        if (!user.info.loggedIn) {
+          user.info.loggedIn = true;
+          this.controller.events.emit('Login', user.info);
           res.json(user);
         } else {
           res.status(406);
@@ -95,9 +95,9 @@ export class Server {
     this.app.post('/logout', (req, res) => {
       const user = this.controller.users.getBySeed(req.body);
       if (user) {
-        if (user.loggedIn) {
-          user.loggedIn = false;
-          this.controller.events.emit('Logout', { id: user.id });
+        if (user.info.loggedIn) {
+          user.info.loggedIn = false;
+          this.controller.events.emit('Logout', { id: user.info.id });
           res.json(user);
         } else {
           res.status(406);
@@ -133,9 +133,9 @@ export class Server {
       const b = JSON.parse(req.body);
       const user = this.controller.users.getBySeed(b.seed);
       if (user) {
-        if (user.trip) {
+        if (user.info.trip) {
           try {
-            this.controller.stopTripOnNextStop(user.trip.vehicle);
+            this.controller.stopTripOnNextStop(user.info.trip.vehicle);
             res.send();
           } catch (e) {
             res.status(400);

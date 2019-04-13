@@ -27,6 +27,7 @@ export class Users {
     );
     return new Users(users, provider, iota);
   }
+
   private byId = new Map<Trytes, { info: User; state: UserState }>();
   private bySeed = new Map<Hash, { info: User; state: UserState }>();
   private iota: API;
@@ -65,21 +66,11 @@ export class Users {
   }
 
   public getById(id: Trytes) {
-    const u = this.byId.get(id);
-    if (u) {
-      return u.info;
-    } else {
-      return undefined;
-    }
+    return this.byId.get(id);
   }
 
   public getBySeed(seed: Hash) {
-    const u = this.bySeed.get(seed);
-    if (u) {
-      return u.info;
-    } else {
-      return undefined;
-    }
+    return this.bySeed.get(seed);
   }
 }
 

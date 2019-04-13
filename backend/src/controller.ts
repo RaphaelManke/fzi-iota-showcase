@@ -14,9 +14,19 @@ import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
 import { VehicleMock, PathFinder } from 'fzi-iota-showcase-vehicle-mock';
+import {
+  Sender as VehicleSender,
+  BoardingHandler,
+} from 'fzi-iota-showcase-vehicle-client';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
 import { Router } from './router';
+import {
+  UserState,
+  TripHandler,
+  Sender as UserSender,
+} from 'fzi-iota-showcase-user-client';
+import { getPathLength } from 'geolib';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -64,7 +74,7 @@ export class Controller {
 
   public startTrip(
     vehicleInfo: VehicleInfo,
-    user: User,
+    { info: user, state: userState }: { info: User; state: UserState },
     start: Trytes,
     intermediateStops: Trytes[],
     destination: Trytes,
@@ -100,8 +110,91 @@ export class Controller {
       }
       const r = new PathFinder(connections);
       const [route] = r.getPaths(start, destination, [v.info.info.type]);
+
+      let boardingHandler: BoardingHandler;
+      const sender: UserSender = {
+        openPaymentChannel(userIndex, settlement, depth, security, digests) {
+          boardingHandler.onPaymentChannelOpened({
+            userIndex,
+            settlement,
+            depth,
+            security,
+            digests,
+          });
+        },
+        sendDestination(destStop, nonce) {
+          boardingHandler.onDestination({ destStop, nonce });
+        },
+        depositSent(hash, amount) {
+          boardingHandler.onDepositSent({ depositTransaction: hash, amount });
+        },
+        createdTransaction(bundles, signedBundles, close) {
+          boardingHandler.onTransactionReceived({
+            bundles,
+            signedBundles,
+            close,
+          });
+        },
+        createdNewBranch(digests, multisig) {
+          boardingHandler.onCreatedNewBranch({ digests, multisig });
+        },
+        cancelBoarding(reason) {
+          // TODO
+        },
+      };
+      const distance = getPathLength(
+        route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
+      );
+      const maxPrice = distance * vehicleInfo.checkIn!.message.price * 1.2;
+      const tripHandler = userState.createTripHandler(
+        destination,
+        vehicleInfo.checkIn!.message,
+        maxPrice,
+        (distance * 1000) / vehicleInfo.info.speed,
+        sender,
+      );
+      const vehicleSender: VehicleSender = {
+        authenticate(nonce, sendAuth) {
+          tripHandler.onVehicleAuthentication({ nonce, sendAuth });
+        },
+        cancelBoarding(reason) {
+          // TODO
+        },
+        closePaymentChannel(bundleHash) {
+          tripHandler.onClosedPaymentChannel({ bundleHash });
+        },
+        creditsExausted(minimumAmount) {
+          // TODO
+        },
+        creditsLeft(amount, distance, millis) {
+          tripHandler.onCreditsLeft({ amount, distance, millis });
+        },
+        depositSent(hash, amount) {
+          tripHandler.onDepositSent({ amount, depositTransaction: hash });
+        },
+        openPaymentChannel(userIndex, settlement, depth, security, digests) {
+          tripHandler.onPaymentChannelOpened({
+            userIndex,
+            settlement,
+            depth,
+            security,
+            digests,
+          });
+        },
+        priced(price) {
+          tripHandler.onPriceSent({ price });
+        },
+        signedTransaction(signedBundles, value, close) {
+          tripHandler.onSignedTransaction({ signedBundles, value, close });
+        },
+      };
+
       v.mock
-        .startTrip(route)
+        .startTrip(
+          route,
+          vehicleSender,
+          (h: BoardingHandler) => (boardingHandler = h),
+        )
         .then((stop) =>
           this.events.emit('TripFinished', {
             vehicleId: vehicleInfo.id,
@@ -131,7 +224,7 @@ export class Controller {
   public async setup() {
     this.events.on('Login', (login: Login) => {
       const user = this.users.getById(login.id);
-      this.env.users.push(user!);
+      this.env.users.push(user!.info);
     });
 
     this.events.on('Logout', (logout: Logout) => {
@@ -153,8 +246,8 @@ export class Controller {
       }
       const u = this.users.getById(event.userId);
       if (u) {
-        u.stop = undefined;
-        u.trip = trip;
+        u.info.stop = undefined;
+        u.info.trip = trip;
       }
     });
 
@@ -165,8 +258,8 @@ export class Controller {
       }
       const u = this.users.getById(event.userId);
       if (u) {
-        u.stop = event.destination;
-        u.trip = undefined;
+        u.info.stop = event.destination;
+        u.info.trip = undefined;
       }
     });
 
@@ -175,7 +268,7 @@ export class Controller {
       if (v) {
         if (v.info.trip) {
           const u = this.users.getById(v.info.trip.user);
-          u!.position = event.position;
+          u!.info.position = event.position;
         }
       }
     });
