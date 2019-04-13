@@ -1,0 +1,24 @@
+version: "3"
+services:
+  backend:
+    container_name: backend
+    image: ${REGISTRY}/backend:${BACKEND_TAG}
+    restart: always
+    ports:
+      - "3000:3000"
+
+  showcase-user-interface:
+    container_name: showcase-user-interface
+    image: ${REGISTRY}/showcase-user-interface:${SHOWCASE_USER_INTERFACE_TAG}
+    ports:
+      - "8080:80"
+    links:
+      - backend
+
+  frontend-showcase-vis:
+    container_name: frontend-showcase-vis
+    image: ${REGISTRY}/frontend-showcase-vis:${SHOWCASE_USER_INTERFACE_TAG}
+    ports:
+      - "8081:80"
+    links:
+      - backend
