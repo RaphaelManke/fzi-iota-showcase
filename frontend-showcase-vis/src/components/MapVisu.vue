@@ -1,6 +1,6 @@
 <template>
-  <b-card id="mapVisu" header="FZI IOTA showcase">
-    <l-map :zoom="zoom" :center="center" :options="mapOptions">
+  <b-card header="FZI IOTA showcase">
+    <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height:60vh">
       <l-tile-layer :url="url" :attribution="attribution" />
 
       <stop-object v-for="stop in stops" :id="stop.id" :key="stop.id" />
@@ -101,9 +101,5 @@ export default {
 
 .leaflet-marker-icon {
   transition: 0.5s linear;
-}
-
-#mapVisu {
-  height: 70vh;
 }
 </style>

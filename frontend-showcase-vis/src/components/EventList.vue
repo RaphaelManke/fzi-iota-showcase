@@ -1,6 +1,6 @@
 <template>
-  <b-card header="Transactions" style="height: 100%">
-    <div style="height: 100%; overflow-y: scroll; overflow-x: hidden;"
+  <b-card header="Transactions">
+    <div style="height: 60vh; overflow-y: scroll; overflow-x: hidden;"
               id="eventList"
       ref="eventList"
               >
@@ -22,7 +22,17 @@ export default {
   name: "EventList",
   data() {
     return {
-      mouseOnEvents: false
+      mouseOnEvents: false,
+      testEvents: [
+        { from: "A", to: "Tangle", amount: 0 },
+        { from: "X", to: "Tangle", amount: 0 },
+        { from: "A", to: "Tangle", amount: 0 },
+        { from: "A", to: "Tangle", amount: 0 },
+        { from: "A", to: "Tangle", amount: 0 },
+        { from: "A", to: "Tangle", amount: 0 },
+        { from: "B", to: "Tangle", amount: 0 },
+        { from: "Z", to: "Tangle", amount: 0 }
+      ]
     };
   },
   computed: {
