@@ -215,7 +215,7 @@ export class Controller {
   public stopTripOnNextStop(vehicleId: Trytes) {
     const v = this.vehicles.get(vehicleId);
     if (v) {
-      v.mock.stopTripAtNextStop();
+      return v.mock.stopTripAtNextStop();
     } else {
       throw new Error('Vehicle not found');
     }

@@ -135,8 +135,10 @@ export class Server {
       if (user) {
         if (user.info.trip) {
           try {
-            this.controller.stopTripOnNextStop(user.info.trip.vehicle);
-            res.send();
+            const nextStop = this.controller.stopTripOnNextStop(
+              user.info.trip.vehicle,
+            );
+            res.send(nextStop);
           } catch (e) {
             res.status(400);
             res.send(e.message || e);

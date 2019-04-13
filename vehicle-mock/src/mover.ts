@@ -9,6 +9,7 @@ export class Mover {
   public static REACHED_THRESHOLD = 10; // meters
 
   private interval?: NodeJS.Timer;
+  private nextStop?: Trytes;
   private continue = true;
 
   constructor(private vehicle: Vehicle) {}
@@ -26,6 +27,7 @@ export class Mover {
       let driven = 0;
       let conIndex = 0;
       let con = path.connections[conIndex];
+      this.nextStop = con.to;
       this.continue = true;
       const worker = () => {
         driven += (this.vehicle.info.speed * Mover.UPDATE_INTERVAL) / 1000;
@@ -48,6 +50,7 @@ export class Mover {
               conIndex++;
               if (conIndex < path.connections.length) {
                 con = path.connections[conIndex];
+                this.nextStop = con.to;
               }
             } else {
               stop = true;
@@ -72,6 +75,7 @@ export class Mover {
   public stopDrivingAtNextStop() {
     if (this.interval) {
       this.continue = false;
+      return this.nextStop;
     }
   }
 
