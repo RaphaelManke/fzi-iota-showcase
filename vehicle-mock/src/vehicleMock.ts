@@ -107,22 +107,13 @@ export class VehicleMock {
 
   public async startTrip(
     path: Path,
+    sendToUser: Sender,
+    setSentVehicleHandler: (handler: BoardingHandler) => void,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
-        const sender: Sender = {
-          authenticate(nonce, sendAuth) {},
-          cancelBoarding(reason) {},
-          closePaymentChannel(bundleHash) {},
-          creditsExausted(minimumAmount) {},
-          creditsLeft(amount, distance, millis) {},
-          depositSent(hash, amount) {},
-          openPaymentChannel(userIndex, settlement, depth, security, digest) {},
-          priced(price) {},
-          signedTransaction(signedBundles, value, close) {},
-        };
-        const distance = 4;
+        const distance = 4; // TODO
         const b = new BoardingHandler(
           this.vehicle.trip.nonce,
           this.vehicle.trip.reservations,
@@ -137,8 +128,9 @@ export class VehicleMock {
             return (await this.iota.getBundle(bundleHash))[0]; // TODO
           },
           new FlashMock(),
-          sender,
+          sendToUser,
         );
+        setSentVehicleHandler(b);
         this.vehicle.trip.state = State.DEPARTED;
         return await this.mover.startDriving(path, (stop) => {
           this.vehicle.stop = stop;
