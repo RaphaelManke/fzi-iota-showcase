@@ -20,6 +20,9 @@ export const user: Module<User, RootState> = {
       state.info = data.info;
       state.state = data.state;
     },
+    updateCurrentStop(state: any, stop: any) {
+      state.info.stop = stop;
+    },
     userLogout(state: any) {
       state.seed = "";
       state.destination = "";

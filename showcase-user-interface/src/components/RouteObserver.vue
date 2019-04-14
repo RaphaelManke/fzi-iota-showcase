@@ -93,8 +93,10 @@
     <b-col>
     <b-button block variant='warning' @click="changeRoute">Change route</b-button>
     </b-col>
-    <b-col>
-    <b-button block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
+    <b-col id="haltNextStopButton">
+    <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish route</b-button>
+    <b-button v-else block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
+    <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next stop:">{{currentStop.name}}</b-popover>
     </b-col>
         </b-row>
         </div>
@@ -116,6 +118,7 @@ export default {
     return {
       mouseOnEvents: false,
       locallySelectedRouteIndex: 0,
+      haltAtNextStopShow: false,
       internTrue: true
     };
   },
@@ -174,9 +177,14 @@ export default {
           seed: this.$store.getters["user/getSeed"]
         })
         .then(function(response) {
-          window.console.log(response);
+          if (response.status === 200) {
+            this.$store.commit("user/updateCurrentStop", response.body);
+            this.refreshRoutes();
+            this.haltAtNextStopShow = true;
+          }
         })
         .catch(function(response) {
+          alert("Server error. PLease look in console!");
           window.console.log(response);
         });
     },
@@ -190,6 +198,7 @@ export default {
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {
         this.selectedRouteIndex = this.locallySelectedRouteIndex;
         this.resumeRoute();
+        this.haltAtNextStopShow = false;
       } else {
         alert("Wait till arrival to change the route");
       }
