@@ -10,7 +10,8 @@ import { TripHandler, Sender } from './tripHandler';
 
 export class UserState {
   public static PAYMENT_EACH_MILLIS = 5000;
-  private currentAddress: Hash | undefined;
+  private currentAddress?: Hash;
+  private nextAddress?: Hash;
   private iota: API;
 
   constructor(
@@ -39,12 +40,13 @@ export class UserState {
     sender: Sender,
   ): TripHandler {
     const paymentAmount = UserState.PAYMENT_EACH_MILLIS / duration;
+    const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
     return new TripHandler(
       destination,
       checkInMessage,
       maxPrice,
-      '', // TODO
-      'SETTLEMENTADDRESS', // TODO
+      nonce,
+      this.nextAddress!,
       paymentAmount,
       async (value, address) => {
         return ''; // TODO
@@ -58,11 +60,24 @@ export class UserState {
   }
 
   public async getAccountData(): Promise<AccountData> {
-    const address = await this.iota.getNewAddress(this.seed);
+    const address = await this.iota.getNewAddress(this.seed, { total: 2 });
     if (typeof address === 'string') {
       this.currentAddress = address;
+    } else {
+      this.currentAddress = address[0];
+      this.nextAddress = address[1];
     }
     const result = await this.iota.getAccountData(this.seed);
     return result;
   }
+}
+
+function generateNonce(length = 81) {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
+  const retVal = [];
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal[i] = charset.charAt(Math.floor(Math.random() * n));
+  }
+  const result = retVal.join('');
+  return result;
 }

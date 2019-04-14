@@ -21,11 +21,13 @@ import {
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
 import { State } from './tripState';
+import { getPathLength } from 'geolib';
 
 export class VehicleMock {
   private mover: Mover;
   private masterChannel?: RAAM;
   private currentAddress?: Hash;
+  private nextAddress?: Hash;
 
   constructor(
     private vehicle: Vehicle,
@@ -46,6 +48,9 @@ export class VehicleMock {
     const result = await this.iota.getNewAddress(seed);
     if (typeof result === 'string') {
       this.currentAddress = result;
+    } else {
+      this.currentAddress = result[0];
+      this.nextAddress = result[1];
     }
     return await this.iota.getAccountData(seed);
   }
@@ -113,11 +118,13 @@ export class VehicleMock {
   ): Promise<Trytes> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
-        const distance = 4; // TODO
+        const distance = getPathLength(
+          path.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
+        );
         const b = new BoardingHandler(
           this.vehicle.trip.nonce,
           this.vehicle.trip.reservations,
-          'SETTLEMENTADDRESS', // TODO
+          this.nextAddress!,
           this.price,
           this.vehicle.info.speed,
           () => ({ price: this.price * distance, distance }),
