@@ -22,17 +22,7 @@ export default {
   name: "EventList",
   data() {
     return {
-      mouseOnEvents: false,
-      testEvents: [
-        { from: "A", to: "Tangle", amount: 0 },
-        { from: "X", to: "Tangle", amount: 0 },
-        { from: "A", to: "Tangle", amount: 0 },
-        { from: "A", to: "Tangle", amount: 0 },
-        { from: "A", to: "Tangle", amount: 0 },
-        { from: "A", to: "Tangle", amount: 0 },
-        { from: "B", to: "Tangle", amount: 0 },
-        { from: "Z", to: "Tangle", amount: 0 }
-      ]
+      mouseOnEvents: false
     };
   },
   computed: {

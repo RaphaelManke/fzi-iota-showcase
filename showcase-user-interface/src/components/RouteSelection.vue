@@ -7,7 +7,7 @@
                     <b-row>
                     <b-col>
                     Start
-                    <b-form-select v-model="currentStop.id" :options="[currentStop]"
+                    <b-form-select :options="[currentStop]"
                     value-field="id" text-field="name" disabled=true
                     ></b-form-select>
                     </b-col>

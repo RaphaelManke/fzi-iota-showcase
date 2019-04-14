@@ -16,8 +16,9 @@ export const user: Module<User, RootState> = {
     updateDestination(state: any, destination: string) {
       state.destination = destination;
     },
-    updateUserInfo(state: any, info: any) {
-      state.info = info;
+    updateUserInfo(state: any, data: any) {
+      state.info = data.info;
+      state.state = data.state;
     },
     userLogout(state: any) {
       state.seed = "";
