@@ -18,6 +18,8 @@ export class MockConstructor {
     private provider: string,
     private iota: API,
     private idSupplier: () => Trytes = getNextId,
+    private mockPayments = false,
+    private mockMessages = false,
   ) {}
 
   public construct(v: VehicleDescription) {
@@ -65,6 +67,10 @@ export class MockConstructor {
       v.reservationRate,
       this.provider,
       this.iota,
+      3,
+      14,
+      this.mockPayments,
+      this.mockMessages,
     );
     return { info, mock };
   }

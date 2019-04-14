@@ -13,14 +13,20 @@ import { composeAPI } from '@iota/core';
 
 (async () => {
   try {
+    log.info('Starting server...');
+
     const args = minimist(process.argv.slice(2), {
+      boolean: ['mockPayments', 'mockMessages'],
       default: {
         vehicles: './vehicles.json',
         stops: './stops.json',
         connections: './connections.json',
         users: './users.json',
+        mockPayments: false,
+        mockMessages: false,
       },
     });
+    log.info('Parameters: %O', args);
 
     log.info('Reading environment settings from files...');
     const stops: Stop[] = JSON.parse(fs.readFileSync(args.stops).toString());
@@ -39,7 +45,10 @@ import { composeAPI } from '@iota/core';
       attachToTangle: createAttachToTangle(),
     });
 
-    const users = Users.fromFile(args.users, { iota });
+    const users = Users.fromFile(args.users, {
+      iota,
+      mockPayments: args.mockPayments,
+    });
     await users.initUsers();
 
     const events = new SafeEmitter();
@@ -53,6 +62,8 @@ import { composeAPI } from '@iota/core';
       users,
       provider,
       iota,
+      args.mockPayments,
+      args.mockMessages,
     );
     await c.setup();
 

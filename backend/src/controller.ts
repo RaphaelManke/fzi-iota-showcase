@@ -13,21 +13,13 @@ import { Trytes } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
-import { VehicleMock, PathFinder } from 'fzi-iota-showcase-vehicle-mock';
-import {
-  Sender as VehicleSender,
-  BoardingHandler,
-} from 'fzi-iota-showcase-vehicle-client';
+import { VehicleMock } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
 import { Router } from './router';
-import {
-  UserState,
-  TripHandler,
-  Sender as UserSender,
-} from 'fzi-iota-showcase-user-client';
-import { getPathLength } from 'geolib';
+import { UserState } from 'fzi-iota-showcase-user-client';
 import { TripStarter } from './tripStarter';
+import { getNextId } from './idSupplier';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -49,9 +41,19 @@ export class Controller {
       provider,
       attachToTangle: createAttachToTangle(),
     }),
+    mockPayments = false,
+    mockMessages = false,
   ) {
     stops.forEach((s) => this.stops.set(s.id, s));
-    const c = new MockConstructor(events, this.stops, provider, iota);
+    const c = new MockConstructor(
+      events,
+      this.stops,
+      provider,
+      iota,
+      getNextId,
+      mockPayments,
+      mockMessages,
+    );
     const vehicles = vehicleDescriptions.map((v) => {
       const { info, mock } = c.construct(v);
       this.vehicles.set(info.id, { info, mock });
