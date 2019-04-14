@@ -1,13 +1,14 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
 import { Path } from './pathFinder';
-import { Trytes, Hash } from '@iota/core/typings/types';
+import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { API, composeAPI } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
   createAttachToTangle,
   CheckInMessage,
   FlashMock,
+  StopWelcomeMessage,
 } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
@@ -22,6 +23,7 @@ import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
 import { State } from './tripState';
 import { getPathLength } from 'geolib';
+import { MamWriter, MAM_MODE } from 'mam.ts';
 
 export class VehicleMock {
   private mover: Mover;
@@ -41,6 +43,8 @@ export class VehicleMock {
     }),
     private depth = 3,
     private mwm = 14,
+    private mockPayments = false,
+    private mockMessages = false,
   ) {
     this.mover = new Mover(vehicle);
   }
@@ -58,20 +62,22 @@ export class VehicleMock {
   }
 
   public async syncTangle() {
-    this.masterChannel = await createMasterChannel(
-      this.iota,
-      this.vehicle.seed,
-      this.capacity,
-    );
-    await this.masterChannel.syncChannel();
-    if (this.masterChannel.cursor === 0) {
-      // publish meta info
-      const { root } = await addMetaInfo(
-        this.provider,
+    if (!this.mockMessages) {
+      this.masterChannel = await createMasterChannel(
+        this.iota,
         this.vehicle.seed,
-        this.vehicle.info,
+        this.capacity,
       );
-      await publishMetaInfoRoot(this.masterChannel, root);
+      await this.masterChannel.syncChannel();
+      if (this.masterChannel.cursor === 0) {
+        // publish meta info
+        const { root } = await addMetaInfo(
+          this.provider,
+          this.vehicle.seed,
+          this.vehicle.info,
+        );
+        await publishMetaInfoRoot(this.masterChannel, root);
+      }
     }
   }
 
@@ -94,13 +100,29 @@ export class VehicleMock {
         price: this.price,
         paymentAddress: this.currentAddress!,
       };
-      const result = await publishCheckIn(
-        this.provider,
-        this.vehicle.seed,
-        this.masterChannel!,
-        this.vehicle.stop,
-        checkInMessage,
-      );
+      let result: {
+        reservationChannel: MamWriter;
+        tripChannel: RAAM;
+        welcomeMessage: StopWelcomeMessage;
+      };
+      if (!this.mockMessages) {
+        result = await publishCheckIn(
+          this.provider,
+          this.vehicle.seed,
+          this.masterChannel!,
+          this.vehicle.stop,
+          checkInMessage,
+        );
+      } else {
+        result = {
+          reservationChannel: new MamWriter('', '', MAM_MODE.PUBLIC),
+          tripChannel: await RAAM.fromSeed('9', { amount: 2 }),
+          welcomeMessage: {
+            checkInMessageRef: '',
+            tripChannelId: new Int8Array(0),
+          },
+        };
+      }
       this.vehicle.trip = {
         ...result,
         nonce,
@@ -123,14 +145,13 @@ export class VehicleMock {
         const distance = getPathLength(
           path.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
         );
-        const b = new BoardingHandler(
-          this.vehicle.trip.nonce,
-          this.vehicle.trip.reservations,
-          this.nextAddress!,
-          this.price,
-          this.vehicle.info.speed,
-          () => ({ price: this.price * distance, distance }),
-          async (value, address) => {
+        let depositor: (value: number, address: Hash) => Promise<string>;
+        let txReader: (bundleHash: Hash) => Promise<Bundle>;
+        if (this.mockPayments) {
+          depositor = async (value, address) => '';
+          txReader = async (bundleHash) => this.mockedBundle();
+        } else {
+          depositor = async (value, address) => {
             const txTrytes = await this.iota.prepareTransfers(
               this.vehicle.seed,
               [{ value, address }],
@@ -141,8 +162,18 @@ export class VehicleMock {
               this.mwm,
             );
             return txs[0].bundle;
-          },
-          async (bundleHash) => await this.iota.getBundle(bundleHash),
+          };
+          txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
+        }
+        const b = new BoardingHandler(
+          this.vehicle.trip.nonce,
+          this.vehicle.trip.reservations,
+          this.nextAddress!,
+          this.price,
+          this.vehicle.info.speed,
+          () => ({ price: this.price * distance, distance }),
+          depositor,
+          txReader,
           new FlashMock(),
           sendToUser,
         );
@@ -164,6 +195,30 @@ export class VehicleMock {
 
   public stopTripAtNextStop() {
     return this.mover.stopDrivingAtNextStop();
+  }
+
+  private mockedBundle(): Bundle {
+    return [
+      {
+        address: 'A'.repeat(81),
+        value: this.price,
+        attachmentTimestamp: 0,
+        attachmentTimestampLowerBound: 0,
+        attachmentTimestampUpperBound: 0,
+        branchTransaction: '',
+        bundle: '',
+        confirmed: true,
+        currentIndex: 0,
+        hash: '',
+        lastIndex: 0,
+        nonce: '',
+        obsoleteTag: '',
+        signatureMessageFragment: '',
+        tag: '',
+        timestamp: 0,
+        trunkTransaction: '',
+      },
+    ];
   }
 
   private hash(value: Trytes) {
