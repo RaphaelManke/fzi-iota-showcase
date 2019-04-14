@@ -16,9 +16,8 @@ export const user: Module<User, RootState> = {
     updateDestination(state: any, destination: string) {
       state.destination = destination;
     },
-    updateUserInfo(state: any, data: any) {
-      state.info = data.info;
-      state.state = data.state;
+    updateUserInfo(state: any, info: any) {
+      state.info = info;
     },
     updateCurrentStop(state: any, stop: any) {
       state.info.stop = stop;
