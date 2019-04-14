@@ -91,9 +91,13 @@ export default {
       return this.$store.getters["routes/getRoutesAvailable"];
     },
     stops() {
-      return this.$store.getters["mapObjects/getStops"].filter(
-        dest => dest.id !== this.$store.getters["user/getCurrentStopId"]
-      );
+      return this.$store.getters["mapObjects/getStops"]
+        .filter(
+          dest => dest.id !== this.$store.getters["user/getCurrentStopId"]
+        )
+        .sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
     },
     currentStop() {
       return this.$store.getters["mapObjects/getStopById"](
