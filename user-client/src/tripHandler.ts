@@ -8,6 +8,8 @@ import {
   OpenPaymentChannelMessage,
   TransactionSignedMessage,
   ClosePaymentChannelMessage,
+  CancelBoardingMessage,
+  CreditsExaustedMessage,
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
@@ -150,7 +152,15 @@ export class TripHandler {
     }
   }
 
+  public onCreditsExausted(message: CreditsExaustedMessage) {
+    this.sendTransaction();
+  }
+
   public onClosedPaymentChannel(message: ClosePaymentChannelMessage) {
+    this.state = State.CLOSED;
+  }
+
+  public onBoardingCanceled(message: CancelBoardingMessage) {
     this.state = State.CLOSED;
   }
 

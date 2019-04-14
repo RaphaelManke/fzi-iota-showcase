@@ -6,6 +6,7 @@ import {
   DepositSentMessage,
   TransactionCreatedMessage,
   CreatedNewBranchMessage,
+  CancelBoardingMessage,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -180,6 +181,10 @@ export class BoardingHandler {
         message.multisig,
       );
     }
+  }
+
+  public onBoardingCanceled(message: CancelBoardingMessage) {
+    this.state = State.CLOSED;
   }
 }
 
