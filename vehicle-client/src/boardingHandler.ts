@@ -7,7 +7,7 @@ import {
   TransactionCreatedMessage,
   CreatedNewBranchMessage,
 } from 'fzi-iota-showcase-client';
-import { Trytes, Hash, Transaction } from '@iota/core/typings/types';
+import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
 import { trits, trytes } from '@iota/converter';
 
@@ -30,7 +30,7 @@ export class BoardingHandler {
       destination: Trytes,
     ) => { price: number; distance: number },
     private depositor: (value: number, address: Hash) => Promise<Hash>,
-    private txReader: (bundleHash: Hash) => Promise<Transaction>,
+    private txReader: (bundleHash: Hash) => Promise<Bundle>,
     private paymentChannel: PaymentChannel<any, any, any>,
     private sender: Sender,
   ) {}
@@ -91,8 +91,9 @@ export class BoardingHandler {
 
   public async onDepositSent(message: DepositSentMessage) {
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
-      const tx = await this.txReader(message.depositTransaction);
-      if (tx.address === this.paymentChannel.rootAddress) {
+      const txs = await this.txReader(message.depositTransaction);
+      const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
+      if (tx) {
         if (tx.value === this.price) {
           const bundleHash = await this.depositor(
             this.price!,

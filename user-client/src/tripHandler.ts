@@ -11,7 +11,7 @@ import {
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
-import { Trytes, Hash, Transaction } from '@iota/core/typings/types';
+import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { CreatedNewBranchMessage } from 'fzi-iota-showcase-client';
 
 export class TripHandler {
@@ -33,7 +33,7 @@ export class TripHandler {
     private settlementAddress: Hash,
     private paymentAmount: number,
     private depositor: (value: number, address: Hash) => Promise<Hash>,
-    private txReader: (bundleHash: Hash) => Promise<Transaction>,
+    private txReader: (bundleHash: Hash) => Promise<Bundle>,
     private paymentChannel: PaymentChannel<any, any, any>,
     private sender: Sender,
   ) {}
@@ -100,8 +100,9 @@ export class TripHandler {
 
   public async onDepositSent(message: DepositSentMessage) {
     if (this.state === State.DEPOSIT_SENT) {
-      const tx = await this.txReader(message.depositTransaction);
-      if (tx.address === this.paymentChannel.rootAddress) {
+      const txs = await this.txReader(message.depositTransaction);
+      const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
+      if (tx) {
         if (tx.value === this.price) {
           this.paymentChannel.updateDeposit([this.price, tx.value]);
           this.state = State.READY_FOR_PAYMENT;
@@ -112,7 +113,7 @@ export class TripHandler {
         }
       } else {
         this.state = State.CLOSED;
-        this.sender.cancelBoarding('Transaction is not on multisig root');
+        this.sender.cancelBoarding('Transaction is not for multisig root');
       }
     }
   }
