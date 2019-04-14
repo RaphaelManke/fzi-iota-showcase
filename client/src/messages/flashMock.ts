@@ -3,7 +3,9 @@ import { Hash } from '@iota/core/typings/types';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.CREATED;
-  public rootAddress = '';
+  public rootAddress = 'A'.repeat(81);
+
+  private depth?: number;
 
   public open(
     settlementAddress: Hash,
@@ -12,7 +14,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     signersCount: number,
     depth: number,
     security: number,
-  ) {}
+  ) {
+    this.depth = depth;
+  }
 
   public updateDeposit(deposits: number[]) {}
 
@@ -54,7 +58,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     return [];
   }
 
-  public createDigests(amount?: number): any[] {
-    return [];
+  public createDigests(amount = this.depth! + 1): any[] {
+    return new Array(amount).fill('');
   }
 }

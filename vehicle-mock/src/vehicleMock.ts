@@ -142,9 +142,7 @@ export class VehicleMock {
             );
             return txs[0].bundle;
           },
-          async (bundleHash) => {
-            return (await this.iota.getBundle(bundleHash))[0]; // TODO
-          },
+          async (bundleHash) => await this.iota.getBundle(bundleHash),
           new FlashMock(),
           sendToUser,
         );
