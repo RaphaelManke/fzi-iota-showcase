@@ -7,6 +7,7 @@ import {
   TransactionCreatedMessage,
   CreatedNewBranchMessage,
   CancelBoardingMessage,
+  log,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -37,11 +38,13 @@ export class BoardingHandler {
   ) {}
 
   public onTripRequested() {
+    log.debug('Trip requested');
     this.state = State.VEHICLE_AUTHENTICATED;
     this.sender.authenticate(this.nonce, this.reservations.length > 0);
   }
 
   public onDestination(message: DestinationMessage) {
+    log.debug('Destination sent %O', message);
     let auth = true;
     if (this.reservations.length > 0) {
       if (!message.nonce) {
@@ -67,6 +70,7 @@ export class BoardingHandler {
   }
 
   public onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
+    log.debug('Payment channel opened %O', message);
     this.paymentChannel.open(
       this.settlementAddress,
       1,
@@ -91,6 +95,7 @@ export class BoardingHandler {
   }
 
   public async onDepositSent(message: DepositSentMessage) {
+    log.debug('Depsoit sent %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       const txs = await this.txReader(message.depositTransaction);
       const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
@@ -135,6 +140,7 @@ export class BoardingHandler {
   }
 
   public async onTransactionReceived(message: TransactionCreatedMessage) {
+    log.debug('Transaction received %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const signedBundles = this.paymentChannel.signTransaction(
         message.bundles,
@@ -172,6 +178,7 @@ export class BoardingHandler {
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
+    log.debug('New branch created %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const myDigests = this.paymentChannel.createDigests(
         message.digests.length,
@@ -184,6 +191,7 @@ export class BoardingHandler {
   }
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
+    log.debug('Boarding cancelled %O', message);
     this.state = State.CLOSED;
   }
 }

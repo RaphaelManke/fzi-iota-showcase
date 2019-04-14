@@ -10,6 +10,7 @@ import {
   ClosePaymentChannelMessage,
   CancelBoardingMessage,
   CreditsExaustedMessage,
+  log,
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
@@ -41,6 +42,7 @@ export class TripHandler {
   ) {}
 
   public onVehicleAuthentication(message: VehicleAuthenticationMessage) {
+    log.debug('Vehicle authenticated %O', message);
     if (hash(message.nonce) === this.checkInMessage.hashedNonce) {
       this.state = State.DESTINATION_SENT;
       this.sender.sendDestination(this.destination, this.nonce);
@@ -51,6 +53,7 @@ export class TripHandler {
   }
 
   public onPriceSent(message: PriceMessage) {
+    log.debug('Price sent %O', message);
     this.price = message.price;
     this.remaining = this.price;
     if (this.price > this.maxPrice) {
@@ -80,6 +83,7 @@ export class TripHandler {
   }
 
   public async onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
+    log.debug('Payment channel opened %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       this.vehicleAddress = message.settlement;
       this.paymentChannel.prepareChannel(
@@ -101,6 +105,7 @@ export class TripHandler {
   }
 
   public async onDepositSent(message: DepositSentMessage) {
+    log.debug('Deposit sent %O', message);
     if (this.state === State.DEPOSIT_SENT) {
       const txs = await this.txReader(message.depositTransaction);
       const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
@@ -121,6 +126,7 @@ export class TripHandler {
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
+    log.debug('New branch created %O', message);
     if (this.branchWaiter && this.state === State.AWAIT_NEW_BRANCH) {
       this.branchWaiter(message.digests);
     } else {
@@ -131,6 +137,7 @@ export class TripHandler {
   }
 
   public onSignedTransaction(message: TransactionSignedMessage) {
+    log.debug('Transaction signed %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
       this.issuedPayment = false;
@@ -139,6 +146,7 @@ export class TripHandler {
   }
 
   public onCreditsLeft(message: CreditsLeftMessage) {
+    log.debug('Credits left updated %O', message);
     if (this.state === State.READY_FOR_PAYMENT && !this.issuedPayment) {
       if (message.millis < TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND) {
         this.sendTransaction();
@@ -153,14 +161,17 @@ export class TripHandler {
   }
 
   public onCreditsExausted(message: CreditsExaustedMessage) {
+    log.debug('Credits exausted %O', message);
     this.sendTransaction();
   }
 
   public onClosedPaymentChannel(message: ClosePaymentChannelMessage) {
+    log.debug('Payment channel closed %O', message);
     this.state = State.CLOSED;
   }
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
+    log.debug('Boarding cancelled %O', message);
     this.state = State.CLOSED;
   }
 

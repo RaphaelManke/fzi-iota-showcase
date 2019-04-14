@@ -57,6 +57,7 @@ export class UserState {
     const paymentAmount = UserState.PAYMENT_EACH_MILLIS / duration;
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
+    // use real or mocked payment functions
     let depositor: (value: number, address: Hash) => Promise<string>;
     let txReader: (bundleHash: Hash) => Promise<Bundle>;
     if (this.mockPayments) {
