@@ -16,10 +16,10 @@ export class BoardingHandler {
   public static MINIMUM_METERS_PAID = 100;
 
   private state = State.TRIP_REQUESTED;
-  private price: undefined | number;
-  private destination: undefined | Trytes;
+  private price?: number;
+  private destination?: Trytes;
   private creditsLeft = 0;
-  private distanceLeft: undefined | number;
+  private distanceLeft?: number;
 
   constructor(
     private nonce: Trytes,
