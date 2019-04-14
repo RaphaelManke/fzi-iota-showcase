@@ -39,6 +39,8 @@ export class VehicleMock {
       provider,
       attachToTangle: createAttachToTangle(),
     }),
+    private depth = 3,
+    private mwm = 14,
   ) {
     this.mover = new Mover(vehicle);
   }
@@ -129,7 +131,16 @@ export class VehicleMock {
           this.vehicle.info.speed,
           () => ({ price: this.price * distance, distance }),
           async (value, address) => {
-            return ''; // TODO
+            const txTrytes = await this.iota.prepareTransfers(
+              this.vehicle.seed,
+              [{ value, address }],
+            );
+            const txs = await this.iota.sendTrytes(
+              txTrytes,
+              this.depth,
+              this.mwm,
+            );
+            return txs[0].bundle;
           },
           async (bundleHash) => {
             return (await this.iota.getBundle(bundleHash))[0]; // TODO

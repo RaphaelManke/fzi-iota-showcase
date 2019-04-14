@@ -13,10 +13,14 @@ export class UserState {
   private currentAddress?: Hash;
   private nextAddress?: Hash;
   private iota: API;
+  private depth: number;
+  private mwm: number;
 
   constructor(
     private seed: Hash,
     {
+      depth = 3,
+      mwm = 14,
       provider,
       iota = provider
         ? composeAPI({
@@ -24,12 +28,19 @@ export class UserState {
             attachToTangle: createAttachToTangle(),
           })
         : undefined,
-    }: { provider?: string; iota?: API | undefined },
+    }: {
+      provider?: string;
+      iota?: API | undefined;
+      depth?: number;
+      mwm?: number;
+    },
   ) {
     if (!iota) {
       throw new Error('IOTA client must be set');
     }
     this.iota = iota;
+    this.depth = depth;
+    this.mwm = mwm;
   }
 
   public createTripHandler(
@@ -49,7 +60,11 @@ export class UserState {
       this.nextAddress!,
       paymentAmount,
       async (value, address) => {
-        return ''; // TODO
+        const trytes = await this.iota.prepareTransfers(this.seed, [
+          { value, address },
+        ]);
+        const txs = await this.iota.sendTrytes(trytes, this.depth, this.mwm);
+        return txs[0].bundle;
       },
       async (bundleHash) => {
         return (await this.iota.getBundle(bundleHash))[0]; // TODO
