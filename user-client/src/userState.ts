@@ -88,15 +88,28 @@ export class UserState {
   }
 
   public async getAccountData(): Promise<AccountData> {
-    const address = await this.iota.getNewAddress(this.seed, { total: 2 });
-    if (typeof address === 'string') {
-      this.currentAddress = address;
+    if (!this.mockPayments) {
+      const seed = this.seed;
+      const result = await this.iota.getNewAddress(seed);
+      if (typeof result === 'string') {
+        this.currentAddress = result;
+      } else {
+        this.currentAddress = result[0];
+        this.nextAddress = result[1];
+      }
+      return await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = address[0];
-      this.nextAddress = address[1];
+      this.currentAddress = 'A';
+      this.nextAddress = 'B';
+      return {
+        addresses: [''],
+        balance: 3000,
+        latestAddress: 'A',
+        transactions: [],
+        inputs: [],
+        transfers: [],
+      };
     }
-    const result = await this.iota.getAccountData(this.seed);
-    return result;
   }
 
   private mockedBundle(price: number): Bundle {

@@ -2,7 +2,7 @@ import { Vehicle } from './vehicle';
 import { Mover } from './mover';
 import { Path } from './pathFinder';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
-import { API, composeAPI } from '@iota/core';
+import { API, composeAPI, AccountData } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
   createAttachToTangle,
@@ -49,16 +49,29 @@ export class VehicleMock {
     this.mover = new Mover(vehicle);
   }
 
-  public async setupPayments() {
-    const seed = trytes(getPaymentSeed(this.vehicle.seed));
-    const result = await this.iota.getNewAddress(seed);
-    if (typeof result === 'string') {
-      this.currentAddress = result;
+  public async setupPayments(): Promise<AccountData> {
+    if (!this.mockPayments) {
+      const seed = trytes(getPaymentSeed(this.vehicle.seed));
+      const result = await this.iota.getNewAddress(seed);
+      if (typeof result === 'string') {
+        this.currentAddress = result;
+      } else {
+        this.currentAddress = result[0];
+        this.nextAddress = result[1];
+      }
+      return await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = result[0];
-      this.nextAddress = result[1];
+      this.currentAddress = 'A';
+      this.nextAddress = 'B';
+      return {
+        addresses: [''],
+        balance: 3000,
+        latestAddress: 'A',
+        transactions: [],
+        inputs: [],
+        transfers: [],
+      };
     }
-    return await this.iota.getAccountData(seed);
   }
 
   public async syncTangle() {
@@ -93,9 +106,11 @@ export class VehicleMock {
       const nonce = this.generateNonce();
       const checkInMessage: CheckInMessage = {
         hashedNonce: this.hash(nonce),
-        vehicleId: this.masterChannel!.channelRoot,
+        vehicleId: this.mockMessages
+          ? trits(this.vehicle.seed)
+          : this.masterChannel!.channelRoot,
         vehicleInfo: this.vehicle.info,
-        tripChannelIndex: this.masterChannel!.cursor,
+        tripChannelIndex: this.mockMessages ? 1 : this.masterChannel!.cursor,
         reservationRate: this.reservationsRate,
         price: this.price,
         paymentAddress: this.currentAddress!,
@@ -115,7 +130,11 @@ export class VehicleMock {
         );
       } else {
         result = {
-          reservationChannel: new MamWriter('', '', MAM_MODE.PUBLIC),
+          reservationChannel: new MamWriter(
+            '',
+            'Z'.repeat(81),
+            MAM_MODE.PUBLIC,
+          ),
           tripChannel: await RAAM.fromSeed('9', { amount: 2 }),
           welcomeMessage: {
             checkInMessageRef: '',
