@@ -5,6 +5,7 @@ import {
   TripStarted,
   TripFinished,
   PosUpdated,
+  TransactionIssued,
 } from './events';
 import { EnvironmentInfo, Stop, Connection, User } from './envInfo';
 import { Users } from './users';
@@ -147,6 +148,17 @@ export class Controller {
         if (v.info.trip) {
           const u = this.users.getById(v.info.trip.user);
           u!.info.position = event.position;
+        }
+      }
+    });
+
+    this.events.on('TransactionIssued', (event: TransactionIssued) => {
+      const u = this.users.getById(event.from);
+      if (u) {
+        const v = this.vehicles.get(event.to);
+        if (v) {
+          u.info.balance -= event.amount;
+          v.info.balance += event.amount;
         }
       }
     });
