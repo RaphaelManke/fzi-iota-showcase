@@ -38,7 +38,7 @@ export class BoardingHandler {
   ) {}
 
   public onTripRequested() {
-    log.debug('User requested trip');
+    log.silly('User requested trip');
     this.state = State.VEHICLE_AUTHENTICATED;
     this.sender.authenticate(this.nonce, this.reservations.length > 0);
   }

@@ -39,7 +39,6 @@ export class TripStarter {
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
     const maxPrice = distance * v.info.checkIn!.message.price;
-    log.debug('User %s calculated price: %s', user.id, maxPrice);
     const tripHandler = userState.createTripHandler(
       destination,
       v.info.checkIn!.message,

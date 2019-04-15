@@ -57,9 +57,9 @@ export class UserState {
   ): TripHandler {
     const paymentAmount = duration / UserState.PAYMENT_EACH_MILLIS;
     log.debug(
-      'User %s calculated %s payments for trip',
+      'User %s will use %s payments for trip',
       this.id,
-      paymentAmount,
+      Math.ceil(paymentAmount),
     );
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
