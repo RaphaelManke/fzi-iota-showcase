@@ -3,7 +3,9 @@ import { Hash } from '@iota/core/typings/types';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.CREATED;
-  public rootAddress = '';
+  public rootAddress = 'A'.repeat(81);
+
+  private depth?: number;
 
   public open(
     settlementAddress: Hash,
@@ -12,7 +14,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     signersCount: number,
     depth: number,
     security: number,
-  ) {}
+  ) {
+    this.depth = depth;
+  }
 
   public updateDeposit(deposits: number[]) {}
 
@@ -36,7 +40,8 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     address: Hash,
     onCreateNewBranch: (multisig: any, generate: number) => void,
   ): Promise<{ bundles: any[]; signedBundles: any[] }> {
-    return { bundles: [], signedBundles: [] };
+    const txs = [{ value: amount, address }];
+    return { bundles: [txs], signedBundles: [txs] };
   }
 
   public createCloseTransaction(): { bundles: any[]; signedBundles: any[] } {
@@ -44,17 +49,20 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   }
 
   public signTransaction(bundles: any[], signedBundles: any[]): any[] {
-    return [];
+    return signedBundles;
   }
 
   public extractTransfers(
     bundles: any[],
     fromIndex: number,
   ): Array<{ value: number; address: Hash }> {
-    return [];
+    return bundles.reduce((acc, v) => {
+      acc.push(...v);
+      return acc;
+    }, []);
   }
 
-  public createDigests(amount?: number): any[] {
-    return [];
+  public createDigests(amount = this.depth! + 1): any[] {
+    return new Array(amount).fill('');
   }
 }

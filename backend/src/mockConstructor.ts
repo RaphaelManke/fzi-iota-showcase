@@ -18,6 +18,8 @@ export class MockConstructor {
     private provider: string,
     private iota: API,
     private idSupplier: () => Trytes = getNextId,
+    private mockPayments = false,
+    private mockMessages = false,
   ) {}
 
   public construct(v: VehicleDescription) {
@@ -50,6 +52,18 @@ export class MockConstructor {
       reachedStop(stop) {
         events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
       },
+      tripStarted(userId, start, destination, price) {
+        events.emit('TripStarted', {
+          vehicleId: info.id,
+          userId,
+          start,
+          destination,
+          price,
+        });
+      },
+      transactionReceived(amount, user) {
+        events.emit('TransactionIssued', { from: user, to: info.id, amount });
+      },
     };
 
     const mock = new VehicleMock(
@@ -65,6 +79,10 @@ export class MockConstructor {
       v.reservationRate,
       this.provider,
       this.iota,
+      3,
+      14,
+      this.mockPayments,
+      this.mockMessages,
     );
     return { info, mock };
   }

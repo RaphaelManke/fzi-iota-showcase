@@ -8,10 +8,13 @@ import {
   OpenPaymentChannelMessage,
   TransactionSignedMessage,
   ClosePaymentChannelMessage,
+  CancelBoardingMessage,
+  CreditsExaustedMessage,
+  log,
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
-import { Trytes, Hash, Transaction } from '@iota/core/typings/types';
+import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { CreatedNewBranchMessage } from 'fzi-iota-showcase-client';
 
 export class TripHandler {
@@ -33,12 +36,13 @@ export class TripHandler {
     private settlementAddress: Hash,
     private paymentAmount: number,
     private depositor: (value: number, address: Hash) => Promise<Hash>,
-    private txReader: (bundleHash: Hash) => Promise<Transaction>,
+    private txReader: (bundleHash: Hash) => Promise<Bundle>,
     private paymentChannel: PaymentChannel<any, any, any>,
     private sender: Sender,
   ) {}
 
   public onVehicleAuthentication(message: VehicleAuthenticationMessage) {
+    log.silly('Vehicle authenticated %O', message);
     if (hash(message.nonce) === this.checkInMessage.hashedNonce) {
       this.state = State.DESTINATION_SENT;
       this.sender.sendDestination(this.destination, this.nonce);
@@ -49,6 +53,7 @@ export class TripHandler {
   }
 
   public onPriceSent(message: PriceMessage) {
+    log.silly('Vehicle sent price %O', message);
     this.price = message.price;
     this.remaining = this.price;
     if (this.price > this.maxPrice) {
@@ -78,6 +83,7 @@ export class TripHandler {
   }
 
   public async onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
+    log.silly('Vehicle opened payment channel %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       this.vehicleAddress = message.settlement;
       this.paymentChannel.prepareChannel(
@@ -91,17 +97,19 @@ export class TripHandler {
       this.state = State.DEPOSIT_SENT;
       this.sender.depositSent(bundleHash, this.price!);
     } else {
-      this.state = State.CLOSED;
       throw new Error(
         `State must be 'PAYMENT_CHANNEL_OPENED' but is '${this.state}'`,
-      );
+      ); // TODO send closed
+      this.state = State.CLOSED;
     }
   }
 
   public async onDepositSent(message: DepositSentMessage) {
+    log.silly('Vehicle sent deposit %O', message);
     if (this.state === State.DEPOSIT_SENT) {
-      const tx = await this.txReader(message.depositTransaction);
-      if (tx.address === this.paymentChannel.rootAddress) {
+      const txs = await this.txReader(message.depositTransaction);
+      const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
+      if (tx) {
         if (tx.value === this.price) {
           this.paymentChannel.updateDeposit([this.price, tx.value]);
           this.state = State.READY_FOR_PAYMENT;
@@ -112,22 +120,24 @@ export class TripHandler {
         }
       } else {
         this.state = State.CLOSED;
-        this.sender.cancelBoarding('Transaction is not on multisig root');
+        log.debug('Vehicle sent bundle %O', txs);
+        this.sender.cancelBoarding('Transaction is not for multisig root');
       }
     }
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
+    log.silly('Vehicle created new branch %O', message);
     if (this.branchWaiter && this.state === State.AWAIT_NEW_BRANCH) {
       this.branchWaiter(message.digests);
     } else {
-      throw new Error(
-        `Client must have state 'AWAIT_BRANCH' but is ${this.state}`,
-      );
+      log.warn(`Client must have state 'AWAIT_BRANCH' but is ${this.state}`); // TODO send close
+      this.state = State.CLOSED;
     }
   }
 
   public onSignedTransaction(message: TransactionSignedMessage) {
+    log.silly('Vehicle signed transaction %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
       this.issuedPayment = false;
@@ -136,6 +146,7 @@ export class TripHandler {
   }
 
   public onCreditsLeft(message: CreditsLeftMessage) {
+    log.silly('Credits left updated %O', message);
     if (this.state === State.READY_FOR_PAYMENT && !this.issuedPayment) {
       if (message.millis < TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND) {
         this.sendTransaction();
@@ -149,19 +160,31 @@ export class TripHandler {
     }
   }
 
+  public onCreditsExausted(message: CreditsExaustedMessage) {
+    log.debug('Credits exausted %O', message);
+    this.sendTransaction(message.minimumAmount);
+  }
+
   public onClosedPaymentChannel(message: ClosePaymentChannelMessage) {
+    log.silly('Vehicle closed payment channel %O', message);
     this.state = State.CLOSED;
   }
 
-  private async sendTransaction() {
+  public onBoardingCanceled(message: CancelBoardingMessage) {
+    log.debug('Vehicle cancelled boarding %O', message);
+    this.state = State.CLOSED;
+  }
+
+  private async sendTransaction(
+    amount = Math.min(
+      this.remaining!,
+      Math.round(this.price! / this.paymentAmount),
+    ),
+  ) {
     if (this.state === State.READY_FOR_PAYMENT) {
       this.issuedPayment = true;
       // TODO
-      const amount = Math.min(
-        this.remaining!,
-        Math.round(this.price! / this.paymentAmount),
-      );
-      if (amount <= 0) {
+      if (amount > 0) {
         const {
           bundles,
           signedBundles,
@@ -174,6 +197,7 @@ export class TripHandler {
         this.state = State.AWAIT_SIGNING;
         this.sender.createdTransaction(bundles, signedBundles, false);
       } else {
+        log.debug('No amount left to pay. Closing channel...');
         const {
           bundles,
           signedBundles,
@@ -182,8 +206,9 @@ export class TripHandler {
         this.sender.createdTransaction(bundles, signedBundles, true);
       }
     } else {
-      this.state = State.CLOSED;
-      throw new Error('Client is not ready to make payments.');
+      if (this.remaining! > 0 && this.state === State.CLOSED) {
+        log.warn('Payment remain but payment channel was closed');
+      }
     }
   }
 

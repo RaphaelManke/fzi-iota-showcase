@@ -5,17 +5,25 @@ import {
   FlashMock,
 } from 'fzi-iota-showcase-client';
 import { API, composeAPI, AccountData } from '@iota/core';
-import { Hash, Trytes } from '@iota/core/typings/types';
+import { Hash, Trytes, Bundle } from '@iota/core/typings/types';
 import { TripHandler, Sender } from './tripHandler';
 
 export class UserState {
   public static PAYMENT_EACH_MILLIS = 5000;
-  private currentAddress: Hash | undefined;
+  private currentAddress?: Hash;
+  private nextAddress?: Hash;
   private iota: API;
+  private depth: number;
+  private mwm: number;
+  private mockPayments: boolean;
 
   constructor(
     private seed: Hash,
+    private id: Trytes,
     {
+      mockPayments = false,
+      depth = 3,
+      mwm = 14,
       provider,
       iota = provider
         ? composeAPI({
@@ -23,12 +31,21 @@ export class UserState {
             attachToTangle: createAttachToTangle(),
           })
         : undefined,
-    }: { provider?: string; iota?: API | undefined },
+    }: {
+      mockPayments: boolean;
+      provider?: string;
+      iota?: API | undefined;
+      depth?: number;
+      mwm?: number;
+    },
   ) {
     if (!iota) {
       throw new Error('IOTA client must be set');
     }
     this.iota = iota;
+    this.depth = depth;
+    this.mwm = mwm;
+    this.mockPayments = mockPayments;
   }
 
   public createTripHandler(
@@ -38,31 +55,101 @@ export class UserState {
     duration: number,
     sender: Sender,
   ): TripHandler {
-    const paymentAmount = UserState.PAYMENT_EACH_MILLIS / duration;
+    const paymentAmount = duration / UserState.PAYMENT_EACH_MILLIS;
+    log.debug(
+      'User %s will use %s payments for trip',
+      this.id,
+      Math.ceil(paymentAmount),
+    );
+    const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
+
+    // use real or mocked payment functions
+    let depositor: (value: number, address: Hash) => Promise<string>;
+    let txReader: (bundleHash: Hash) => Promise<Bundle>;
+    if (this.mockPayments) {
+      depositor = async (value, address) => '';
+      txReader = async (bundleHash) => this.mockedBundle(maxPrice);
+    } else {
+      depositor = async (value, address) => {
+        const txTrytes = await this.iota.prepareTransfers(this.seed, [
+          { value, address },
+        ]);
+        const txs = await this.iota.sendTrytes(txTrytes, this.depth, this.mwm);
+        return txs[0].bundle;
+      };
+      txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
+    }
+
     return new TripHandler(
       destination,
       checkInMessage,
       maxPrice,
-      '', // TODO
-      'SETTLEMENTADDRESS', // TODO
+      nonce,
+      this.nextAddress!,
       paymentAmount,
-      async (value, address) => {
-        return ''; // TODO
-      },
-      async (bundleHash) => {
-        return (await this.iota.getBundle(bundleHash))[0]; // TODO
-      },
+      depositor,
+      txReader,
       new FlashMock(),
       sender,
     );
   }
 
   public async getAccountData(): Promise<AccountData> {
-    const address = await this.iota.getNewAddress(this.seed);
-    if (typeof address === 'string') {
-      this.currentAddress = address;
+    if (!this.mockPayments) {
+      const seed = this.seed;
+      const result = await this.iota.getNewAddress(seed);
+      if (typeof result === 'string') {
+        this.currentAddress = result;
+      } else {
+        this.currentAddress = result[0];
+        this.nextAddress = result[1];
+      }
+      return await this.iota.getAccountData(seed);
+    } else {
+      this.currentAddress = 'A';
+      this.nextAddress = 'B';
+      return {
+        addresses: [''],
+        balance: 3000,
+        latestAddress: 'A',
+        transactions: [],
+        inputs: [],
+        transfers: [],
+      };
     }
-    const result = await this.iota.getAccountData(this.seed);
-    return result;
   }
+
+  private mockedBundle(price: number): Bundle {
+    return [
+      {
+        address: 'A'.repeat(81),
+        value: price,
+        attachmentTimestamp: 0,
+        attachmentTimestampLowerBound: 0,
+        attachmentTimestampUpperBound: 0,
+        branchTransaction: '',
+        bundle: '',
+        confirmed: true,
+        currentIndex: 0,
+        hash: '',
+        lastIndex: 0,
+        nonce: '',
+        obsoleteTag: '',
+        signatureMessageFragment: '',
+        tag: '',
+        timestamp: 0,
+        trunkTransaction: '',
+      },
+    ];
+  }
+}
+
+function generateNonce(length = 81) {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
+  const retVal = [];
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal[i] = charset.charAt(Math.floor(Math.random() * n));
+  }
+  const result = retVal.join('');
+  return result;
 }

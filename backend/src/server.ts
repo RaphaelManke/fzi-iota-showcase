@@ -81,10 +81,10 @@ export class Server {
         if (!user.info.loggedIn) {
           user.info.loggedIn = true;
           this.controller.events.emit('Login', user.info);
-          res.json(user);
+          res.json(user.info);
         } else {
           res.status(406);
-          res.json(user);
+          res.json(user.info);
         }
       } else {
         res.status(404);
@@ -98,10 +98,10 @@ export class Server {
         if (user.info.loggedIn) {
           user.info.loggedIn = false;
           this.controller.events.emit('Logout', { id: user.info.id });
-          res.json(user);
+          res.json(user.info);
         } else {
           res.status(406);
-          res.json(user);
+          res.json(user.info);
         }
       } else {
         res.status(404);

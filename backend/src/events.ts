@@ -96,6 +96,7 @@ export interface TripStarted {
   vehicleId: Trytes;
   start: Trytes;
   destination: Trytes;
+  price: number;
 }
 
 export interface TripFinished {
