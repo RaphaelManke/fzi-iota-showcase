@@ -17,6 +17,15 @@
                     value-field="id" text-field="name"
                     ></b-form-select>
                     </b-col>
+                    <b-col>
+                      <b-form-group label="Vehicel types">
+      <b-form-checkbox-group v-model="vehicleTypes">
+        <b-form-checkbox value="car">Car</b-form-checkbox>
+        <b-form-checkbox value="tram">Tram</b-form-checkbox>
+        <b-form-checkbox value="bike">Bike</b-form-checkbox>
+      </b-form-checkbox-group>
+    </b-form-group>
+                    </b-col>
                     </b-row>
                 </b-form-group>
             </b-card>
@@ -83,12 +92,19 @@ export default {
   data() {
     return {
       dismissSecs: 5,
-      dismissCountDown: 0
+      dismissCountDown: 0,
+      vehicleTypes: ["car", "tram", "bike"]
     };
   },
   computed: {
     routes() {
-      return this.$store.getters["routes/getRoutesAvailable"];
+      return this.$store.getters["routes/getRoutesAvailable"].filter(route => {
+        let res = true;
+        route.sections.forEach(section => {
+          if (!this.vehicleTypes.includes(section.vehicle.type)) res = false;
+        });
+        return res;
+      });
     },
     stops() {
       return this.$store.getters["mapObjects/getStops"]
