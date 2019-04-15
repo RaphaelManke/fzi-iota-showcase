@@ -248,21 +248,26 @@ export default {
       return "assets/images/" + imageType + ".png";
     },
     refreshRoutes() {
-      this.$http
-        .get(this.$hostname + "/routes", {
-          params: {
-            start: this.$store.getters["user/getUserInfo"].stop,
-            destination: this.$store.getters["user/getDestination"]
-          }
-        })
-        .then(function(response) {
-          if (response.status === 200) {
-            this.$store.commit("routes/updateRoutesAvailable", response.body);
-          }
-        })
-        .catch(function(response) {
-          window.console.log(response);
-        });
+      if (
+        this.$store.getters["user/getUserInfo"].stop !==
+        this.$store.getters["user/getDestination"]
+      ) {
+        this.$http
+          .get(this.$hostname + "/routes", {
+            params: {
+              start: this.$store.getters["user/getUserInfo"].stop,
+              destination: this.$store.getters["user/getDestination"]
+            }
+          })
+          .then(function(response) {
+            if (response.status === 200) {
+              this.$store.commit("routes/updateRoutesAvailable", response.body);
+            }
+          })
+          .catch(function(response) {
+            window.console.log(response);
+          });
+      }
     },
     routePrice(sections) {
       let summedPrice = 0;
