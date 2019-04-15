@@ -111,6 +111,7 @@
 
 <script>
 import MapVisu from "./MapVisu";
+import { formatIota } from "../utils";
 export default {
   components: {
     MapVisu
@@ -172,6 +173,9 @@ export default {
     }
   },
   methods: {
+    formatIota(iotas) {
+      return formatIota(iotas);
+    },
     haltAtNextStop() {
       this.$http
         .post(this.$hostname + "/stopTripAtNextStop", {
@@ -188,12 +192,6 @@ export default {
           alert("Server error. PLease look in console!");
           window.console.log(response);
         });
-    },
-    formatIota(iotas) {
-      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + " Gi";
-      if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + " Mi";
-      if (iotas > 1000) return (iotas / 1000).toFixed(0) + " Ki";
-      return iotas + " i";
     },
     changeRoute() {
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {
