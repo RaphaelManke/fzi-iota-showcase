@@ -2,7 +2,7 @@ import { PaymentChannel, PaymentChannelState } from './boarding';
 import { Hash } from '@iota/core/typings/types';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
-  public state = PaymentChannelState.CREATED;
+  public state = PaymentChannelState.UNINITIALIZED;
   public rootAddress = 'A'.repeat(81);
 
   private depth?: number;
@@ -16,13 +16,20 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     security: number,
   ) {
     this.depth = depth;
+    this.state = PaymentChannelState.CREATED;
   }
 
-  public updateDeposit(deposits: number[]) {}
+  public updateDeposit(deposits: number[]) {
+    this.state = PaymentChannelState.READY;
+  }
 
-  public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {}
+  public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
+    this.state = PaymentChannelState.WAIT_FOR_DEPOSIT;
+  }
 
-  public applyTransaction(signedBundles: any[]) {}
+  public applyTransaction(signedBundles: any[]) {
+    this.state = PaymentChannelState.READY;
+  }
 
   public async attachCurrentBundle(): Promise<Hash> {
     return '';
@@ -32,6 +39,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     allDigests: any[],
     multisigAddress: any,
   ): Promise<any[]> {
+    this.state = PaymentChannelState.READY;
     return [];
   }
 
@@ -49,6 +57,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   }
 
   public signTransaction(bundles: any[], signedBundles: any[]): any[] {
+    this.state = PaymentChannelState.SIGNED_TRANSACTION;
     return signedBundles;
   }
 
@@ -63,6 +72,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   }
 
   public createDigests(amount = this.depth! + 1): any[] {
+    this.state = PaymentChannelState.GENERATED_DIGESTS;
     return new Array(amount).fill('');
   }
 }
