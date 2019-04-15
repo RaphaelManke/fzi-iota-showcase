@@ -52,6 +52,17 @@ export class MockConstructor {
       reachedStop(stop) {
         events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
       },
+      tripStarted(userId, start, destination) {
+        events.emit('TripStarted', {
+          vehicleId: info.id,
+          userId,
+          start,
+          destination,
+        });
+      },
+      transactionReceived(amount, user) {
+        events.emit('TransactionIssued', { from: user, to: info.id, amount });
+      },
     };
 
     const mock = new VehicleMock(

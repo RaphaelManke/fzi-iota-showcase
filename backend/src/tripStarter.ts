@@ -1,6 +1,7 @@
 import { Connection, User } from './envInfo';
 import { Trytes } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
+import { log, Exception } from 'fzi-iota-showcase-client';
 import {
   UserState,
   Sender as UserSender,
@@ -17,7 +18,7 @@ import { getPathLength } from 'geolib';
 export class TripStarter {
   constructor(private connections: Connection[], private events: SafeEmitter) {}
 
-  public startTrip(
+  public async startTrip(
     v: { info: VehicleInfo; mock: VehicleMock },
     { info: user, state: userState }: { info: User; state: UserState },
     start: Trytes,
@@ -38,6 +39,7 @@ export class TripStarter {
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
     const maxPrice = distance * v.info.checkIn!.message.price;
+    log.debug('User %s calculated price: %s', user.id, maxPrice);
     const tripHandler = userState.createTripHandler(
       destination,
       v.info.checkIn!.message,
@@ -48,22 +50,24 @@ export class TripStarter {
 
     const vehicleSender = this.createVehicleSender(tripHandler);
 
-    v.mock
-      .startTrip(route, vehicleSender, setter)
-      .then((stop) =>
+    this.events.emit('BoardingStarted', {
+      userId: user.id,
+      vehicleId: v.info.id,
+      destination,
+    });
+    return v.mock
+      .startTrip(route, vehicleSender, user.id, setter)
+      .then((stop: Trytes) => {
         this.events.emit('TripFinished', {
           vehicleId: v.info.id,
           userId: user.id,
           destination: stop,
-        }),
-      )
-      .then(() => v.mock.checkInAtCurrentStop());
-    this.events.emit('TripStarted', {
-      vehicleId: v.info.id,
-      userId: user.id,
-      start,
-      destination,
-    });
+        });
+      })
+      .then(() => v.mock.checkInAtCurrentStop())
+      .catch((e: any) =>
+        Promise.reject(new Exception('Starting trip failed', e)),
+      );
   }
 
   private findConnections(
@@ -98,7 +102,10 @@ export class TripStarter {
     return connections;
   }
 
-  private createUserSender() {
+  private createUserSender(): {
+    sender: UserSender;
+    setter: (handler: BoardingHandler) => void;
+  } {
     let boardingHandler: BoardingHandler;
     const sender: UserSender = {
       openPaymentChannel(userIndex, settlement, depth, security, digests) {

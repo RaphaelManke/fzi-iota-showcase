@@ -24,6 +24,7 @@
     "start": "node --inspect=5858 -r ts-node/register ./src/main.ts",
     "localTest": "mocha --reporter spec --inspect",
     "dev": "nodemon",
+    "mocked": "nodemon  --mockPayments true --mockMessages true",
     "build": "tsc"
   },
   "dependencies": {

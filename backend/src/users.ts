@@ -54,7 +54,7 @@ export class Users {
     }
     this.iota = iota;
     Array.from(users.entries()).forEach(([seed, user]) => {
-      const state = new UserState(seed, { iota, mockPayments });
+      const state = new UserState(seed, user.id, { iota, mockPayments });
       this.byId.set(user.id, { info: user, state });
       this.bySeed.set(seed, { info: user, state });
     });
