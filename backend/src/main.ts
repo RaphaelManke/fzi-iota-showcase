@@ -13,8 +13,6 @@ import { composeAPI } from '@iota/core';
 
 (async () => {
   try {
-    log.info('Starting server...');
-
     const args = minimist(process.argv.slice(2), {
       boolean: ['mockPayments', 'mockMessages'],
       default: {
@@ -24,8 +22,11 @@ import { composeAPI } from '@iota/core';
         users: './users.json',
         mockPayments: false,
         mockMessages: false,
+        logLevel: 'debug',
       },
     });
+    log.level = args.logLevel;
+    log.info('Starting server...');
     log.info('Parameters: %O', args);
 
     log.info('Reading environment settings from files...');
