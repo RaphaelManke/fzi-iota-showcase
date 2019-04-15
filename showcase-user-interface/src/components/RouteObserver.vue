@@ -56,7 +56,7 @@
       <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
           <div v-if="event.type==='tripStarted'">Trip from {{getStop(event.info.start).name}} to {{getStop(event.info.destination).name}} started</div>
           <div v-if="event.type==='tripFinished'">Arrived at {{getStop(event.info.destination).name}}</div>
-          <div v-if="event.type==='transaction'">{{event.info.amount}} iotas transfered</div>
+          <div v-if="event.type==='transaction'">{{formatIota(event.info.amount)}} transfered</div>
       </b-list-group-item>
     </b-list-group>
     </b-col>
@@ -189,10 +189,10 @@ export default {
         });
     },
     formatIota(iotas) {
-      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + "Gi";
-      if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + "Mi";
-      if (iotas > 1000) return (iotas / 1000).toFixed(0) + "Ki";
-      return iotas;
+      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + " Gi";
+      if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + " Mi";
+      if (iotas > 1000) return (iotas / 1000).toFixed(0) + " Ki";
+      return iotas + " i";
     },
     changeRoute() {
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {

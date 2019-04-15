@@ -8,7 +8,7 @@
               <b-col>
               <b-list-group>
       <b-list-group-item v-for="transaction in transactionData" class="d-flex justify-content-between align-items-center">
-          {{transaction}}
+          {{formatIota(transaction.amount)}} transfered from {{transaction.from}} to {{transaction.to}}
       </b-list-group-item>
     </b-list-group>
     </b-col>
@@ -28,6 +28,14 @@ export default {
   computed: {
     transactionData() {
       return this.$store.getters["transactions/getTransactions"];
+    }
+  },
+  methods: {
+    formatIota(iotas) {
+      if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + " Gi";
+      if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + " Mi";
+      if (iotas > 1000) return (iotas / 1000).toFixed(0) + " Ki";
+      return iotas + " i";
     }
   },
   updated() {

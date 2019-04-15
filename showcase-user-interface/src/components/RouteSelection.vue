@@ -157,7 +157,7 @@ export default {
       if (iotas > 1000000000) return (iotas / 1000000000).toFixed(0) + "Gi";
       if (iotas > 1000000) return (iotas / 1000000).toFixed(0) + "Mi";
       if (iotas > 1000) return (iotas / 1000).toFixed(0) + "Ki";
-      return iotas;
+      return iotas + " i";
     },
     getNextTrip() {
       let trip = undefined;
