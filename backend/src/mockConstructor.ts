@@ -52,12 +52,13 @@ export class MockConstructor {
       reachedStop(stop) {
         events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
       },
-      tripStarted(userId, start, destination) {
+      tripStarted(userId, start, destination, price) {
         events.emit('TripStarted', {
           vehicleId: info.id,
           userId,
           start,
           destination,
+          price,
         });
       },
       transactionReceived(amount, user) {
