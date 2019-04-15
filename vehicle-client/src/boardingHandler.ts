@@ -126,12 +126,17 @@ export class BoardingHandler {
   public addMetersDriven(add: number) {
     this.creditsLeft -= this.pricePerMeter * add;
     this.distanceLeft! -= add;
-    if (this.distanceLeft! > 0) {
-      if (this.creditsLeft <= 0) {
-        const amount =
-          this.pricePerMeter *
-            Math.min(BoardingHandler.MINIMUM_METERS_PAID, this.distanceLeft!) +
-          -this.creditsLeft;
+    if (this.distanceLeft && this.distanceLeft > 0) {
+      const minimumCredits =
+        this.pricePerMeter * BoardingHandler.MINIMUM_METERS_PAID;
+      if (
+        this.creditsLeft <= minimumCredits &&
+        this.distanceLeft > BoardingHandler.MINIMUM_METERS_PAID
+      ) {
+        const amount = Math.min(
+          minimumCredits,
+          this.pricePerMeter * this.distanceLeft,
+        );
         this.sender.creditsExausted(amount);
       } else {
         const distanceLeft = this.creditsLeft / this.pricePerMeter;
