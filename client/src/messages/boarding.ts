@@ -45,6 +45,7 @@ export interface PaymentChannel<DIGEST, MULTISIG_ADDRESS, BUNDLE> {
 }
 
 export enum PaymentChannelState {
+  UNINITIALIZED,
   CREATED,
   GENERATED_DIGESTS,
   WAIT_FOR_DEPOSIT,
