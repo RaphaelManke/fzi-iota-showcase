@@ -135,7 +135,19 @@ export class TripHandler {
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
     log.silly('Vehicle created new branch %O', message);
     if (this.branchWaiter && this.state === State.AWAIT_NEW_BRANCH) {
-      this.branchWaiter(message.digests);
+      if (this.branchWaiter) {
+        this.branchWaiter(message.digests);
+        this.branchWaiter = undefined;
+      } else {
+        // creation not issued by me
+        const myDigests = this.paymentChannel.createDigests(
+          message.digests.length,
+        );
+        this.paymentChannel.buildNewBranch(
+          [message.digests, myDigests],
+          message.multisig,
+        );
+      }
     } else {
       log.warn(`Client must have state 'AWAIT_BRANCH' but is ${this.state}`); // TODO send close
       this.state = State.CLOSED;

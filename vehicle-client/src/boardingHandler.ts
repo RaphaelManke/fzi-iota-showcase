@@ -78,6 +78,7 @@ export class BoardingHandler {
       const { distance: oldDistance } = this.getPriceAndDistance(
         this.destination,
       );
+      this.destination = destination;
       const delta = distance - oldDistance;
       this.distanceLeft += delta;
 
@@ -228,13 +229,19 @@ export class BoardingHandler {
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
     log.silly('User created new branch %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
-      const myDigests = this.paymentChannel.createDigests(
-        message.digests.length,
-      );
-      this.paymentChannel.buildNewBranch(
-        [message.digests, myDigests],
-        message.multisig,
-      );
+      if (!this.branchWaiter) {
+        // creation not issued by me
+        const myDigests = this.paymentChannel.createDigests(
+          message.digests.length,
+        );
+        this.paymentChannel.buildNewBranch(
+          [message.digests, myDigests],
+          message.multisig,
+        );
+      } else {
+        this.branchWaiter(message.digests);
+        this.branchWaiter = undefined;
+      }
     }
   }
 
