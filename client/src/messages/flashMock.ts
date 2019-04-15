@@ -40,8 +40,8 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     address: Hash,
     onCreateNewBranch: (multisig: any, generate: number) => void,
   ): Promise<{ bundles: any[]; signedBundles: any[] }> {
-    const txs = [{value: amount, address}];
-    return { bundles: txs, signedBundles: txs };
+    const txs = [{ value: amount, address }];
+    return { bundles: [txs], signedBundles: [txs] };
   }
 
   public createCloseTransaction(): { bundles: any[]; signedBundles: any[] } {
@@ -56,10 +56,19 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     bundles: any[],
     fromIndex: number,
   ): Array<{ value: number; address: Hash }> {
-    return bundles.reduce((acc, v) => acc.push(...v), []);
+    return bundles.reduce((acc, v) => {
+      acc.push(...v);
+      return acc;
+    }, []);
   }
 
   public createDigests(amount = this.depth! + 1): any[] {
     return new Array(amount).fill('');
   }
 }
+
+(() => {
+  // const txs = [{ amount: 12344, address: 'A' }];
+  // const bundles = [txs];
+  // console.log(new FlashMock().extractTransfers(bundles, 1));
+})();

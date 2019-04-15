@@ -53,7 +53,7 @@ export class TripHandler {
   }
 
   public onPriceSent(message: PriceMessage) {
-    log.debug('Price sent %O', message);
+    log.debug('Vehicle sent price %O', message);
     this.price = message.price;
     this.remaining = this.price;
     if (this.price > this.maxPrice) {
@@ -83,7 +83,7 @@ export class TripHandler {
   }
 
   public async onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
-    log.debug('Payment channel opened %O', message);
+    log.debug('Vehicle opened payment channel %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       this.vehicleAddress = message.settlement;
       this.paymentChannel.prepareChannel(
@@ -105,7 +105,7 @@ export class TripHandler {
   }
 
   public async onDepositSent(message: DepositSentMessage) {
-    log.debug('Deposit sent %O', message);
+    log.debug('Vehicle sent deposit %O', message);
     if (this.state === State.DEPOSIT_SENT) {
       const txs = await this.txReader(message.depositTransaction);
       const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
@@ -120,13 +120,14 @@ export class TripHandler {
         }
       } else {
         this.state = State.CLOSED;
+        log.debug('Vehicle sent bundle %O', txs);
         this.sender.cancelBoarding('Transaction is not for multisig root');
       }
     }
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
-    log.debug('New branch created %O', message);
+    log.debug('Vehicle created new branch %O', message);
     if (this.branchWaiter && this.state === State.AWAIT_NEW_BRANCH) {
       this.branchWaiter(message.digests);
     } else {
@@ -137,7 +138,7 @@ export class TripHandler {
   }
 
   public onSignedTransaction(message: TransactionSignedMessage) {
-    log.debug('Transaction signed %O', message);
+    log.debug('Vehicle signed transaction %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
       this.issuedPayment = false;
@@ -166,12 +167,12 @@ export class TripHandler {
   }
 
   public onClosedPaymentChannel(message: ClosePaymentChannelMessage) {
-    log.debug('Payment channel closed %O', message);
+    log.debug('Vehicle closed payment channel %O', message);
     this.state = State.CLOSED;
   }
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
-    log.debug('Boarding cancelled %O', message);
+    log.debug('Vehicle cancelled boarding %O', message);
     this.state = State.CLOSED;
   }
 
@@ -183,7 +184,7 @@ export class TripHandler {
         this.remaining!,
         Math.round(this.price! / this.paymentAmount),
       );
-      if (amount <= 0) {
+      if (amount > 0) {
         const {
           bundles,
           signedBundles,
@@ -196,6 +197,7 @@ export class TripHandler {
         this.state = State.AWAIT_SIGNING;
         this.sender.createdTransaction(bundles, signedBundles, false);
       } else {
+        log.debug('No amount left to pay. Closing channel...');
         const {
           bundles,
           signedBundles,

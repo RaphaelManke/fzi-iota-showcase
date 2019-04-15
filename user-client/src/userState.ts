@@ -19,6 +19,7 @@ export class UserState {
 
   constructor(
     private seed: Hash,
+    private id: Trytes,
     {
       mockPayments = false,
       depth = 3,
@@ -54,7 +55,12 @@ export class UserState {
     duration: number,
     sender: Sender,
   ): TripHandler {
-    const paymentAmount = UserState.PAYMENT_EACH_MILLIS / duration;
+    const paymentAmount = duration / UserState.PAYMENT_EACH_MILLIS;
+    log.debug(
+      'User %s calculated %s payments for trip',
+      this.id,
+      paymentAmount,
+    );
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
     // use real or mocked payment functions

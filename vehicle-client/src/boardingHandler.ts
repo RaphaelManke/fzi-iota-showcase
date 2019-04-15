@@ -38,13 +38,13 @@ export class BoardingHandler {
   ) {}
 
   public onTripRequested() {
-    log.debug('Trip requested');
+    log.debug('User requested trip');
     this.state = State.VEHICLE_AUTHENTICATED;
     this.sender.authenticate(this.nonce, this.reservations.length > 0);
   }
 
   public onDestination(message: DestinationMessage) {
-    log.debug('Destination sent %O', message);
+    log.debug('User sent destination %O', message);
     let auth = true;
     if (this.reservations.length > 0) {
       if (!message.nonce) {
@@ -70,7 +70,7 @@ export class BoardingHandler {
   }
 
   public onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
-    log.debug('Payment channel opened %O', message);
+    log.debug('User opened payment channel %O', message);
     this.paymentChannel.open(
       this.settlementAddress,
       1,
@@ -95,7 +95,7 @@ export class BoardingHandler {
   }
 
   public async onDepositSent(message: DepositSentMessage) {
-    log.debug('Depsoit sent %O', message);
+    log.debug('User sent depsoit %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       const txs = await this.txReader(message.depositTransaction);
       const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
@@ -110,7 +110,9 @@ export class BoardingHandler {
           this.sender.depositSent(bundleHash, this.price!);
         } else {
           this.state = State.CLOSED;
-          this.sender.cancelBoarding('Transaction has false amount');
+          this.sender.cancelBoarding(
+            `Transaction should have amount ${this.price} but has ${tx.value}`,
+          );
         }
       }
     } else {
@@ -124,23 +126,25 @@ export class BoardingHandler {
   public addMetersDriven(add: number) {
     this.creditsLeft -= this.pricePerMeter * add;
     this.distanceLeft! -= add;
-    if (this.creditsLeft <= 0) {
-      this.sender.creditsExausted(
-        this.pricePerMeter *
-          Math.min(BoardingHandler.MINIMUM_METERS_PAID, this.distanceLeft!),
-      );
-    } else {
-      const distanceLeft = this.creditsLeft / this.pricePerMeter;
-      this.sender.creditsLeft(
-        this.creditsLeft,
-        distanceLeft,
-        (distanceLeft * 1000) / this.speed,
-      );
+    if (this.distanceLeft! > 0) {
+      if (this.creditsLeft <= 0) {
+        this.sender.creditsExausted(
+          this.pricePerMeter *
+            Math.min(BoardingHandler.MINIMUM_METERS_PAID, this.distanceLeft!),
+        );
+      } else {
+        const distanceLeft = this.creditsLeft / this.pricePerMeter;
+        this.sender.creditsLeft(
+          this.creditsLeft,
+          distanceLeft,
+          (distanceLeft * 1000) / this.speed,
+        );
+      }
     }
   }
 
   public async onTransactionReceived(message: TransactionCreatedMessage) {
-    log.debug('Transaction received %O', message);
+    log.debug('User sent transaction %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const signedBundles = this.paymentChannel.signTransaction(
         message.bundles,
@@ -178,7 +182,7 @@ export class BoardingHandler {
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
-    log.debug('New branch created %O', message);
+    log.debug('User created new branch %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const myDigests = this.paymentChannel.createDigests(
         message.digests.length,
@@ -191,7 +195,7 @@ export class BoardingHandler {
   }
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
-    log.debug('Boarding cancelled %O', message);
+    log.debug('User cancelled boarding %O', message);
     this.state = State.CLOSED;
   }
 }
