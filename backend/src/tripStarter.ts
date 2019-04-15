@@ -132,6 +132,9 @@ export class TripStarter {
       createdNewBranch(digests, multisig) {
         boardingHandler.onCreatedNewBranch({ digests, multisig });
       },
+      signedTransaction(signedBundles, value, close) {
+        boardingHandler.onSignedTransaction({ signedBundles, value, close });
+      },
       cancelBoarding(reason) {
         boardingHandler.onBoardingCanceled({ reason });
       },
@@ -176,6 +179,12 @@ export class TripStarter {
       },
       signedTransaction(signedBundles, value, close) {
         tripHandler.onSignedTransaction({ signedBundles, value, close });
+      },
+      createdNewBranch(digests, multisig) {
+        tripHandler.onCreatedNewBranch({ digests, multisig });
+      },
+      createdTransaction(bundles, signedBundles, close) {
+        tripHandler.onTransactionReceived({ bundles, signedBundles, close });
       },
     };
   }

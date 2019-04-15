@@ -73,12 +73,12 @@ export class BoardingHandler {
   public updateDestination(destination: Trytes) {
     const { price, distance } = this.getPriceAndDistance(destination);
     this.price = price;
+    this.destination = destination;
 
     if (this.destination && this.distanceLeft) {
       const { distance: oldDistance } = this.getPriceAndDistance(
         this.destination,
       );
-      this.destination = destination;
       const delta = distance - oldDistance;
       this.distanceLeft += delta;
 
@@ -212,7 +212,7 @@ export class BoardingHandler {
         this.state = State.CLOSED;
       }
     } else {
-      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${this.state}`);
+      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${State[this.state]}`);
       this.state = State.CLOSED;
     }
   }

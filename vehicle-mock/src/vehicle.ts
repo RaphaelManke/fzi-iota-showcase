@@ -4,8 +4,8 @@ import { Position } from './position';
 import { TripState } from './tripState';
 
 export class Vehicle {
-  private currentTrip: TripState | undefined;
-  private mStop: Trytes | undefined;
+  private currentTrip?: TripState;
+  private mStop?: Trytes;
   private mPosition: Position;
   private observers: Set<Observer> = new Set<Observer>();
 
