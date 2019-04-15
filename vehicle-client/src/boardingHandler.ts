@@ -44,7 +44,7 @@ export class BoardingHandler {
   }
 
   public onDestination(message: DestinationMessage) {
-    log.debug('User sent destination %O', message);
+    log.silly('User sent destination %O', message);
     let auth = true;
     if (this.reservations.length > 0) {
       if (!message.nonce) {
@@ -70,7 +70,7 @@ export class BoardingHandler {
   }
 
   public onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
-    log.debug('User opened payment channel %O', message);
+    log.silly('User opened payment channel %O', message);
     this.paymentChannel.open(
       this.settlementAddress,
       1,
@@ -95,7 +95,7 @@ export class BoardingHandler {
   }
 
   public async onDepositSent(message: DepositSentMessage) {
-    log.debug('User sent depsoit %O', message);
+    log.silly('User sent depsoit %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       const txs = await this.txReader(message.depositTransaction);
       const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
@@ -145,7 +145,7 @@ export class BoardingHandler {
   }
 
   public async onTransactionReceived(message: TransactionCreatedMessage) {
-    log.debug('User sent transaction %O', message);
+    log.silly('User sent transaction %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const signedBundles = this.paymentChannel.signTransaction(
         message.bundles,
@@ -176,6 +176,7 @@ export class BoardingHandler {
       } else {
         const bundleHash = await this.paymentChannel.attachCurrentBundle();
         this.sender.closePaymentChannel(bundleHash);
+        this.state = State.CLOSED;
       }
     } else {
       throw new Error(`State must be 'READY_FOR_PAYMENT' but is ${this.state}`);
@@ -183,7 +184,7 @@ export class BoardingHandler {
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
-    log.debug('User created new branch %O', message);
+    log.silly('User created new branch %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
       const myDigests = this.paymentChannel.createDigests(
         message.digests.length,
