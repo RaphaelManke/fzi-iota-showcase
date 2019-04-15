@@ -7,4 +7,5 @@ export interface Event {
   type: string;
   relId: string;
   info: string;
+  time: string;
 }

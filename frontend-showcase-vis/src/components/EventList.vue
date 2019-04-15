@@ -9,6 +9,7 @@
               <b-list-group>
       <b-list-group-item v-for="transaction in transactionData" class="d-flex justify-content-between align-items-center">
           {{formatIota(transaction.amount)}} transfered from {{transaction.from}} to {{transaction.to}}
+          <b-badge variant="primary" pill>{{transaction.time}}</b-badge>
       </b-list-group-item>
     </b-list-group>
     </b-col>
