@@ -9,7 +9,12 @@ export interface Observer {
 
   reachedStop(stop: Trytes): void;
 
-  tripStarted(userId: Trytes, start: Trytes, destination: Trytes): void;
+  tripStarted(
+    userId: Trytes,
+    start: Trytes,
+    destination: Trytes,
+    price: number,
+  ): void;
 
   transactionReceived(value: number, user: Trytes): void;
 }

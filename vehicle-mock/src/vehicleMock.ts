@@ -37,7 +37,7 @@ export class VehicleMock {
   constructor(
     private vehicle: Vehicle,
     private capacity: number,
-    private price: number,
+    private pricePerMeter: number,
     private reservationsRate: number,
     private provider: string,
     private iota: API = composeAPI({
@@ -115,7 +115,7 @@ export class VehicleMock {
         vehicleInfo: this.vehicle.info,
         tripChannelIndex: this.mockMessages ? 1 : this.masterChannel!.cursor,
         reservationRate: this.reservationsRate,
-        price: this.price,
+        price: this.pricePerMeter,
         paymentAddress: this.currentAddress!,
       };
       let result: {
@@ -172,13 +172,14 @@ export class VehicleMock {
           })),
         );
 
+        const price = this.pricePerMeter * distance;
+
         // use real or mocked payment functions
         let depositor: (value: number, address: Hash) => Promise<string>;
         let txReader: (bundleHash: Hash) => Promise<Bundle>;
         if (this.mockPayments) {
           depositor = async (value, address) => '';
-          txReader = async (bundleHash) =>
-            this.mockedBundle(this.price * distance);
+          txReader = async (bundleHash) => this.mockedBundle(price);
         } else {
           depositor = async (value, address) => {
             const txTrytes = await this.iota.prepareTransfers(
@@ -202,6 +203,7 @@ export class VehicleMock {
             sendToUser,
             userId,
             path,
+            price,
             () => this.vehicle.removeObserver(o),
             res,
             rej,
@@ -212,9 +214,9 @@ export class VehicleMock {
             this.vehicle.trip!.nonce,
             this.vehicle.trip!.reservations,
             this.nextAddress!,
-            this.price,
+            this.pricePerMeter,
             this.vehicle.info.speed,
-            () => ({ price: this.price * distance, distance }),
+            () => ({ price, distance }),
             depositor,
             txReader,
             new FlashMock(),
@@ -262,6 +264,7 @@ export class VehicleMock {
     sendToUser: Sender,
     userId: Trytes,
     path: Path,
+    price: number,
     removeObserver: () => void,
     res: (result: any) => void,
     rej: (reason: any) => void,
@@ -302,6 +305,7 @@ export class VehicleMock {
               }
             })
             .then((stop) => {
+              vehicle.trip!.state = State.FINISHED;
               removeObserver();
               res(stop);
             })
@@ -313,6 +317,7 @@ export class VehicleMock {
           vehicle.tripStarted(
             userId,
             path.connections[path.connections.length - 1].to,
+            price,
           );
         } else {
           // TODO resume driving if stopped

@@ -34,11 +34,11 @@ export class Vehicle {
     }
   }
 
-  public tripStarted(userId: Trytes, destination: Trytes) {
+  public tripStarted(userId: Trytes, destination: Trytes, price: number) {
     if (this.currentTrip) {
       Promise.resolve(
         this.observers.forEach((o) =>
-          o.tripStarted(userId, this.currentTrip!.stop, destination),
+          o.tripStarted(userId, this.currentTrip!.stop, destination, price),
         ),
       );
     }
