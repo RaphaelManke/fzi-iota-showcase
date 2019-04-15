@@ -66,9 +66,3 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     return new Array(amount).fill('');
   }
 }
-
-(() => {
-  // const txs = [{ amount: 12344, address: 'A' }];
-  // const bundles = [txs];
-  // console.log(new FlashMock().extractTransfers(bundles, 1));
-})();

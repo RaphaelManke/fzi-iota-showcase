@@ -163,7 +163,7 @@ export class TripHandler {
 
   public onCreditsExausted(message: CreditsExaustedMessage) {
     log.debug('Credits exausted %O', message);
-    this.sendTransaction();
+    this.sendTransaction(message.minimumAmount);
   }
 
   public onClosedPaymentChannel(message: ClosePaymentChannelMessage) {
@@ -176,14 +176,15 @@ export class TripHandler {
     this.state = State.CLOSED;
   }
 
-  private async sendTransaction() {
+  private async sendTransaction(
+    amount = Math.min(
+      this.remaining!,
+      Math.round(this.price! / this.paymentAmount),
+    ),
+  ) {
     if (this.state === State.READY_FOR_PAYMENT) {
       this.issuedPayment = true;
       // TODO
-      const amount = Math.min(
-        this.remaining!,
-        Math.round(this.price! / this.paymentAmount),
-      );
       if (amount > 0) {
         const {
           bundles,

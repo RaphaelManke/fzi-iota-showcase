@@ -128,10 +128,11 @@ export class BoardingHandler {
     this.distanceLeft! -= add;
     if (this.distanceLeft! > 0) {
       if (this.creditsLeft <= 0) {
-        this.sender.creditsExausted(
+        const amount =
           this.pricePerMeter *
-            Math.min(BoardingHandler.MINIMUM_METERS_PAID, this.distanceLeft!),
-        );
+            Math.min(BoardingHandler.MINIMUM_METERS_PAID, this.distanceLeft!) +
+          -this.creditsLeft;
+        this.sender.creditsExausted(amount);
       } else {
         const distanceLeft = this.creditsLeft / this.pricePerMeter;
         this.sender.creditsLeft(
