@@ -72,6 +72,12 @@ export class Mover {
     });
   }
 
+  public stopImmediatly() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+
   public stopDrivingAtNextStop() {
     if (this.interval) {
       this.continue = false;

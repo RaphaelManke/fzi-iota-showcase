@@ -8,4 +8,8 @@ export interface Observer {
   checkedIn(stop: Trytes, checkIn: CheckInMessage): void;
 
   reachedStop(stop: Trytes): void;
+
+  tripStarted(userId: Trytes, start: Trytes, destination: Trytes): void;
+
+  transactionReceived(value: number, user: Trytes): void;
 }

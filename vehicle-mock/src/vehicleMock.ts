@@ -9,6 +9,8 @@ import {
   CheckInMessage,
   FlashMock,
   StopWelcomeMessage,
+  Exception,
+  log,
 } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
@@ -22,8 +24,9 @@ import {
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
 import { State } from './tripState';
-import { getPathLength } from 'geolib';
+import { getPathLength, getDistance } from 'geolib';
 import { MamWriter, MAM_MODE } from 'mam.ts';
+import { Observer } from './observer';
 
 export class VehicleMock {
   private mover: Mover;
@@ -156,19 +159,26 @@ export class VehicleMock {
   public async startTrip(
     path: Path,
     sendToUser: Sender,
+    userId: Trytes,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
     onStop?: (stop: Trytes) => void,
   ): Promise<Trytes> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
         const distance = getPathLength(
-          path.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
+          path.waypoints.map((pos) => ({
+            latitude: pos.lat,
+            longitude: pos.lng,
+          })),
         );
+
+        // use real or mocked payment functions
         let depositor: (value: number, address: Hash) => Promise<string>;
         let txReader: (bundleHash: Hash) => Promise<Bundle>;
         if (this.mockPayments) {
           depositor = async (value, address) => '';
-          txReader = async (bundleHash) => this.mockedBundle();
+          txReader = async (bundleHash) =>
+            this.mockedBundle(this.price * distance);
         } else {
           depositor = async (value, address) => {
             const txTrytes = await this.iota.prepareTransfers(
@@ -184,24 +194,56 @@ export class VehicleMock {
           };
           txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
         }
-        const b = new BoardingHandler(
-          this.vehicle.trip.nonce,
-          this.vehicle.trip.reservations,
-          this.nextAddress!,
-          this.price,
-          this.vehicle.info.speed,
-          () => ({ price: this.price * distance, distance }),
-          depositor,
-          txReader,
-          new FlashMock(),
-          sendToUser,
-        );
-        setSentVehicleHandler(b);
-        this.vehicle.trip.state = State.DEPARTED;
-        return await this.mover.startDriving(path, (stop) => {
-          this.vehicle.stop = stop;
-          if (onStop) {
-            onStop(stop);
+
+        return new Promise<Trytes>((res, rej) => {
+          // observe sender
+          let o: Observer;
+          const senderProxy = this.createSenderProxy(
+            sendToUser,
+            userId,
+            path,
+            () => this.vehicle.removeObserver(o),
+            res,
+            rej,
+            onStop,
+          );
+
+          const b = new BoardingHandler(
+            this.vehicle.trip!.nonce,
+            this.vehicle.trip!.reservations,
+            this.nextAddress!,
+            this.price,
+            this.vehicle.info.speed,
+            () => ({ price: this.price * distance, distance }),
+            depositor,
+            txReader,
+            new FlashMock(),
+            senderProxy,
+          );
+          setSentVehicleHandler(b);
+
+          let lastPosition = this.vehicle.position;
+          o = {
+            posUpdated(position) {
+              const add = getDistance(
+                { latitude: lastPosition.lat, longitude: lastPosition.lng },
+                { latitude: position.lat, longitude: position.lng },
+              );
+              lastPosition = position;
+              b.addMetersDriven(add);
+            },
+            checkedIn() {},
+            reachedStop() {},
+            transactionReceived() {},
+            tripStarted() {},
+          };
+          this.vehicle.addObserver(o);
+
+          try {
+            b.onTripRequested();
+          } catch (e) {
+            log.error('Boarding failed', e);
+            rej(new Exception('Boarding failed', e));
           }
         });
       } else {
@@ -216,11 +258,85 @@ export class VehicleMock {
     return this.mover.stopDrivingAtNextStop();
   }
 
-  private mockedBundle(): Bundle {
+  private createSenderProxy(
+    sendToUser: Sender,
+    userId: Trytes,
+    path: Path,
+    removeObserver: () => void,
+    res: (result: any) => void,
+    rej: (reason: any) => void,
+    onStop?: (stop: Trytes) => void,
+  ): Sender {
+    let departed = false;
+    const vehicle = this.vehicle;
+    const mover = this.mover;
+
+    return {
+      authenticate(nonce, sendAuth) {
+        sendToUser.authenticate(nonce, sendAuth);
+      },
+      priced(price) {
+        sendToUser.priced(price);
+      },
+      openPaymentChannel(...args) {
+        sendToUser.openPaymentChannel(...args);
+      },
+      depositSent(hash, amount) {
+        sendToUser.depositSent(hash, amount);
+      },
+      signedTransaction(signedBundles, value, close) {
+        if (!close) {
+          vehicle.transactionReceived(userId, value);
+        }
+        sendToUser.signedTransaction(signedBundles, value, close);
+      },
+      creditsLeft(amount, distanceLeft, millis) {
+        if (!departed && amount > 0) {
+          vehicle.trip!.state = State.DEPARTED;
+          departed = true;
+          mover
+            .startDriving(path, (stop) => {
+              vehicle.stop = stop;
+              if (onStop) {
+                onStop(stop);
+              }
+            })
+            .then((stop) => {
+              removeObserver();
+              res(stop);
+            })
+            .catch((e: any) => {
+              mover.stopImmediatly();
+              rej(new Exception('Start driving failed', e));
+            });
+          // send event
+          vehicle.tripStarted(
+            userId,
+            path.connections[path.connections.length - 1].to,
+          );
+        } else {
+          // TODO resume driving if stopped
+        }
+        sendToUser.creditsLeft(amount, distanceLeft, millis);
+      },
+      creditsExausted(minimumAmount) {
+        // TODO stop vehicle
+        sendToUser.creditsExausted(minimumAmount);
+      },
+      closePaymentChannel(bundleHash) {
+        sendToUser.closePaymentChannel(bundleHash);
+      },
+      cancelBoarding(reason) {
+        sendToUser.cancelBoarding(reason);
+      },
+    };
+  }
+
+  private mockedBundle(price: number): Bundle {
     return [
       {
         address: 'A'.repeat(81),
-        value: this.price,
+        value: price,
         attachmentTimestamp: 0,
         attachmentTimestampLowerBound: 0,
         attachmentTimestampUpperBound: 0,
