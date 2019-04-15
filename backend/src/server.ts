@@ -20,7 +20,7 @@ export class Server {
 
   public listen() {
     this.io.on('connection', (client: SocketIO.Socket) => {
-      log.info('Connected to websocket client.');
+      log.info(`Connected to websocket client '%s'.`, client.id);
       const accept: Trytes[] = [];
       const deny: Trytes[] = [];
       this.controller.events.onAny((event: any, data: any) => {

@@ -182,5 +182,6 @@ export class Controller {
         })(),
       ),
     );
+    log.info('Vehicles initialized.');
   }
 }
