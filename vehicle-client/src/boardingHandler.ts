@@ -171,7 +171,10 @@ export class BoardingHandler {
             (distanceLeft * 1000) / this.speed,
           );
         } else {
-          throw new Error('No value transaction was found in bundle');
+          this.sender.closePaymentChannel(
+            'No value transaction was found in bundle',
+          );
+          this.state = State.CLOSED;
         }
       } else {
         const bundleHash = await this.paymentChannel.attachCurrentBundle();
@@ -179,7 +182,10 @@ export class BoardingHandler {
         this.state = State.CLOSED;
       }
     } else {
-      throw new Error(`State must be 'READY_FOR_PAYMENT' but is ${this.state}`);
+      this.sender.closePaymentChannel(
+        `State must be 'READY_FOR_PAYMENT' but is ${this.state}`,
+      );
+      this.state = State.CLOSED;
     }
   }
 

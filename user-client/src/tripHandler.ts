@@ -97,10 +97,10 @@ export class TripHandler {
       this.state = State.DEPOSIT_SENT;
       this.sender.depositSent(bundleHash, this.price!);
     } else {
-      this.state = State.CLOSED;
       throw new Error(
         `State must be 'PAYMENT_CHANNEL_OPENED' but is '${this.state}'`,
-      );
+      ); // TODO send closed
+      this.state = State.CLOSED;
     }
   }
 
@@ -131,9 +131,8 @@ export class TripHandler {
     if (this.branchWaiter && this.state === State.AWAIT_NEW_BRANCH) {
       this.branchWaiter(message.digests);
     } else {
-      throw new Error(
-        `Client must have state 'AWAIT_BRANCH' but is ${this.state}`,
-      );
+      log.warn(`Client must have state 'AWAIT_BRANCH' but is ${this.state}`); // TODO send close
+      this.state = State.CLOSED;
     }
   }
 
