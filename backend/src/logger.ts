@@ -1,6 +1,8 @@
 import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Event } from './events';
 import { Trytes } from '@iota/core/typings/types';
+import { trits, value } from '@iota/converter';
+import * as colors from 'colors';
 
 export function enableLogging(
   events: SafeEmitter,
@@ -45,7 +47,9 @@ export function enableLogging(
       const entityLabel = format.entity + ' ' + data[format.skip];
       const typePadding =
         entityLabel.length < 11 ? ' '.repeat(11 - entityLabel.length) : '';
-      const prefix = `${entityLabel}${typePadding} ${type[1]}`;
+      const prefix = `${colorText(entityLabel)}${typePadding} ${colorBg(
+        type[1],
+      )}`;
 
       if (Object.keys(r).length > 0) {
         // const padding =
@@ -61,6 +65,53 @@ export function enableLogging(
 
   events.onAny((type: any, data: any) => prettify(type, data));
 }
+
+function colorText(s: string) {
+  const trit = trits(s.split(' ')[1]);
+  return text[value(trit) % text.length](s);
+}
+
+const text = [
+  colors.red,
+  colors.green,
+  colors.yellow,
+  colors.blue,
+  colors.magenta,
+  colors.cyan,
+  colors.white,
+  colors.gray,
+  colors.grey,
+];
+
+const bgs = new Map<Event[0], colors.Color>();
+bgs.set('Login', colors.bgMagenta);
+bgs.set('ReachedStop', colors.bgYellow);
+bgs.set('CheckIn', colors.bgWhite);
+bgs.set('BoardingStarted', colors.bgBlue);
+bgs.set('TransactionIssued', colors.bgCyan);
+bgs.set('TripStarted', colors.bgGreen);
+bgs.set('TripFinished', colors.bgRed);
+bgs.set('Logout', colors.bgRed);
+bgs.set('PosUpdated', colors.bgWhite);
+bgs.set('ReservationIssued', colors.bgGreen);
+bgs.set('ReservationExpired', colors.bgYellow);
+
+function colorBg(s: Event[0]) {
+  if (!bgs.has(s)) {
+    bgs.set(s, bg[bgs.size % bg.length]);
+  }
+  return bgs.get(s)!(s.black);
+}
+
+const bg = [
+  colors.bgRed,
+  colors.bgGreen,
+  colors.bgMagenta,
+  colors.bgYellow,
+  colors.bgBlue,
+  colors.bgCyan,
+  colors.bgWhite,
+];
 
 function getLevel(eventType: Event[0]) {
   switch (eventType) {
