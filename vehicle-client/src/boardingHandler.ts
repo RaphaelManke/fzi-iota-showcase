@@ -73,20 +73,26 @@ export class BoardingHandler {
   public updateDestination(destination: Trytes) {
     const { price, distance } = this.getPriceAndDistance(destination);
     this.price = price;
-    this.destination = destination;
 
     if (this.destination && this.distanceLeft) {
       const { distance: oldDistance } = this.getPriceAndDistance(
         this.destination,
       );
+      this.destination = destination;
       const delta = distance - oldDistance;
       this.distanceLeft += delta;
+      log.debug(
+        'Vehicle destination stop updated. %s m left to drive. Total price: %s.',
+        this.distanceLeft,
+        this.price,
+      );
 
       this.sender.priced(this.price);
       if (this.paid > this.price) {
         this.sendTransaction(this.paid - this.price);
       }
     } else {
+      this.destination = destination;
       this.distanceLeft = distance;
       this.state = State.ROUTE_PRICED;
       this.sender.priced(this.price);
@@ -151,25 +157,30 @@ export class BoardingHandler {
 
   public addMetersDriven(add: number) {
     this.creditsLeft -= this.pricePerMeter * add;
-    this.distanceLeft! -= add;
+    const distancePaidLeft = this.creditsLeft / this.pricePerMeter;
+    this.distanceLeft! -= add; // distance left to drive
     if (this.distanceLeft && this.distanceLeft > 0) {
       const minimumCredits =
         this.pricePerMeter * BoardingHandler.MINIMUM_METERS_PAID;
       if (
         this.creditsLeft <= minimumCredits &&
-        this.distanceLeft > BoardingHandler.MINIMUM_METERS_PAID
+        distancePaidLeft < this.distanceLeft
       ) {
+        log.warn(
+          'User paid for %s more meters but distance to destination is %s meters.',
+          distancePaidLeft,
+          this.distanceLeft,
+        );
         const amount = Math.min(
           minimumCredits,
           this.pricePerMeter * this.distanceLeft,
         );
         this.sender.creditsExausted(amount);
       } else {
-        const distanceLeft = this.creditsLeft / this.pricePerMeter;
         this.sender.creditsLeft(
           this.creditsLeft,
-          distanceLeft,
-          (distanceLeft * 1000) / this.speed,
+          distancePaidLeft,
+          (distancePaidLeft * 1000) / this.speed,
         );
       }
     }

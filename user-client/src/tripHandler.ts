@@ -27,8 +27,11 @@ export class TripHandler {
   private digests?: any[];
   private vehicleAddress?: Hash;
   private branchWaiter?: (digests: any[]) => void;
+
   private remainingToPay?: number;
-  private issuedPayment = false;
+  private paymentValue?: number;
+  private remainingPayments?: number;
+  private issuedPayment?: NodeJS.Timer;
 
   constructor(
     private destination: Trytes,
@@ -70,6 +73,16 @@ export class TripHandler {
       const delta = message.price - this.price;
       this.remainingToPay! += delta;
       this.price = message.price;
+      this.paymentValue = Math.round(
+        this.remainingToPay! / this.remainingPayments!,
+      );
+      log.debug(
+        'User trip repriced. %s tokens left to pay.',
+        this.remainingToPay,
+      );
+      if (!this.issuedPayment) {
+        this.sendTransaction();
+      }
       if (this.paymentChannel.state === PaymentChannelState.UNINITIALIZED) {
         // payment channel was not opened
         this.openPaymentChannel();
@@ -78,7 +91,6 @@ export class TripHandler {
           this.remainingToPay === 0 &&
           this.state === State.READY_FOR_PAYMENT
         ) {
-          this.issuedPayment = true;
           this.sendCloseTransaction();
         }
       }
@@ -158,7 +170,7 @@ export class TripHandler {
     log.silly('Vehicle signed transaction %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
-      this.issuedPayment = false;
+      this.issuedPayment = undefined;
       this.state = State.READY_FOR_PAYMENT;
     }
   }
@@ -169,8 +181,7 @@ export class TripHandler {
       if (message.millis < TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND) {
         this.sendTransaction();
       } else {
-        this.issuedPayment = true;
-        setTimeout(
+        this.issuedPayment = setTimeout(
           () => this.sendTransaction(),
           message.millis - TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND,
         );
@@ -214,7 +225,6 @@ export class TripHandler {
           this.sender.signedTransaction(signedBundles, tx.value, message.close);
           this.remainingToPay! += tx.value;
           if (this.remainingToPay === 0) {
-            this.issuedPayment = true;
             this.sendCloseTransaction();
           }
         } else {
@@ -232,6 +242,8 @@ export class TripHandler {
 
   private openPaymentChannel() {
     const depth = Math.ceil(Math.log2(this.paymentAmount));
+    this.remainingPayments = this.paymentAmount;
+    this.paymentValue = Math.round(this.price! / this.paymentAmount);
     this.paymentChannel.open(
       this.settlementAddress,
       0,
@@ -252,13 +264,10 @@ export class TripHandler {
   }
 
   private async sendTransaction(
-    amount = Math.min(
-      this.remainingToPay!,
-      Math.round(this.price! / this.paymentAmount),
-    ),
+    amount = Math.min(this.remainingToPay!, this.paymentValue!),
   ) {
     if (this.state === State.READY_FOR_PAYMENT) {
-      this.issuedPayment = true;
+      this.issuedPayment = setTimeout(() => {}, 0);
       if (amount > 0) {
         const {
           bundles,
@@ -269,6 +278,7 @@ export class TripHandler {
           this.createNewBranch,
         );
         this.remainingToPay! -= amount;
+        this.remainingPayments!--;
         this.state = State.AWAIT_SIGNING;
         this.sender.createdTransaction(bundles, signedBundles, false);
       } else {
@@ -288,6 +298,7 @@ export class TripHandler {
       signedBundles,
     } = this.paymentChannel.createCloseTransaction();
     this.state = State.AWAIT_SIGNING;
+    this.issuedPayment = setTimeout(() => {}, 0);
     this.sender.createdTransaction(bundles, signedBundles, true);
   }
 
