@@ -50,7 +50,7 @@
     </b-alert>
           <b-card header="Route Options">
             <div style="height: 40vh">
-              <div style="height: 80%; overflow-y: scroll">
+              <div style="height: 80%; overflow-y: auto; overflow-x: hidden;">
             <b-row>
               <b-col>
               <b-list-group>
