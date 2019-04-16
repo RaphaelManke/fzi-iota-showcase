@@ -5,20 +5,20 @@
             <b-card header="Start/Stop Station">
                 <b-form-group>
                     <b-row>
-                    <b-col>
+                    <b-col class="padded">
                     Start
                     <b-form-select v-model="currentStop.id" :options="[currentStop]"
                     value-field="id" text-field="name" disabled=true
                     ></b-form-select>
                     </b-col>
-                    <b-col>
+                    <b-col class="padded">
                     Destination
                     <b-form-select v-model="selectedDestination" :options="stops"
                     value-field="id" text-field="name"
                     ></b-form-select>
                     </b-col>
-                    <b-col md="auto">
-                      <b-form-group label="Vehicel types">
+                    <b-col class="padded" md="auto">
+                      <b-form-group label="Vehicle types">
       <b-form-checkbox-group v-model="vehicleTypes">
         <b-form-checkbox value="car">Car</b-form-checkbox>
         <b-form-checkbox value="tram">Tram</b-form-checkbox>
@@ -219,5 +219,9 @@ export default {
 img {
   height: 12px;
 }
-</style>
 
+.padded {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+</style>
