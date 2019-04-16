@@ -50,16 +50,25 @@ export function enableLogging(
       if (Object.keys(r).length > 0) {
         // const padding =
         //   prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
-        log.debug(`${prefix}:\n%o`, r);
+        log[getLevel(type[1])](`${prefix}:\n%o`, r);
       } else {
-        log.debug(prefix);
+        log[getLevel(type[1])](prefix);
       }
     } else {
-      log.debug(type.join('.'));
+      log[getLevel(type[1])](type.join('.'));
     }
   };
 
   events.onAny((type: any, data: any) => prettify(type, data));
+}
+
+function getLevel(eventType: Event[0]) {
+  switch (eventType) {
+    case 'PosUpdated':
+      return 'silly';
+    default:
+      return 'debug';
+  }
 }
 
 type Type = ['public', Event[0]];
