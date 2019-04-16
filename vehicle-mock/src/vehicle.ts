@@ -29,7 +29,9 @@ export class Vehicle {
     this.currentTrip = trip;
     if (trip) {
       Promise.resolve(
-        this.observers.forEach((o) => o.checkedIn(trip.stop, trip.checkInMessage)),
+        this.observers.forEach((o) =>
+          o.checkedIn(trip.start, trip.checkInMessage),
+        ),
       );
     }
   }
@@ -38,7 +40,7 @@ export class Vehicle {
     if (this.currentTrip) {
       Promise.resolve(
         this.observers.forEach((o) =>
-          o.tripStarted(userId, this.currentTrip!.stop, destination, price),
+          o.tripStarted(userId, this.currentTrip!.start, destination, price),
         ),
       );
     }

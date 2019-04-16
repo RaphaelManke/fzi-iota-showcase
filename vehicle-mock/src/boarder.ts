@@ -7,6 +7,7 @@ import { Vehicle } from './vehicle';
 import { Path, PathFinder } from './pathFinder';
 
 export class Boarder {
+  private h?: BoardingHandler;
   private observer?: Partial<Observer>;
 
   constructor(
@@ -16,6 +17,24 @@ export class Boarder {
     private path: Path,
     private pricePerMeter: number,
   ) {}
+
+  public get handler() {
+    return this.h!;
+  }
+
+  private get destination() {
+    return this.path.connections[this.path.connections.length - 1].to;
+  }
+
+  public onStartDriving() {
+    const { price } = this.getPriceDistanceCalculator()(this.destination);
+    // send event
+    this.vehicle.tripStarted(
+      this.userId,
+      this.path.connections[this.path.connections.length - 1].to,
+      price,
+    );
+  }
 
   public startBoarding(
     sendToUser: Sender,
@@ -29,27 +48,31 @@ export class Boarder {
         const senderProxy = this.createSenderProxy(
           sendToUser,
           this.userId,
-          res,
+          () => {
+            this.vehicle.trip!.destination = this.destination;
+            this.vehicle.trip!.path = this.path;
+            res();
+          },
           rej,
         );
 
-        const b = new BoardingHandler(
+        this.h = new BoardingHandler(
           this.vehicle.trip!.nonce,
           this.vehicle.trip!.reservations,
           this.settlementAddress,
           this.pricePerMeter,
           this.vehicle.info.speed,
-          this.priceDistanceCalculator(),
+          this.getPriceDistanceCalculator(),
           depositor,
           txReader,
           new FlashMock(),
           senderProxy,
         );
-        setSentVehicleHandler(b);
-        this.vehicle.trip!.boardingHandler = b;
+        setSentVehicleHandler(this.handler);
 
         // create observer to notify boarding handler when vehicle moved
         let lastPosition = this.vehicle.position;
+        const handler = this.handler!;
         this.observer = {
           posUpdated(position) {
             const add = getDistance(
@@ -57,13 +80,13 @@ export class Boarder {
               { latitude: position.lat, longitude: position.lng },
             );
             lastPosition = position;
-            b.addMetersDriven(add);
+            handler.addMetersDriven(add);
           },
         };
         this.vehicle.addObserver(this.observer);
 
         // start boarding
-        b.onTripRequested();
+        this.handler.onTripRequested();
       } catch (e) {
         log.error('Boarding failed ', e);
         rej(new Exception('Boarding failed', e));
@@ -77,7 +100,7 @@ export class Boarder {
     }
   }
 
-  private priceDistanceCalculator() {
+  private getPriceDistanceCalculator() {
     const path = this.path;
     const type = this.vehicle.info.type;
     const pricePerMeter = this.pricePerMeter;

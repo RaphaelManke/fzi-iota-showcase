@@ -7,6 +7,8 @@ import {
 } from 'fzi-iota-showcase-client';
 import { Trytes } from '@iota/core/typings/types';
 import { BoardingHandler } from 'fzi-iota-showcase-vehicle-client';
+import { Boarder } from './boarder';
+import { Path } from './pathFinder';
 
 export interface TripState {
   tripChannel: RAAM;
@@ -16,8 +18,10 @@ export interface TripState {
   reservations: Reservation[];
   nonce: Trytes;
   state: State;
-  stop: Trytes;
-  boardingHandler?: BoardingHandler;
+  start: Trytes;
+  destination?: Trytes;
+  path?: Path;
+  boarders: Boarder[];
 }
 
 export enum State {

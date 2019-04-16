@@ -151,8 +151,9 @@ export class VehicleMock {
         nonce,
         state: State.CHECKED_IN,
         checkInMessage,
-        stop: this.vehicle.stop,
+        start: this.vehicle.stop,
         reservations: [],
+        boarders: [],
       };
     }
   }
@@ -204,9 +205,10 @@ export class VehicleMock {
           path,
           this.pricePerMeter,
         );
+        this.vehicle.trip.boarders.push(boarder);
         return boarder
           .startBoarding(sendToUser, depositor, txReader, setSentVehicleHandler)
-          .then(() => this.startDriving(path, userId, price, onStop))
+          .then(() => this.startDriving(onStop))
           .then((stop) => {
             boarder.cleanUp();
             return stop;
@@ -221,8 +223,10 @@ export class VehicleMock {
 
   public stopTripAtNextStop() {
     const stop = this.mover.stopDrivingAtNextStop();
-    if (stop && this.vehicle.trip && this.vehicle.trip.boardingHandler) {
-      this.vehicle.trip.boardingHandler.updateDestination(stop);
+    if (stop && this.vehicle.trip) {
+      this.vehicle.trip.boarders.forEach((b) =>
+        b.handler!.updateDestination(stop),
+      );
     }
     return stop;
   }
@@ -231,35 +235,29 @@ export class VehicleMock {
     this.vehicle.transactionSent(to, value);
   }
 
-  private startDriving(
-    path: Path,
-    userId: Trytes,
-    tripPrice: number,
-    onStop?: (stop: Trytes) => void,
-  ) {
+  private startDriving(onStop?: (stop: Trytes) => void) {
     return new Promise<Trytes>((res, rej) => {
       this.vehicle.trip!.state = State.DEPARTED;
-      this.mover
-        .startDriving(path, (stop) => {
-          this.vehicle.stop = stop;
-          if (onStop) {
-            onStop(stop);
-          }
-        })
-        .then((stop) => {
-          this.vehicle.trip!.state = State.FINISHED;
-          res(stop);
-        })
-        .catch((e: any) => {
-          this.mover.stopImmediatly();
-          rej(new Exception('Start driving failed', e));
-        });
-      // send event
-      this.vehicle.tripStarted(
-        userId,
-        path.connections[path.connections.length - 1].to,
-        tripPrice,
-      );
+      if (this.vehicle.trip && this.vehicle.trip.path) {
+        this.vehicle.trip.boarders.forEach((b) => b.onStartDriving());
+        this.mover
+          .startDriving(this.vehicle.trip.path, (stop) => {
+            this.vehicle.stop = stop;
+            if (onStop) {
+              onStop(stop);
+            }
+          })
+          .then((stop) => {
+            this.vehicle.trip!.state = State.FINISHED;
+            res(stop);
+          })
+          .catch((e: any) => {
+            this.mover.stopImmediatly();
+            rej(new Exception('Start driving failed', e));
+          });
+      } else {
+        rej(new Error('Destination was not set.'));
+      }
     });
   }
 
