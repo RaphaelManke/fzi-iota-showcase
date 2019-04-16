@@ -50,6 +50,12 @@ export class Vehicle {
     );
   }
 
+  public transactionSent(user: Trytes, value: number) {
+    Promise.resolve(
+      this.observers.forEach((o) => o.transactionSent(value, user)),
+    );
+  }
+
   public addObserver(o: Observer) {
     this.observers.add(o);
   }

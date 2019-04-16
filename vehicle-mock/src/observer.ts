@@ -17,4 +17,6 @@ export interface Observer {
   ): void;
 
   transactionReceived(value: number, user: Trytes): void;
+
+  transactionSent(value: number, user: Trytes): void;
 }

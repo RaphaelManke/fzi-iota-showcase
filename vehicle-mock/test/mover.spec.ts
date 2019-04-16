@@ -118,6 +118,9 @@ describe('Mover', () => {
       transactionReceived(value, user) {
         log.info('Transaction received');
       },
+      transactionSent(value, user) {
+        log.info('Transaction sent');
+      },
       tripStarted(userId, start, dest) {
         log.info('Trip started');
       },

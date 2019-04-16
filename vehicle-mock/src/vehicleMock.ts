@@ -255,6 +255,7 @@ export class VehicleMock {
             checkedIn() {},
             reachedStop() {},
             transactionReceived() {},
+            transactionSent() {},
             tripStarted() {},
           };
           this.vehicle.addObserver(o);
@@ -280,6 +281,10 @@ export class VehicleMock {
       this.vehicle.trip.boardingHandler.updateDestination(stop);
     }
     return stop;
+  }
+
+  public emitTransactionSent(to: Trytes, value: number) {
+    this.vehicle.transactionSent(to, value);
   }
 
   private createSenderProxy(
@@ -361,7 +366,6 @@ export class VehicleMock {
         sendToUser.createdNewBranch(digests, multisig);
       },
       createdTransaction(bundles, signedBundles, close) {
-        // TODO send transaction to events
         sendToUser.createdTransaction(bundles, signedBundles, close);
       },
     };
