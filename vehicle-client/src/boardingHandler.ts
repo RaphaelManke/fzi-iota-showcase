@@ -8,6 +8,7 @@ import {
   CreatedNewBranchMessage,
   CancelBoardingMessage,
   log,
+  TransactionSignedMessage,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -19,8 +20,12 @@ export class BoardingHandler {
   private state = State.TRIP_REQUESTED;
   private price?: number;
   private destination?: Trytes;
+  private paid = 0;
   private creditsLeft = 0;
   private distanceLeft?: number;
+  private branchWaiter?: (digests: any[]) => void;
+  private issuedPayment = false;
+  private userAddress?: Hash;
 
   constructor(
     private nonce: Trytes,
@@ -60,10 +65,35 @@ export class BoardingHandler {
       }
     }
     if (auth) {
-      const { price, distance } = this.getPriceAndDistance(message.destStop);
-      this.price = price;
+      this.state = State.ROUTE_PRICED;
+      this.updateDestination(message.destStop);
+    }
+  }
+
+  public updateDestination(destination: Trytes) {
+    const { price, distance } = this.getPriceAndDistance(destination);
+    this.price = price;
+
+    if (this.destination && this.distanceLeft) {
+      const { distance: oldDistance } = this.getPriceAndDistance(
+        this.destination,
+      );
+      this.destination = destination;
+      const delta = distance - oldDistance;
+      this.distanceLeft += delta;
+      log.debug(
+        'Vehicle destination stop updated. %s m left to drive. Total price: %s.',
+        this.distanceLeft,
+        this.price,
+      );
+
+      this.sender.priced(this.price);
+      if (this.paid > this.price) {
+        this.sendTransaction(this.paid - this.price);
+      }
+    } else {
+      this.destination = destination;
       this.distanceLeft = distance;
-      this.destination = message.destStop;
       this.state = State.ROUTE_PRICED;
       this.sender.priced(this.price);
     }
@@ -79,6 +109,7 @@ export class BoardingHandler {
       message.depth,
       message.security,
     );
+    this.userAddress = message.settlement;
     const digests = this.paymentChannel.createDigests();
     this.paymentChannel.prepareChannel(
       [message.digests, digests],
@@ -116,34 +147,40 @@ export class BoardingHandler {
         }
       }
     } else {
+      const state = this.state;
       this.state = State.CLOSED;
       throw new Error(
-        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${this.state}'`,
+        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${State[state]}'`,
       );
     }
   }
 
   public addMetersDriven(add: number) {
     this.creditsLeft -= this.pricePerMeter * add;
-    this.distanceLeft! -= add;
+    const distancePaidLeft = this.creditsLeft / this.pricePerMeter;
+    this.distanceLeft! -= add; // distance left to drive
     if (this.distanceLeft && this.distanceLeft > 0) {
       const minimumCredits =
         this.pricePerMeter * BoardingHandler.MINIMUM_METERS_PAID;
       if (
         this.creditsLeft <= minimumCredits &&
-        this.distanceLeft > BoardingHandler.MINIMUM_METERS_PAID
+        distancePaidLeft < this.distanceLeft
       ) {
+        log.warn(
+          'User paid for %s more meters but distance to destination is %s meters.',
+          distancePaidLeft,
+          this.distanceLeft,
+        );
         const amount = Math.min(
           minimumCredits,
           this.pricePerMeter * this.distanceLeft,
         );
         this.sender.creditsExausted(amount);
       } else {
-        const distanceLeft = this.creditsLeft / this.pricePerMeter;
         this.sender.creditsLeft(
           this.creditsLeft,
-          distanceLeft,
-          (distanceLeft * 1000) / this.speed,
+          distancePaidLeft,
+          (distancePaidLeft * 1000) / this.speed,
         );
       }
     }
@@ -169,6 +206,7 @@ export class BoardingHandler {
         if (tx) {
           this.sender.signedTransaction(signedBundles, tx.value, message.close);
           this.creditsLeft += tx.value;
+          this.paid += tx.value;
           const distanceLeft = this.creditsLeft / this.pricePerMeter;
           this.sender.creditsLeft(
             this.creditsLeft,
@@ -176,9 +214,7 @@ export class BoardingHandler {
             (distanceLeft * 1000) / this.speed,
           );
         } else {
-          this.sender.closePaymentChannel(
-            'No value transaction was found in bundle',
-          );
+          log.warn('No value transaction was found in bundle');
           this.state = State.CLOSED;
         }
       } else {
@@ -187,29 +223,78 @@ export class BoardingHandler {
         this.state = State.CLOSED;
       }
     } else {
-      this.sender.closePaymentChannel(
-        `State must be 'READY_FOR_PAYMENT' but is ${this.state}`,
-      );
+      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${State[this.state]}`);
       this.state = State.CLOSED;
+    }
+  }
+
+  public onSignedTransaction(message: TransactionSignedMessage) {
+    log.silly('User signed transaction %O', message);
+    if (this.state === State.AWAIT_SIGNING) {
+      this.paymentChannel.applyTransaction(message.signedBundles);
+      this.issuedPayment = false;
+      this.state = State.READY_FOR_PAYMENT;
     }
   }
 
   public onCreatedNewBranch(message: CreatedNewBranchMessage) {
     log.silly('User created new branch %O', message);
     if (this.state === State.READY_FOR_PAYMENT) {
-      const myDigests = this.paymentChannel.createDigests(
-        message.digests.length,
-      );
-      this.paymentChannel.buildNewBranch(
-        [message.digests, myDigests],
-        message.multisig,
-      );
+      if (!this.branchWaiter) {
+        // creation not issued by me
+        const myDigests = this.paymentChannel.createDigests(
+          message.digests.length,
+        );
+        this.paymentChannel.buildNewBranch(
+          [message.digests, myDigests],
+          message.multisig,
+        );
+      } else {
+        this.branchWaiter(message.digests);
+        this.branchWaiter = undefined;
+      }
     }
   }
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
     log.debug('User cancelled boarding %O', message);
     this.state = State.CLOSED;
+  }
+
+  private async createNewBranch(multisig: any, generate: number) {
+    const digests = this.paymentChannel.createDigests(generate);
+    this.state = State.AWAIT_NEW_BRANCH;
+    return new Promise<void>((res, rej) => {
+      this.branchWaiter = (otherDigests) => {
+        this.paymentChannel.buildNewBranch([digests, otherDigests], multisig);
+        this.state = State.READY_FOR_PAYMENT;
+        res();
+      };
+      this.sender.createdNewBranch(digests, multisig);
+    });
+  }
+
+  private async sendTransaction(amount: number) {
+    if (this.state === State.READY_FOR_PAYMENT) {
+      this.issuedPayment = true;
+      const {
+        bundles,
+        signedBundles,
+      } = await this.paymentChannel.createTransaction(
+        amount,
+        this.userAddress!,
+        this.createNewBranch,
+      );
+      this.paid -= amount;
+      this.creditsLeft -= amount;
+      this.addMetersDriven(0);
+      this.state = State.AWAIT_SIGNING;
+      this.sender.createdTransaction(bundles, signedBundles, false);
+    } else {
+      log.warn(
+        `Vehicle wants to make payment but state is ${State[this.state]}`,
+      );
+    }
   }
 }
 
@@ -250,7 +335,11 @@ export interface Sender {
 
   depositSent(hash: Hash, amount: number): void;
 
+  createdNewBranch(digest: any[], multisig: any): void;
+
   signedTransaction(signedBundles: any[], value: number, close: boolean): void;
+
+  createdTransaction(bundles: any, signedBundles: any, close: boolean): void;
 
   creditsLeft(amount: number, distance: number, millis: number): void;
 
@@ -265,5 +354,7 @@ export enum State {
   ROUTE_PRICED,
   PAYMENT_CHANNEL_OPENED,
   READY_FOR_PAYMENT,
+  AWAIT_SIGNING,
+  AWAIT_NEW_BRANCH,
   CLOSED,
 }

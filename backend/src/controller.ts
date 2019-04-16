@@ -21,6 +21,7 @@ import { Router } from './router';
 import { UserState } from 'fzi-iota-showcase-user-client';
 import { TripStarter } from './tripStarter';
 import { getNextId } from './idSupplier';
+import { enableLogging } from './logger';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -55,6 +56,10 @@ export class Controller {
       mockPayments,
       mockMessages,
     );
+    enableLogging(events, (id) => {
+      const entity = this.getEntity(id);
+      return entity ? this.isUser(entity) : false;
+    });
     const vehicles = vehicleDescriptions.map((v) => {
       const { info, mock } = c.construct(v);
       this.vehicles.set(info.id, { info, mock });
@@ -67,6 +72,15 @@ export class Controller {
       users: [],
     };
     this.tripStarter = new TripStarter(connections, events);
+  }
+
+  public getEntity(id: Trytes): User | VehicleInfo | undefined {
+    const entity = this.users.getById(id) || this.vehicles.get(id);
+    return entity ? entity.info : undefined;
+  }
+
+  public isUser(info: User | VehicleInfo): info is User {
+    return this.users.getById(info.id) !== undefined;
   }
 
   public getRoutes(
@@ -87,7 +101,15 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      this.tripStarter.startTrip(v, u, start, destination, intermediateStops);
+      return this.tripStarter.startTrip(
+        v,
+        u,
+        start,
+        destination,
+        intermediateStops,
+      );
+    } else {
+      return Promise.resolve();
     }
   }
 
@@ -153,12 +175,13 @@ export class Controller {
     });
 
     this.events.on('TransactionIssued', (event: TransactionIssued) => {
-      const u = this.users.getById(event.from);
-      if (u) {
-        const v = this.vehicles.get(event.to);
-        if (v) {
-          u.info.balance -= event.amount;
-          v.info.balance += event.amount;
+      const from =
+        this.users.getById(event.from) || this.vehicles.get(event.from);
+      if (from) {
+        const to = this.users.getById(event.to) || this.vehicles.get(event.to);
+        if (to) {
+          from.info.balance -= event.amount;
+          to.info.balance += event.amount;
         }
       }
     });

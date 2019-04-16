@@ -15,12 +15,24 @@
     "seed": "",
     "name": "Tessy",
     "channelCapacity": 10,
-    "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
+    "stop": "RUPPURERTORMGORYBXIDPXHNYAKDHGJTIICTPPCNGPKC9JHNBSQLM9EQGPKOAWSAVXQPUHJCEYFDFXCXM",
     "price": 1500,
     "reservationRate": 10000000,
     "type": "car",
     "co2emission": 90000,
     "speed": 50,
+    "maxReservations": 1
+  },
+  {
+    "seed": "",
+    "name": "Fächerrad",
+    "channelCapacity": 10,
+    "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
+    "price": 750,
+    "reservationRate": 1000000,
+    "type": "bike",
+    "co2emission": 0,
+    "speed": 25,
     "maxReservations": 1
   }
 ]

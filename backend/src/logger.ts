@@ -1,7 +1,11 @@
 import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Event } from './events';
+import { Trytes } from '@iota/core/typings/types';
 
-export function enableLogging(events: SafeEmitter) {
+export function enableLogging(
+  events: SafeEmitter,
+  isUser: (id: Trytes) => boolean,
+) {
   const prettify = (type: Type, data: any) => {
     let format: { skip: string; entity: string };
     switch (type[1]) {
@@ -10,7 +14,10 @@ export function enableLogging(events: SafeEmitter) {
         format = { skip: 'id', entity: 'User' };
         break;
       case 'TransactionIssued':
-        format = { skip: 'from', entity: 'User' };
+        format = {
+          skip: 'from',
+          entity: isUser(data.from) ? 'User' : 'Vehicle',
+        };
         break;
       case 'PosUpdated':
         format = { skip: 'id', entity: 'Vehicle' };
@@ -35,27 +42,33 @@ export function enableLogging(events: SafeEmitter) {
           }
           r[p] = v;
         });
+      const entityLabel = format.entity + ' ' + data[format.skip];
       const typePadding =
-        !data[format.skip] || data[format.skip].length < 10
-          ? ' '.repeat(10 - (data[format.skip] ? data[format.skip].length : 0))
-          : '';
-      const prefix = `${format.entity} ${data[format.skip]}${typePadding} ${
-        type[1]
-      }`;
+        entityLabel.length < 11 ? ' '.repeat(11 - entityLabel.length) : '';
+      const prefix = `${entityLabel}${typePadding} ${type[1]}`;
 
       if (Object.keys(r).length > 0) {
         // const padding =
         //   prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
-        log.debug(`${prefix}:\n%o`, r);
+        log[getLevel(type[1])](`${prefix}:\n%o`, r);
       } else {
-        log.debug(prefix);
+        log[getLevel(type[1])](prefix);
       }
     } else {
-      log.debug(type.join('.'));
+      log[getLevel(type[1])](type.join('.'));
     }
   };
 
   events.onAny((type: any, data: any) => prettify(type, data));
+}
+
+function getLevel(eventType: Event[0]) {
+  switch (eventType) {
+    case 'PosUpdated':
+      return 'silly';
+    default:
+      return 'debug';
+  }
 }
 
 type Type = ['public', Event[0]];

@@ -18,13 +18,13 @@ import { getPathLength } from 'geolib';
 export class TripStarter {
   constructor(private connections: Connection[], private events: SafeEmitter) {}
 
-  public async startTrip(
+  public startTrip(
     v: { info: VehicleInfo; mock: VehicleMock },
     { info: user, state: userState }: { info: User; state: UserState },
     start: Trytes,
     destination: Trytes,
     intermediateStops: Trytes[],
-  ) {
+  ): Promise<any> {
     const connections = this.findConnections(
       start,
       destination,
@@ -34,7 +34,7 @@ export class TripStarter {
     const r = new PathFinder(connections);
     const [route] = r.getPaths(start, destination, [v.info.info.type]);
 
-    const { sender, setter } = this.createUserSender();
+    const { sender, setter } = this.createUserSender(v.mock, user.id);
     const distance = getPathLength(
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
@@ -101,7 +101,10 @@ export class TripStarter {
     return connections;
   }
 
-  private createUserSender(): {
+  private createUserSender(
+    mock: VehicleMock,
+    userId: Trytes,
+  ): {
     sender: UserSender;
     setter: (handler: BoardingHandler) => void;
   } {
@@ -131,6 +134,12 @@ export class TripStarter {
       },
       createdNewBranch(digests, multisig) {
         boardingHandler.onCreatedNewBranch({ digests, multisig });
+      },
+      signedTransaction(signedBundles, value, close) {
+        if (!close) {
+          mock.emitTransactionSent(userId, value);
+        }
+        boardingHandler.onSignedTransaction({ signedBundles, value, close });
       },
       cancelBoarding(reason) {
         boardingHandler.onBoardingCanceled({ reason });
@@ -176,6 +185,12 @@ export class TripStarter {
       },
       signedTransaction(signedBundles, value, close) {
         tripHandler.onSignedTransaction({ signedBundles, value, close });
+      },
+      createdNewBranch(digests, multisig) {
+        tripHandler.onCreatedNewBranch({ digests, multisig });
+      },
+      createdTransaction(bundles, signedBundles, close) {
+        tripHandler.onTransactionReceived({ bundles, signedBundles, close });
       },
     };
   }

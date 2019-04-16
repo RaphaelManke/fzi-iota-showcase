@@ -4,8 +4,8 @@ import { Position } from './position';
 import { TripState } from './tripState';
 
 export class Vehicle {
-  private currentTrip: TripState | undefined;
-  private mStop: Trytes | undefined;
+  private currentTrip?: TripState;
+  private mStop?: Trytes;
   private mPosition: Position;
   private observers: Set<Observer> = new Set<Observer>();
 
@@ -47,6 +47,12 @@ export class Vehicle {
   public transactionReceived(user: Trytes, value: number) {
     Promise.resolve(
       this.observers.forEach((o) => o.transactionReceived(value, user)),
+    );
+  }
+
+  public transactionSent(user: Trytes, value: number) {
+    Promise.resolve(
+      this.observers.forEach((o) => o.transactionSent(value, user)),
     );
   }
 

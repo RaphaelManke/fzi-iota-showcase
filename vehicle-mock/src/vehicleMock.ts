@@ -1,6 +1,6 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
-import { Path } from './pathFinder';
+import { Path, PathFinder } from './pathFinder';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
@@ -216,13 +216,31 @@ export class VehicleMock {
             this.nextAddress!,
             this.pricePerMeter,
             this.vehicle.info.speed,
-            () => ({ price, distance }),
+            (dest) => {
+              let i = 0;
+              const cons = [];
+              do {
+                cons.push(path.connections[i++]);
+              } while (cons[cons.length - 1].to !== dest);
+              const p = new PathFinder(cons);
+              const [route] = p.getPaths(path.connections[0].from, dest, [
+                this.vehicle.info.type,
+              ]);
+              const dis = getPathLength(
+                route.waypoints.map((pos) => ({
+                  latitude: pos.lat,
+                  longitude: pos.lng,
+                })),
+              );
+              return { distance: dis, price: dis * this.pricePerMeter };
+            },
             depositor,
             txReader,
             new FlashMock(),
             senderProxy,
           );
           setSentVehicleHandler(b);
+          this.vehicle.trip!.boardingHandler = b;
 
           let lastPosition = this.vehicle.position;
           o = {
@@ -237,6 +255,7 @@ export class VehicleMock {
             checkedIn() {},
             reachedStop() {},
             transactionReceived() {},
+            transactionSent() {},
             tripStarted() {},
           };
           this.vehicle.addObserver(o);
@@ -257,14 +276,22 @@ export class VehicleMock {
   }
 
   public stopTripAtNextStop() {
-    return this.mover.stopDrivingAtNextStop();
+    const stop = this.mover.stopDrivingAtNextStop();
+    if (stop && this.vehicle.trip && this.vehicle.trip.boardingHandler) {
+      this.vehicle.trip.boardingHandler.updateDestination(stop);
+    }
+    return stop;
+  }
+
+  public emitTransactionSent(to: Trytes, value: number) {
+    this.vehicle.transactionSent(to, value);
   }
 
   private createSenderProxy(
     sendToUser: Sender,
     userId: Trytes,
     path: Path,
-    price: number,
+    tripPrice: number,
     removeObserver: () => void,
     res: (result: any) => void,
     rej: (reason: any) => void,
@@ -317,7 +344,7 @@ export class VehicleMock {
           vehicle.tripStarted(
             userId,
             path.connections[path.connections.length - 1].to,
-            price,
+            tripPrice,
           );
         } else {
           // TODO resume driving if stopped
@@ -333,6 +360,13 @@ export class VehicleMock {
       },
       cancelBoarding(reason) {
         sendToUser.cancelBoarding(reason);
+        rej(new Error('Boarding cancelled. ' + reason));
+      },
+      createdNewBranch(digests, multisig) {
+        sendToUser.createdNewBranch(digests, multisig);
+      },
+      createdTransaction(bundles, signedBundles, close) {
+        sendToUser.createdTransaction(bundles, signedBundles, close);
       },
     };
   }
