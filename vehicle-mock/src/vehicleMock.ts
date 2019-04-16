@@ -27,6 +27,7 @@ import { State } from './tripState';
 import { getPathLength, getDistance } from 'geolib';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 import { Observer } from './observer';
+import { Boarder } from './boarder';
 
 export class VehicleMock {
   private mover: Mover;
@@ -196,77 +197,20 @@ export class VehicleMock {
           txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
         }
 
-        return new Promise<Trytes>((res, rej) => {
-          // observe sender
-          let o: Observer;
-          const senderProxy = this.createSenderProxy(
-            sendToUser,
-            userId,
-            path,
-            price,
-            () => this.vehicle.removeObserver(o),
-            res,
-            rej,
-            onStop,
-          );
-
-          const b = new BoardingHandler(
-            this.vehicle.trip!.nonce,
-            this.vehicle.trip!.reservations,
-            this.nextAddress!,
-            this.pricePerMeter,
-            this.vehicle.info.speed,
-            (dest) => {
-              let i = 0;
-              const cons = [];
-              do {
-                cons.push(path.connections[i++]);
-              } while (cons[cons.length - 1].to !== dest);
-              const p = new PathFinder(cons);
-              const [route] = p.getPaths(path.connections[0].from, dest, [
-                this.vehicle.info.type,
-              ]);
-              const dis = getPathLength(
-                route.waypoints.map((pos) => ({
-                  latitude: pos.lat,
-                  longitude: pos.lng,
-                })),
-              );
-              return { distance: dis, price: dis * this.pricePerMeter };
-            },
-            depositor,
-            txReader,
-            new FlashMock(),
-            senderProxy,
-          );
-          setSentVehicleHandler(b);
-          this.vehicle.trip!.boardingHandler = b;
-
-          let lastPosition = this.vehicle.position;
-          o = {
-            posUpdated(position) {
-              const add = getDistance(
-                { latitude: lastPosition.lat, longitude: lastPosition.lng },
-                { latitude: position.lat, longitude: position.lng },
-              );
-              lastPosition = position;
-              b.addMetersDriven(add);
-            },
-            checkedIn() {},
-            reachedStop() {},
-            transactionReceived() {},
-            transactionSent() {},
-            tripStarted() {},
-          };
-          this.vehicle.addObserver(o);
-
-          try {
-            b.onTripRequested();
-          } catch (e) {
-            log.error('Boarding failed', e);
-            rej(new Exception('Boarding failed', e));
-          }
-        });
+        const boarder = new Boarder(
+          this.vehicle,
+          userId,
+          this.nextAddress!,
+          path,
+          this.pricePerMeter,
+        );
+        return boarder
+          .startBoarding(sendToUser, depositor, txReader, setSentVehicleHandler)
+          .then(() => this.startDriving(path, userId, price, onStop))
+          .then((stop) => {
+            boarder.cleanUp();
+            return stop;
+          });
       } else {
         throw new Error('Vehicle is not at the start of the given path');
       }
@@ -287,88 +231,36 @@ export class VehicleMock {
     this.vehicle.transactionSent(to, value);
   }
 
-  private createSenderProxy(
-    sendToUser: Sender,
-    userId: Trytes,
+  private startDriving(
     path: Path,
+    userId: Trytes,
     tripPrice: number,
-    removeObserver: () => void,
-    res: (result: any) => void,
-    rej: (reason: any) => void,
     onStop?: (stop: Trytes) => void,
-  ): Sender {
-    let departed = false;
-    const vehicle = this.vehicle;
-    const mover = this.mover;
-
-    return {
-      authenticate(nonce, sendAuth) {
-        sendToUser.authenticate(nonce, sendAuth);
-      },
-      priced(price) {
-        sendToUser.priced(price);
-      },
-      openPaymentChannel(...args) {
-        sendToUser.openPaymentChannel(...args);
-      },
-      depositSent(hash, amount) {
-        sendToUser.depositSent(hash, amount);
-      },
-      signedTransaction(signedBundles, value, close) {
-        if (!close) {
-          vehicle.transactionReceived(userId, value);
-        }
-        sendToUser.signedTransaction(signedBundles, value, close);
-      },
-      creditsLeft(amount, distanceLeft, millis) {
-        if (!departed && amount > 0) {
-          vehicle.trip!.state = State.DEPARTED;
-          departed = true;
-          mover
-            .startDriving(path, (stop) => {
-              vehicle.stop = stop;
-              if (onStop) {
-                onStop(stop);
-              }
-            })
-            .then((stop) => {
-              vehicle.trip!.state = State.FINISHED;
-              removeObserver();
-              res(stop);
-            })
-            .catch((e: any) => {
-              mover.stopImmediatly();
-              rej(new Exception('Start driving failed', e));
-            });
-          // send event
-          vehicle.tripStarted(
-            userId,
-            path.connections[path.connections.length - 1].to,
-            tripPrice,
-          );
-        } else {
-          // TODO resume driving if stopped
-        }
-        sendToUser.creditsLeft(amount, distanceLeft, millis);
-      },
-      creditsExausted(minimumAmount) {
-        // TODO stop vehicle
-        sendToUser.creditsExausted(minimumAmount);
-      },
-      closePaymentChannel(bundleHash) {
-        sendToUser.closePaymentChannel(bundleHash);
-      },
-      cancelBoarding(reason) {
-        sendToUser.cancelBoarding(reason);
-        rej(new Error('Boarding cancelled. ' + reason));
-      },
-      createdNewBranch(digests, multisig) {
-        sendToUser.createdNewBranch(digests, multisig);
-      },
-      createdTransaction(bundles, signedBundles, close) {
-        sendToUser.createdTransaction(bundles, signedBundles, close);
-      },
-    };
+  ) {
+    return new Promise<Trytes>((res, rej) => {
+      this.vehicle.trip!.state = State.DEPARTED;
+      this.mover
+        .startDriving(path, (stop) => {
+          this.vehicle.stop = stop;
+          if (onStop) {
+            onStop(stop);
+          }
+        })
+        .then((stop) => {
+          this.vehicle.trip!.state = State.FINISHED;
+          res(stop);
+        })
+        .catch((e: any) => {
+          this.mover.stopImmediatly();
+          rej(new Exception('Start driving failed', e));
+        });
+      // send event
+      this.vehicle.tripStarted(
+        userId,
+        path.connections[path.connections.length - 1].to,
+        tripPrice,
+      );
+    });
   }
 
   private mockedBundle(price: number): Bundle {

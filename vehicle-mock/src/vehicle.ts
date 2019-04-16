@@ -7,7 +7,7 @@ export class Vehicle {
   private currentTrip?: TripState;
   private mStop?: Trytes;
   private mPosition: Position;
-  private observers: Set<Observer> = new Set<Observer>();
+  private observers = new Map<Partial<Observer>, Observer>();
 
   constructor(
     observer: Observer,
@@ -16,7 +16,7 @@ export class Vehicle {
     stop: Trytes,
     public info: { type: string; speed: number; co2emission: number },
   ) {
-    this.observers.add(observer);
+    this.observers.set(observer, observer);
     this.mPosition = position;
     this.stop = stop;
   }
@@ -56,11 +56,18 @@ export class Vehicle {
     );
   }
 
-  public addObserver(o: Observer) {
-    this.observers.add(o);
+  public addObserver(o: Partial<Observer>) {
+    this.observers.set(o, {
+      checkedIn: o.checkedIn || (() => {}),
+      posUpdated: o.posUpdated || (() => {}),
+      reachedStop: o.reachedStop || (() => {}),
+      transactionReceived: o.transactionReceived || (() => {}),
+      transactionSent: o.transactionSent || (() => {}),
+      tripStarted: o.tripStarted || (() => {}),
+    });
   }
 
-  public removeObserver(o: Observer) {
+  public removeObserver(o: Partial<Observer>) {
     this.observers.delete(o);
   }
 

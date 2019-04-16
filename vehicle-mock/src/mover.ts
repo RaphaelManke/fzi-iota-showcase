@@ -64,12 +64,17 @@ export class Mover {
           } else {
             // arrived
             clearInterval(this.interval!);
+            this.interval = undefined;
             resolve(con.to);
           }
         }
       };
       this.interval = setInterval(worker, Mover.UPDATE_INTERVAL);
     });
+  }
+
+  public isDriving() {
+    return this.interval !== undefined;
   }
 
   public stopImmediatly() {
