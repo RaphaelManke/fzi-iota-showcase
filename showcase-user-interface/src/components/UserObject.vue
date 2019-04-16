@@ -6,7 +6,7 @@
     :z-index-offset="prioityZIndex"
   >
     <l-tooltip
-      :options="{ permanent: true, direction: 'bottom' }"
+      :options="{ permanent: true, direction: 'left', offset: [-20, -5] }"
       :z-index-offset="prioityZIndex"
       class="iota_style"
       >{{ paras.name }}</l-tooltip
