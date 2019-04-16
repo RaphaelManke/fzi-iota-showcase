@@ -18,13 +18,13 @@ import { getPathLength } from 'geolib';
 export class TripStarter {
   constructor(private connections: Connection[], private events: SafeEmitter) {}
 
-  public async startTrip(
+  public startTrip(
     v: { info: VehicleInfo; mock: VehicleMock },
     { info: user, state: userState }: { info: User; state: UserState },
     start: Trytes,
     destination: Trytes,
     intermediateStops: Trytes[],
-  ) {
+  ): Promise<any> {
     const connections = this.findConnections(
       start,
       destination,

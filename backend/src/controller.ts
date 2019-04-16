@@ -101,7 +101,15 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      this.tripStarter.startTrip(v, u, start, destination, intermediateStops);
+      return this.tripStarter.startTrip(
+        v,
+        u,
+        start,
+        destination,
+        intermediateStops,
+      );
+    } else {
+      return Promise.resolve();
     }
   }
 
