@@ -12,12 +12,12 @@
                     ></b-form-select>
                     </b-col>
                     <b-col>
-                    Stop
+                    Destination
                     <b-form-select v-model="selectedDestination" :options="stops"
                     value-field="id" text-field="name"
                     ></b-form-select>
                     </b-col>
-                    <b-col>
+                    <b-col md="auto">
                       <b-form-group label="Vehicel types">
       <b-form-checkbox-group v-model="vehicleTypes">
         <b-form-checkbox value="car">Car</b-form-checkbox>
