@@ -53,7 +53,6 @@ import { composeAPI } from '@iota/core';
     await users.initUsers();
 
     const events = new SafeEmitter();
-    enableLogging(events);
 
     const c = new Controller(
       events,

@@ -1,7 +1,11 @@
 import { log } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Event } from './events';
+import { Trytes } from '@iota/core/typings/types';
 
-export function enableLogging(events: SafeEmitter) {
+export function enableLogging(
+  events: SafeEmitter,
+  isUser: (id: Trytes) => boolean,
+) {
   const prettify = (type: Type, data: any) => {
     let format: { skip: string; entity: string };
     switch (type[1]) {
@@ -10,7 +14,10 @@ export function enableLogging(events: SafeEmitter) {
         format = { skip: 'id', entity: 'User' };
         break;
       case 'TransactionIssued':
-        format = { skip: 'from', entity: 'User' };
+        format = {
+          skip: 'from',
+          entity: isUser(data.from) ? 'User' : 'Vehicle',
+        };
         break;
       case 'PosUpdated':
         format = { skip: 'id', entity: 'Vehicle' };
@@ -35,13 +42,10 @@ export function enableLogging(events: SafeEmitter) {
           }
           r[p] = v;
         });
+      const entityLabel = format.entity + ' ' + data[format.skip];
       const typePadding =
-        !data[format.skip] || data[format.skip].length < 10
-          ? ' '.repeat(10 - (data[format.skip] ? data[format.skip].length : 0))
-          : '';
-      const prefix = `${format.entity} ${data[format.skip]}${typePadding} ${
-        type[1]
-      }`;
+        entityLabel.length < 11 ? ' '.repeat(11 - entityLabel.length) : '';
+      const prefix = `${entityLabel}${typePadding} ${type[1]}`;
 
       if (Object.keys(r).length > 0) {
         // const padding =

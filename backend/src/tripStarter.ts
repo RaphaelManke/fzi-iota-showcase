@@ -34,7 +34,7 @@ export class TripStarter {
     const r = new PathFinder(connections);
     const [route] = r.getPaths(start, destination, [v.info.info.type]);
 
-    const { sender, setter } = this.createUserSender();
+    const { sender, setter } = this.createUserSender(v.mock, user.id);
     const distance = getPathLength(
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
@@ -101,7 +101,10 @@ export class TripStarter {
     return connections;
   }
 
-  private createUserSender(): {
+  private createUserSender(
+    mock: VehicleMock,
+    userId: Trytes,
+  ): {
     sender: UserSender;
     setter: (handler: BoardingHandler) => void;
   } {
@@ -133,6 +136,9 @@ export class TripStarter {
         boardingHandler.onCreatedNewBranch({ digests, multisig });
       },
       signedTransaction(signedBundles, value, close) {
+        if (!close) {
+          mock.emitTransactionSent(userId, value);
+        }
         boardingHandler.onSignedTransaction({ signedBundles, value, close });
       },
       cancelBoarding(reason) {

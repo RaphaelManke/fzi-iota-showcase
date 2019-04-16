@@ -64,6 +64,9 @@ export class MockConstructor {
       transactionReceived(amount, user) {
         events.emit('TransactionIssued', { from: user, to: info.id, amount });
       },
+      transactionSent(amount, user) {
+        events.emit('TransactionIssued', { from: info.id, to: user, amount });
+      },
     };
 
     const mock = new VehicleMock(
