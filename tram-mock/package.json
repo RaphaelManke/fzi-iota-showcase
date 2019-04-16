@@ -1,10 +1,12 @@
 {
   "name": "fzi-iota-showcase-tram-mock",
   "version": "0.0.1",
-  "private": false,
-  "publishConfig": {
-    "registry":"https://pkgs.dev.azure.com/FZI-IOTA-showcase/_packaging/FZI-IOTA-NPM/npm/registry/"
-  },
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "files": [
+    "out",
+    "src"
+  ],
   "description": "",
   "keywords": [
     "iota",
@@ -23,15 +25,49 @@
     "Raphael Manke <> (https://github.com/RaphaelManke/)"
   ],
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha",
+    "localTest": "mocha --reporter spec --inspect",
+    "coverage": "nyc mocha && node process-coverage-report.js "
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "cobertura"
+    ],
+    "all": false
+  },
   "dependencies": {
-    "fzi-iota-showcase-vehicle-mock": "^0.0.1"
+    "fzi-iota-showcase-vehicle-mock": "alpha"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.26",
+    "@types/chai": "^4.1.7",
+    "@types/chai-things": "0.0.33",
+    "@types/extend": "^3.0.1",
+    "@types/mocha": "^5.2.6",
     "@types/node": "7.0.22",
+    "chai": "^4.2.0",
+    "chai-things": "^0.2.0",
     "mocha": "^5.2.0",
-    "ts-node": "^8.0.2",
+    "mocha-junit-reporter": "^1.18.0",
+    "nyc": "^13.3.0",
+    "source-map-support": "^0.5.11",
+    "ts-node": "^8.0.3",
     "tslint": "^5.13.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "vsts-coverage-styles": "^1.0.7"
   }
 }
