@@ -29,6 +29,9 @@ export class MockConstructor {
         type: v.type,
         co2emission: v.co2emission,
         speed: v.speed,
+        driveStartingPolicy: v.driveStartingPolicy
+          ? v.driveStartingPolicy
+          : 'AFTER_BOARDING',
         maxReservations: v.maxReservations ? v.maxReservations : 1,
       },
       name: v.name,

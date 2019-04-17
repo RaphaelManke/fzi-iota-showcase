@@ -55,16 +55,14 @@ export class TripStarter {
       destination,
     });
     return v.mock
-      .startBoarding(route, vehicleSender, user.id, setter)
-      .then(() => v.mock.startDriving())
-      .then((stop: Trytes) => {
+      .startBoarding(route, vehicleSender, user.id, setter, (stop: Trytes) => {
         this.events.emit('TripFinished', {
           vehicleId: v.info.id,
           userId: user.id,
           destination: stop,
         });
+        v.mock.checkInAtCurrentStop();
       })
-      .then(() => v.mock.checkInAtCurrentStop())
       .catch((e: any) =>
         Promise.reject(new Exception('Starting trip failed', e)),
       );

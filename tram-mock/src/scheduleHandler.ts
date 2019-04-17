@@ -7,5 +7,11 @@ export class ScheduleHandler {
     private schedule: ScheduleDescription,
   ) {}
 
-  public startSchedule() {}
+  public startSchedule() {
+    this.mock.vehicle.addObserver({
+      reachedStop(stop) {
+        
+      },
+    });
+  }
 }
