@@ -14,7 +14,12 @@ export class Vehicle {
     public seed: Trytes,
     position: Position,
     stop: Trytes,
-    public info: { type: string; speed: number; co2emission: number },
+    public info: {
+      type: string;
+      speed: number;
+      co2emission: number;
+      maxReservations: number;
+    },
   ) {
     this.observers.set(observer, observer);
     this.mPosition = position;

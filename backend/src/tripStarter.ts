@@ -55,7 +55,8 @@ export class TripStarter {
       destination,
     });
     return v.mock
-      .startTrip(route, vehicleSender, user.id, setter)
+      .startBoarding(route, vehicleSender, user.id, setter)
+      .then(() => v.mock.startDriving())
       .then((stop: Trytes) => {
         this.events.emit('TripFinished', {
           vehicleId: v.info.id,
