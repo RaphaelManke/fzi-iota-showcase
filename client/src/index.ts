@@ -18,3 +18,4 @@ export * from './exception';
 export * from './intTryteConverter';
 export * from './messages/boarding';
 export * from './messages/flashMock';
+export * from './driveStartingPolicy';
