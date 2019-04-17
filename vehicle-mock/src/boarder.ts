@@ -23,7 +23,11 @@ export class Boarder {
     return this.h!;
   }
 
-  private get destination() {
+  public get start() {
+    return this.path.connections[0].from;
+  }
+
+  public get destination() {
     return this.path.connections[this.path.connections.length - 1].to;
   }
 

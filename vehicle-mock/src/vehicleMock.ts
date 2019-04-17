@@ -31,6 +31,7 @@ export class VehicleMock {
   private masterChannel?: RAAM;
   private currentAddress?: Hash;
   private nextAddress?: Hash;
+  private toOverBoard: Boarder[] = [];
 
   constructor(
     public readonly vehicle: Vehicle,
@@ -150,8 +151,9 @@ export class VehicleMock {
         checkInMessage,
         start: this.vehicle.stop,
         reservations: [],
-        boarders: [],
+        boarders: Array.from(this.toOverBoard),
       };
+      this.toOverBoard = [];
     }
   }
 
@@ -237,7 +239,9 @@ export class VehicleMock {
     return new Promise<Trytes>((res, rej) => {
       this.vehicle.trip!.state = State.DEPARTED;
       if (this.vehicle.trip && this.vehicle.trip.path) {
-        this.vehicle.trip.boarders.forEach((b) => b.onStartDriving());
+        this.vehicle.trip.boarders
+          .filter((b) => b.start === this.vehicle.trip!.start)
+          .forEach((b) => b.onStartDriving());
         this.mover
           .startDriving(this.vehicle.trip.path, (stop) => {
             this.vehicle.stop = stop;
@@ -247,7 +251,13 @@ export class VehicleMock {
           })
           .then((stop) => {
             this.vehicle.trip!.state = State.FINISHED;
-            this.vehicle.trip!.boarders.forEach((b) => b.tripFinished(stop));
+            this.vehicle.trip!.boarders.forEach((b) => {
+              if (b.destination === stop) {
+                b.tripFinished(stop);
+              } else {
+                this.toOverBoard.push(b);
+              }
+            });
             res(stop);
             if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
               this.checkInAtCurrentStop();
