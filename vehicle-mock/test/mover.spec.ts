@@ -129,6 +129,8 @@ describe('Mover', () => {
       co2emission: 0,
       speed: 100,
       type: 'tram',
+      driveStartingPolicy: 'AFTER_BOARDING',
+      maxReservations: 1,
     });
     const mover = new Mover(v);
     const paths = pathFinder.getPaths(v.stop!, 'C', [v.info.type]);

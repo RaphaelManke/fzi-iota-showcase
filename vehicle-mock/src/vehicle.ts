@@ -2,6 +2,7 @@ import { Trytes } from '@iota/core/typings/types';
 import { Observer } from './observer';
 import { Position } from './position';
 import { TripState } from './tripState';
+import { DriveStartingPolicy } from 'fzi-iota-showcase-client';
 
 export class Vehicle {
   private currentTrip?: TripState;
@@ -19,6 +20,7 @@ export class Vehicle {
       speed: number;
       co2emission: number;
       maxReservations: number;
+      driveStartingPolicy: DriveStartingPolicy;
     },
   ) {
     this.observers.set(observer, observer);

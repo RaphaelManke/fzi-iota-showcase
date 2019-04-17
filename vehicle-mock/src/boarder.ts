@@ -11,11 +11,12 @@ export class Boarder {
   private observer?: Partial<Observer>;
 
   constructor(
-    private vehicle: Vehicle,
-    private userId: Trytes,
-    private settlementAddress: Hash,
-    private path: Path,
-    private pricePerMeter: number,
+    private readonly vehicle: Vehicle,
+    private readonly userId: Trytes,
+    private readonly settlementAddress: Hash,
+    private readonly path: Path,
+    private readonly pricePerMeter: number,
+    private readonly onTripFinished: (stop: Trytes) => void,
   ) {}
 
   public get handler() {
@@ -90,7 +91,8 @@ export class Boarder {
     });
   }
 
-  public cleanUp() {
+  public tripFinished(stop: Trytes) {
+    this.onTripFinished(stop);
     if (this.observer) {
       this.vehicle.removeObserver(this.observer);
     }
