@@ -35,16 +35,21 @@ export const user: Module<User, RootState> = {
         state.info.trip !== undefined &&
         state.info.trip.vehicleId === data.id
       ) {
+        window.console.log(state.info.trip);
         state.info.position = data.position;
       }
     },
     SOCKET_TripStarted(state: any, data: any) {
-      state.info.trip = data;
-      state.info.stop = data.destination;
+      if (data.userId === state.info.id) {
+        state.info.trip = data;
+        state.info.stop = data.destination;
+      }
     },
     SOCKET_TripFinished(state: any, data: any) {
-      state.info.trip = undefined;
-      state.info.stop = data.destination;
+      if (data.userId === state.info.id) {
+        state.info.trip = undefined;
+        state.info.stop = data.destination;
+      }
     }
   },
   getters: {
