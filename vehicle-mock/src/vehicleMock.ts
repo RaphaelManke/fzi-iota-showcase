@@ -36,7 +36,7 @@ export class VehicleMock {
   private nextAddress?: Hash;
 
   constructor(
-    private vehicle: Vehicle,
+    public readonly vehicle: Vehicle,
     private capacity: number,
     private pricePerMeter: number,
     private reservationsRate: number,
