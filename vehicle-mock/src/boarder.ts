@@ -41,18 +41,14 @@ export class Boarder {
     depositor: (value: number, address: Hash) => Promise<string>,
     txReader: (bundleHash: Hash) => Promise<Bundle>,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
-  ) {
-    return new Promise<Trytes>((res, rej) => {
+  ): Promise<void> {
+    return new Promise<void>((res, rej) => {
       try {
         // observe sender
         const senderProxy = this.createSenderProxy(
           sendToUser,
           this.userId,
-          () => {
-            this.vehicle.trip!.destination = this.destination;
-            this.vehicle.trip!.path = this.path;
-            res();
-          },
+          res,
           rej,
         );
 
@@ -130,6 +126,8 @@ export class Boarder {
   ): Sender {
     let boardingFinished = false;
     const vehicle = this.vehicle;
+    const path = this.path;
+    const destination = this.destination;
 
     return {
       authenticate(nonce, sendAuth) {
@@ -152,7 +150,10 @@ export class Boarder {
       },
       creditsLeft(amount, distanceLeft, millis) {
         if (!boardingFinished && amount > 0) {
+          // ready to start driving
           boardingFinished = true;
+          vehicle.trip!.destination = destination;
+          vehicle.trip!.path = path;
           res();
         } else {
           // TODO resume driving if stopped
