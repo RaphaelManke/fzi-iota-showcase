@@ -1,4 +1,3 @@
-import { enableLogging } from './logger';
 import { Server } from './server';
 import { Controller } from './controller';
 import { Connection, Stop } from './envInfo';
@@ -10,6 +9,7 @@ import { readVehicles } from './vehicleImporter';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
 import { composeAPI } from '@iota/core';
+import { ScheduleDescription, Mode } from 'fzi-iota-showcase-tram-mock';
 
 (async () => {
   try {
@@ -20,6 +20,7 @@ import { composeAPI } from '@iota/core';
         stops: './stops.json',
         connections: './connections.json',
         users: './users.json',
+        schedules: './schedules.json',
         mockPayments: false,
         mockMessages: false,
         logLevel: 'debug',
@@ -52,6 +53,10 @@ import { composeAPI } from '@iota/core';
     });
     await users.initUsers();
 
+    const schedules: ScheduleDescription[] = JSON.parse(
+      fs.readFileSync(args.schedules).toString(),
+    );
+
     const events = new SafeEmitter();
 
     const c = new Controller(
@@ -59,6 +64,7 @@ import { composeAPI } from '@iota/core';
       stops,
       connections,
       vehicles,
+      schedules,
       users,
       provider,
       iota,

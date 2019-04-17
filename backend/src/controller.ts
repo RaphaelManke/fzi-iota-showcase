@@ -22,6 +22,10 @@ import { UserState } from 'fzi-iota-showcase-user-client';
 import { TripStarter } from './tripStarter';
 import { getNextId } from './idSupplier';
 import { enableLogging } from './logger';
+import {
+  ScheduleDescription,
+  ScheduleHandler,
+} from 'fzi-iota-showcase-tram-mock';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -37,6 +41,7 @@ export class Controller {
     stops: Stop[],
     connections: Connection[],
     vehicleDescriptions: VehicleDescription[],
+    private schedules: ScheduleDescription[],
     public readonly users: Users,
     provider: string,
     iota: API = composeAPI({
@@ -205,6 +210,21 @@ export class Controller {
         })(),
       ),
     );
+    log.info('Starting schedules...');
+    this.schedules.forEach((s) => {
+      const vehicle = Array.from(this.vehicles.values()).find(
+        (v) => v.info.name === s.forVehicle,
+      );
+      if (vehicle) {
+        new ScheduleHandler(
+          vehicle.mock,
+          s,
+          this.env.connections,
+        ).startSchedule();
+      } else {
+        log.warn('Vehicle ' + s.forVehicle + ' was not found for schedule.');
+      }
+    });
     log.info('Vehicles initialized.');
   }
 }

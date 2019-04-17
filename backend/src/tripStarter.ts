@@ -61,7 +61,6 @@ export class TripStarter {
           userId: user.id,
           destination: stop,
         });
-        v.mock.checkInAtCurrentStop();
       })
       .catch((e: any) =>
         Promise.reject(new Exception('Starting trip failed', e)),

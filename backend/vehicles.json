@@ -9,7 +9,8 @@
     "type": "tram",
     "co2emission": 9000,
     "speed": 35,
-    "maxReservations": 100
+    "maxReservations": 100,
+    "driveStartingPolicy": "MANUAL"
   },
   {
     "seed": "",
