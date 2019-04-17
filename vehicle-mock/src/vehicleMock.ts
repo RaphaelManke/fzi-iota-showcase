@@ -1,16 +1,14 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
-import { Path, PathFinder } from './pathFinder';
+import { Path } from './pathFinder';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
   createAttachToTangle,
   CheckInMessage,
-  FlashMock,
   StopWelcomeMessage,
   Exception,
-  log,
 } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
@@ -24,9 +22,8 @@ import {
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
 import { State } from './tripState';
-import { getPathLength, getDistance } from 'geolib';
+import { getPathLength } from 'geolib';
 import { MamWriter, MAM_MODE } from 'mam.ts';
-import { Observer } from './observer';
 import { Boarder } from './boarder';
 
 export class VehicleMock {
@@ -252,6 +249,9 @@ export class VehicleMock {
             this.vehicle.trip!.state = State.FINISHED;
             this.vehicle.trip!.boarders.forEach((b) => b.tripFinished(stop));
             res(stop);
+            if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
+              this.checkInAtCurrentStop();
+            }
           })
           .catch((e: any) => {
             this.mover.stopImmediatly();
