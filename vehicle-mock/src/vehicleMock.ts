@@ -36,7 +36,7 @@ export class VehicleMock {
   private nextAddress?: Hash;
 
   constructor(
-    private vehicle: Vehicle,
+    public readonly vehicle: Vehicle,
     private capacity: number,
     private pricePerMeter: number,
     private reservationsRate: number,
@@ -158,13 +158,13 @@ export class VehicleMock {
     }
   }
 
-  public async startTrip(
+  public startBoarding(
     path: Path,
     sendToUser: Sender,
     userId: Trytes,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
-    onStop?: (stop: Trytes) => void,
-  ): Promise<Trytes> {
+    onTripFinished: (stop: Trytes) => void,
+  ): Promise<void> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
         const distance = getPathLength(
@@ -204,14 +204,15 @@ export class VehicleMock {
           this.nextAddress!,
           path,
           this.pricePerMeter,
+          onTripFinished,
         );
         this.vehicle.trip.boarders.push(boarder);
         return boarder
           .startBoarding(sendToUser, depositor, txReader, setSentVehicleHandler)
-          .then(() => this.startDriving(onStop))
-          .then((stop) => {
-            boarder.cleanUp();
-            return stop;
+          .then(() => {
+            if (this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING') {
+              this.startDriving();
+            }
           });
       } else {
         throw new Error('Vehicle is not at the start of the given path');
@@ -235,7 +236,7 @@ export class VehicleMock {
     this.vehicle.transactionSent(to, value);
   }
 
-  private startDriving(onStop?: (stop: Trytes) => void) {
+  public startDriving(onStop?: (stop: Trytes) => void) {
     return new Promise<Trytes>((res, rej) => {
       this.vehicle.trip!.state = State.DEPARTED;
       if (this.vehicle.trip && this.vehicle.trip.path) {
@@ -249,6 +250,7 @@ export class VehicleMock {
           })
           .then((stop) => {
             this.vehicle.trip!.state = State.FINISHED;
+            this.vehicle.trip!.boarders.forEach((b) => b.tripFinished(stop));
             res(stop);
           })
           .catch((e: any) => {

@@ -1,0 +1,1 @@
+export type DriveStartingPolicy = 'MANUAL' | 'AFTER_BOARDING' | 'AFTER_RESERVATIONS_FULFILLED';
