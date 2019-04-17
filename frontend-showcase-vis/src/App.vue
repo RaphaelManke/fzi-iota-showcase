@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-row no-gutters="true">
+    <b-row no-gutters="true" style="height: 75vh">
       <b-col cols="9">
       <map-visu/>
       </b-col>
@@ -8,8 +8,7 @@
       <event-list />
       </b-col>
     </b-row>
-
-    <state-table />
+    <tangle-panel style="height: 25vh"/>
   </div>
 </template>
 
@@ -19,13 +18,13 @@ import { Component, Vue } from "vue-property-decorator";
 // components
 import MapVisu from "./components/MapVisu.vue";
 import EventList from "./components/EventList.vue";
-import StateTable from "./components/StateTable.vue";
+import TanglePanel from "./components/TanglePanel.vue";
 
 export default {
   components: {
     MapVisu,
     EventList,
-    StateTable
+    TanglePanel
   },
   sockets: {
     connect() {

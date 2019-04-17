@@ -234,7 +234,11 @@ export default {
         this.$http
           .post(this.$hostname + "/trip", trip)
           .catch(function(response) {
+            this.refreshRoutes();
             window.console.log(response);
+            alert(
+              "Trip does not seem to be valid anymore. Please select another route!"
+            );
           });
       } else {
         this.refreshRoutes();

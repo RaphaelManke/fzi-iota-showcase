@@ -10,19 +10,12 @@ function timestampTransaction(transaction: any) {
 export const transactions: Module<TransactionStore, RootState> = {
   namespaced: true,
   state: {
-    transactions: []
+    transactions: [],
+    max_transactions_shown: 4
   },
   mutations: {
-    SOCKET_CheckIn(state: any, data: any) {
-      if (state.transactions.length > 50) {
-        state.transactions.shift();
-      }
-      // state.transactions.push(
-      //   timestampTransaction({ from: data.vehicleId, to: "Tangle", amount: 0 })
-      // );
-    },
     SOCKET_TransactionIssued(state: any, data: any) {
-      if (state.transactions.length > 50) {
+      if (state.transactions.length > state.max_transactions_shown - 1) {
         state.transactions.shift();
       }
       state.transactions.push(timestampTransaction(data));

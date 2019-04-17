@@ -1,5 +1,6 @@
 export interface TransactionStore {
   transactions: Transaction[];
+  max_transactions_shown: number;
 }
 
 export interface Transaction {

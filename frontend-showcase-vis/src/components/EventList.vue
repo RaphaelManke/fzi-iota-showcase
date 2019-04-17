@@ -1,5 +1,5 @@
 <template>
-  <b-card header="Transactions">
+  <b-card header="Routes">
     <div style="height: 60vh; overflow-y: scroll; overflow-x: hidden;"
               id="eventList"
       ref="eventList"
