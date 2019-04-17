@@ -1,2 +1,2 @@
-export { ScheduleDescription } from './scheduleDescription';
-export { ScheduleHandler } from './scheduleHandler';
+export * from './scheduleDescription';
+export * from './scheduleHandler';

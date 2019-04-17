@@ -7,7 +7,4 @@ export interface ScheduleDescription {
   forVehicle: string;
 }
 
-export enum Mode {
-  RING,
-  TURNING,
-}
+export type Mode = 'RING' | 'TURNING';
