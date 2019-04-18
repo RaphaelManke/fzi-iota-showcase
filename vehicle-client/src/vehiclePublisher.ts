@@ -83,6 +83,9 @@ async function publishMetaInfo(
 function createMetaInfoWriter(provider: string, seed: string) {
   const metaInfoSeed = getMetaInfoSeed(seed);
   const infoChannel = new MamWriter(provider, metaInfoSeed, MAM_MODE.PUBLIC);
-  infoChannel.EnablePowSrv(true);
+  Object.assign(infoChannel, {
+    // dirty hack. mam.ts supports powsrv only with api_key
+    attachFunction: createAttachToTangle(),
+  });
   return infoChannel;
 }
