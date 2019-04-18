@@ -9,7 +9,7 @@ import { readVehicles } from './vehicleImporter';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
 import { composeAPI } from '@iota/core';
-import { ScheduleDescription, Mode } from 'fzi-iota-showcase-tram-mock';
+import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
 
 (async () => {
   try {
@@ -21,6 +21,7 @@ import { ScheduleDescription, Mode } from 'fzi-iota-showcase-tram-mock';
         connections: './connections.json',
         users: './users.json',
         schedules: './schedules.json',
+        provider: 'https://nodes.devnet.iota.org',
         mockPayments: false,
         mockMessages: false,
         logLevel: 'debug',
@@ -41,9 +42,8 @@ import { ScheduleDescription, Mode } from 'fzi-iota-showcase-tram-mock';
       .filter((v) => v.seed.length === 0)
       .forEach((v) => (v.seed = generateSeed()));
 
-    const provider = 'https://nodes.devnet.iota.org';
     const iota = composeAPI({
-      provider,
+      provider: args.provider,
       attachToTangle: createAttachToTangle(),
     });
 
@@ -66,7 +66,7 @@ import { ScheduleDescription, Mode } from 'fzi-iota-showcase-tram-mock';
       vehicles,
       schedules,
       users,
-      provider,
+      args.provider,
       iota,
       args.mockPayments,
       args.mockMessages,

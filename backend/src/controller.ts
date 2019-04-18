@@ -106,6 +106,7 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
+      // TODO check if user and vehicle are at start stop
       return this.tripStarter.startTrip(
         v,
         u,
@@ -114,7 +115,7 @@ export class Controller {
         intermediateStops,
       );
     } else {
-      return Promise.resolve();
+      return Promise.reject(new Error('Vehicle not found.'));
     }
   }
 
@@ -195,21 +196,24 @@ export class Controller {
     return this;
   }
 
-  private async initVehicles() {
+  private async initVehicles(parallelCheckIn = false) {
     log.info('Initializing all vehicles...');
-    await Promise.all(
-      Array.from(this.vehicles.values()).map(({ mock: vm, info }) =>
-        (async () => {
-          log.info('Init vehicle %s', info.id);
-          await Promise.all([
-            vm.syncTangle().then(() => vm.checkInAtCurrentStop()),
-            vm
-              .setupPayments()
-              .then((ad: AccountData) => (info.balance = ad.balance)),
-          ]);
-        })(),
-      ),
-    );
+    const vehicles = [];
+    for (const { mock: vm, info } of this.vehicles.values()) {
+      log.info('Init vehicle %s', info.id);
+      const p = Promise.all([
+        vm.syncTangle().then(() => vm.checkInAtCurrentStop()),
+        vm
+          .setupPayments()
+          .then((ad: AccountData) => (info.balance = ad.balance)),
+      ]);
+      if (!parallelCheckIn) {
+        await p;
+      }
+      vehicles.push(p);
+    }
+    await Promise.all(vehicles);
+
     log.info('Starting schedules...');
     this.schedules.forEach((s) => {
       const vehicle = Array.from(this.vehicles.values()).find(
