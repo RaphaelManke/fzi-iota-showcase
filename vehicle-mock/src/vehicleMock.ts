@@ -41,7 +41,7 @@ export class VehicleMock {
     private provider: string,
     private iota: API = composeAPI({
       provider,
-      attachToTangle: createAttachToTangle(),
+      attachToTangle: createAttachToTangle(provider),
     }),
     private depth = 3,
     private mwm = 14,

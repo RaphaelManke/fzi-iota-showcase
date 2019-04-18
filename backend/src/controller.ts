@@ -46,7 +46,7 @@ export class Controller {
     provider: string,
     iota: API = composeAPI({
       provider,
-      attachToTangle: createAttachToTangle(),
+      attachToTangle: createAttachToTangle(provider),
     }),
     mockPayments = false,
     mockMessages = false,

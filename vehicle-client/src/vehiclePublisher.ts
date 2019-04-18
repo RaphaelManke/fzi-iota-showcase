@@ -28,7 +28,7 @@ export async function publishVehicle(
   vehicleInfo: VehicleInfo,
   iota: API = composeAPI({
     provider,
-    attachToTangle: createAttachToTangle(),
+    attachToTangle: createAttachToTangle(provider),
   }),
 ): Promise<{
   masterChannel: RAAM;
