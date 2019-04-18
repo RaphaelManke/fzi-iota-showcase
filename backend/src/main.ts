@@ -44,7 +44,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
 
     const iota = composeAPI({
       provider: args.provider,
-      attachToTangle: createAttachToTangle(),
+      attachToTangle: createAttachToTangle(args.provider),
     });
 
     const users = Users.fromFile(args.users, {

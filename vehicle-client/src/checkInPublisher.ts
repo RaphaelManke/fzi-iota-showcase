@@ -43,7 +43,7 @@ export async function publishCheckIn(
     );
     Object.assign(reservationChannel, {
       // dirty hack. mam.ts supports powsrv only with api_key
-      attachFunction: createAttachToTangle(),
+      attachFunction: createAttachToTangle(provider),
     });
     // reservationChannel.EnablePowSrv(true);
     checkInMessage.reservationRoot = reservationChannel.getNextRoot();
