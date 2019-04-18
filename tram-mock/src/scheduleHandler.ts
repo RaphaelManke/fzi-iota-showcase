@@ -12,6 +12,7 @@ export class ScheduleHandler {
   private forward = true;
   private vehicle: Vehicle;
   private pathFinder: PathFinder;
+  private started = false;
   private timeout?: NodeJS.Timer;
 
   constructor(
@@ -54,13 +55,24 @@ export class ScheduleHandler {
     const scheduleDeparture = () =>
       (this.timeout = setTimeout(start, schedule.defaultTransferTime));
     const mock = this.mock;
+    const self = this;
     this.mock.vehicle.addObserver({
       reachedStop() {
-        // TODO vehicle should check in in advance and not when reached stop
-        mock.checkInAtCurrentStop().then(scheduleDeparture);
+        if (self.started) {
+          // TODO vehicle should check in in advance and not when reached stop
+          mock.checkInAtCurrentStop().then(scheduleDeparture);
+        }
       },
     });
     scheduleDeparture();
+    this.started = true;
+  }
+
+  public stopSchedule() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.started = false;
+    }
   }
 
   private getStartNextTrip() {
