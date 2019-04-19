@@ -50,6 +50,8 @@
     "all": false
   },
   "dependencies": {
+    "fzi-iota-showcase-client": "alpha",
+    "fzi-iota-showcase-vehicle-client": "alpha",
     "fzi-iota-showcase-vehicle-mock": "alpha"
   },
   "devDependencies": {
