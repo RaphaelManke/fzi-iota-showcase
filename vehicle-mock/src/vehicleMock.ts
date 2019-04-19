@@ -224,12 +224,12 @@ export class VehicleMock {
     }
   }
 
-  public stopTripAtNextStop() {
+  public stopTripAtNextStop(userId: Trytes) {
     const stop = this.mover.stopDrivingAtNextStop();
     if (stop && this.vehicle.trip) {
-      this.vehicle.trip.boarders.forEach((b) =>
-        b.handler!.updateDestination(stop),
-      );
+      this.vehicle.trip.boarders
+        .filter((b) => b.userId === userId)
+        .forEach((b) => b.updateDestination(stop));
     }
     return stop;
   }

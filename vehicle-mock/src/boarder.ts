@@ -4,7 +4,7 @@ import { BoardingHandler, Sender } from 'fzi-iota-showcase-vehicle-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { Observer } from './observer';
 import { Vehicle } from './vehicle';
-import { Path, PathFinder } from './pathFinder';
+import { Path, PathFinder, Connection } from './pathFinder';
 
 export class Boarder {
   private h?: BoardingHandler;
@@ -12,9 +12,9 @@ export class Boarder {
 
   constructor(
     private readonly vehicle: Vehicle,
-    private readonly userId: Trytes,
+    public readonly userId: Trytes,
     private readonly settlementAddress: Hash,
-    private readonly path: Path,
+    private path: Path,
     private readonly pricePerMeter: number,
     private readonly onTripFinished: (stop: Trytes) => void,
   ) {}
@@ -34,11 +34,7 @@ export class Boarder {
   public onStartDriving() {
     const { price } = this.getPriceDistanceCalculator()(this.destination);
     // send event
-    this.vehicle.tripStarted(
-      this.userId,
-      this.path.connections[this.path.connections.length - 1].to,
-      price,
-    );
+    this.vehicle.tripStarted(this.userId, this.destination, price);
   }
 
   public startBoarding(
@@ -95,6 +91,11 @@ export class Boarder {
     });
   }
 
+  public updateDestination(stop: Trytes) {
+    this.path = getPath(this.path.connections, stop, this.vehicle.info.type);
+    this.handler.updateDestination(stop);
+  }
+
   public tripFinished(stop: Trytes) {
     this.onTripFinished(stop);
     if (this.observer) {
@@ -107,13 +108,7 @@ export class Boarder {
     const type = this.vehicle.info.type;
     const pricePerMeter = this.pricePerMeter;
     return (dest: Trytes) => {
-      let i = 0;
-      const cons = [];
-      do {
-        cons.push(path.connections[i++]);
-      } while (cons[cons.length - 1].to !== dest);
-      const p = new PathFinder(cons);
-      const [route] = p.getPaths(path.connections[0].from, dest, [type]);
+      const route = getPath(path.connections, dest, type);
       const dis = getPathLength(
         route.waypoints.map((pos) => ({
           latitude: pos.lat,
@@ -158,8 +153,11 @@ export class Boarder {
         if (!boardingFinished && amount > 0) {
           // ready to start driving
           boardingFinished = true;
-          vehicle.trip!.destination = destination;
-          vehicle.trip!.path = path;
+          if (!vehicle.trip!.destination) {
+            // only if vehicle did not set path itself
+            vehicle.trip!.destination = destination;
+            vehicle.trip!.path = path;
+          }
           res();
         } else {
           // TODO resume driving if stopped
@@ -185,4 +183,15 @@ export class Boarder {
       },
     };
   }
+}
+
+function getPath(connections: Connection[], dest: Trytes, type: string) {
+  let i = 0;
+  const cons = [];
+  do {
+    cons.push(connections[i++]);
+  } while (cons[cons.length - 1].to !== dest);
+  const p = new PathFinder(cons);
+  const [route] = p.getPaths(connections[0].from, dest, [type]);
+  return route;
 }
