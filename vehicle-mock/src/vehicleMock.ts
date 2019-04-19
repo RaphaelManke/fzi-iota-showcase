@@ -215,10 +215,12 @@ export class VehicleMock {
             }
           });
       } else {
-        throw new Error('Vehicle is not at the start of the given path');
+        return Promise.reject(
+          new Error('Vehicle is not at the start of the given path'),
+        );
       }
     } else {
-      throw new Error('Vehicle is not checked in.');
+      return Promise.reject(new Error('Vehicle is not checked in.'));
     }
   }
 

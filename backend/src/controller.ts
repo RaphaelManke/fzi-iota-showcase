@@ -107,13 +107,23 @@ export class Controller {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
       // TODO check if user and vehicle are at start stop
-      return this.tripStarter.startTrip(
-        v,
-        u,
-        start,
-        destination,
-        intermediateStops,
-      );
+      if (v.info.checkIn && v.info.checkIn.stop === start) {
+        if (u.info.stop === start) {
+          return this.tripStarter.startTrip(
+            v,
+            u,
+            start,
+            destination,
+            intermediateStops,
+          );
+        } else {
+          return Promise.reject(new Error('User isn\'t at start stop.'));
+        }
+      } else {
+        return Promise.reject(
+          new Error('Vehicle isn\'t checked in at start stop.'),
+        );
+      }
     } else {
       return Promise.reject(new Error('Vehicle not found.'));
     }
@@ -196,7 +206,7 @@ export class Controller {
     return this;
   }
 
-  private async initVehicles(parallelCheckIn = false) {
+  private async initVehicles(parallelCheckIn = true) {
     log.info('Initializing all vehicles...');
     const vehicles = [];
     for (const { mock: vm, info } of this.vehicles.values()) {

@@ -31,10 +31,10 @@
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
     "fzi-iota-showcase-client": "alpha",
+    "fzi-iota-showcase-tram-mock": "alpha",
     "fzi-iota-showcase-user-client": "alpha",
     "fzi-iota-showcase-vehicle-client": "alpha",
     "fzi-iota-showcase-vehicle-mock": "alpha",
-    "fzi-iota-showcase-tram-mock": "alpha",
     "minimist": "^1.2.0",
     "socket.io": "^2.2.0"
   },
