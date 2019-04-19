@@ -129,10 +129,10 @@ export class Controller {
     }
   }
 
-  public stopTripOnNextStop(vehicleId: Trytes) {
+  public stopTripOnNextStop(vehicleId: Trytes, userId: Trytes) {
     const v = this.vehicles.get(vehicleId);
     if (v) {
-      return v.mock.stopTripAtNextStop();
+      return v.mock.stopTripAtNextStop(userId);
     } else {
       throw new Error('Vehicle not found');
     }

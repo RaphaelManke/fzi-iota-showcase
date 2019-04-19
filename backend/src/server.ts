@@ -137,6 +137,7 @@ export class Server {
           try {
             const nextStop = this.controller.stopTripOnNextStop(
               user.info.trip.vehicle,
+              user.info.id,
             );
             res.send(nextStop);
           } catch (e) {
