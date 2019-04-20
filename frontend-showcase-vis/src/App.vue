@@ -39,11 +39,4 @@ export default {
 </script>
 
 <style>
-html {
-  overflow: hidden;
-}
-
-#app {
-  height: 100vh;
-}
 </style>

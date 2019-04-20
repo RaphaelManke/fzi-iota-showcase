@@ -35,7 +35,6 @@ export const user: Module<User, RootState> = {
         state.info.trip !== undefined &&
         state.info.trip.vehicleId === data.id
       ) {
-        window.console.log(state.info.trip);
         state.info.position = data.position;
       }
     },
