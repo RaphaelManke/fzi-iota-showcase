@@ -137,6 +137,7 @@ export class Server {
           try {
             const nextStop = this.controller.stopTripOnNextStop(
               user.info.trip.vehicle,
+              user.info.id,
             );
             res.send(nextStop);
           } catch (e) {
@@ -168,19 +169,19 @@ export class Server {
                   this.controller.env.stops.find((f) => f.id === s),
                 )
               ) {
-                try {
-                  this.controller.startTrip(
+                this.controller
+                  .startTrip(
                     vehicle,
                     user,
                     b.start,
                     b.intermediateStops,
                     b.destination,
-                  );
-                  res.send();
-                } catch (e) {
-                  res.status(400);
-                  res.send(e.message || e);
-                }
+                  )
+                  .then(() => res.send())
+                  .catch((reason) => {
+                    res.status(400);
+                    res.send(reason.message || reason);
+                  });
               } else {
                 res.status(404);
                 res.send('Intermediate stop not found');

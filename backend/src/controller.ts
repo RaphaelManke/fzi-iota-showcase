@@ -46,7 +46,7 @@ export class Controller {
     provider: string,
     iota: API = composeAPI({
       provider,
-      attachToTangle: createAttachToTangle(),
+      attachToTangle: createAttachToTangle(provider),
     }),
     mockPayments = false,
     mockMessages = false,
@@ -106,22 +106,33 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      return this.tripStarter.startTrip(
-        v,
-        u,
-        start,
-        destination,
-        intermediateStops,
-      );
+      // TODO check if user and vehicle are at start stop
+      if (v.info.checkIn && v.info.checkIn.stop === start) {
+        if (u.info.stop === start) {
+          return this.tripStarter.startTrip(
+            v,
+            u,
+            start,
+            destination,
+            intermediateStops,
+          );
+        } else {
+          return Promise.reject(new Error('User isn\'t at start stop.'));
+        }
+      } else {
+        return Promise.reject(
+          new Error('Vehicle isn\'t checked in at start stop.'),
+        );
+      }
     } else {
-      return Promise.resolve();
+      return Promise.reject(new Error('Vehicle not found.'));
     }
   }
 
-  public stopTripOnNextStop(vehicleId: Trytes) {
+  public stopTripOnNextStop(vehicleId: Trytes, userId: Trytes) {
     const v = this.vehicles.get(vehicleId);
     if (v) {
-      return v.mock.stopTripAtNextStop();
+      return v.mock.stopTripAtNextStop(userId);
     } else {
       throw new Error('Vehicle not found');
     }
@@ -195,21 +206,24 @@ export class Controller {
     return this;
   }
 
-  private async initVehicles() {
+  private async initVehicles(parallelCheckIn = true) {
     log.info('Initializing all vehicles...');
-    await Promise.all(
-      Array.from(this.vehicles.values()).map(({ mock: vm, info }) =>
-        (async () => {
-          log.info('Init vehicle %s', info.id);
-          await Promise.all([
-            vm.syncTangle().then(() => vm.checkInAtCurrentStop()),
-            vm
-              .setupPayments()
-              .then((ad: AccountData) => (info.balance = ad.balance)),
-          ]);
-        })(),
-      ),
-    );
+    const vehicles = [];
+    for (const { mock: vm, info } of this.vehicles.values()) {
+      log.info('Init vehicle %s', info.id);
+      const p = Promise.all([
+        vm.syncTangle().then(() => vm.checkInAtCurrentStop()),
+        vm
+          .setupPayments()
+          .then((ad: AccountData) => (info.balance = ad.balance)),
+      ]);
+      if (!parallelCheckIn) {
+        await p;
+      }
+      vehicles.push(p);
+    }
+    await Promise.all(vehicles);
+
     log.info('Starting schedules...');
     this.schedules.forEach((s) => {
       const vehicle = Array.from(this.vehicles.values()).find(

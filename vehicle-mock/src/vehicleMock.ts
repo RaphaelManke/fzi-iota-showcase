@@ -18,6 +18,7 @@ import {
   getPaymentSeed,
   BoardingHandler,
   Sender,
+  publishCheckOutMessage,
 } from 'fzi-iota-showcase-vehicle-client';
 import { RAAM } from 'raam.client.js';
 import Kerl from '@iota/kerl';
@@ -41,7 +42,7 @@ export class VehicleMock {
     private provider: string,
     private iota: API = composeAPI({
       provider,
-      attachToTangle: createAttachToTangle(),
+      attachToTangle: createAttachToTangle(provider),
     }),
     private depth = 3,
     private mwm = 14,
@@ -214,19 +215,21 @@ export class VehicleMock {
             }
           });
       } else {
-        throw new Error('Vehicle is not at the start of the given path');
+        return Promise.reject(
+          new Error('Vehicle is not at the start of the given path'),
+        );
       }
     } else {
-      throw new Error('Vehicle is not checked in.');
+      return Promise.reject(new Error('Vehicle is not checked in.'));
     }
   }
 
-  public stopTripAtNextStop() {
+  public stopTripAtNextStop(userId: Trytes) {
     const stop = this.mover.stopDrivingAtNextStop();
     if (stop && this.vehicle.trip) {
-      this.vehicle.trip.boarders.forEach((b) =>
-        b.handler!.updateDestination(stop),
-      );
+      this.vehicle.trip.boarders
+        .filter((b) => b.userId === userId)
+        .forEach((b) => b.updateDestination(stop));
     }
     return stop;
   }
@@ -237,16 +240,22 @@ export class VehicleMock {
 
   public startDriving(onStop?: (stop: Trytes) => void) {
     return new Promise<Trytes>((res, rej) => {
-      this.vehicle.trip!.state = State.DEPARTED;
-      if (this.vehicle.trip && this.vehicle.trip.path) {
-        this.vehicle.trip.boarders
-          .filter((b) => b.start === this.vehicle.trip!.start)
-          .forEach((b) => b.onStartDriving());
-        this.mover
-          .startDriving(this.vehicle.trip.path, (stop) => {
-            this.vehicle.stop = stop;
-            if (onStop) {
-              onStop(stop);
+      if (this.vehicle.trip) {
+        const checkOut = this.mockMessages
+          ? Promise.resolve('')
+          : publishCheckOutMessage(this.vehicle.trip.tripChannel);
+        checkOut
+          .then(() => this.notifyTripDeparted())
+          .then(() => {
+            if (this.vehicle.trip && this.vehicle.trip.path) {
+              return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
+                this.vehicle.stop = stop;
+                if (onStop) {
+                  onStop(stop);
+                }
+              });
+            } else {
+              return Promise.reject(new Error('Destination was not set.'));
             }
           })
           .then((stop) => {
@@ -271,6 +280,18 @@ export class VehicleMock {
         rej(new Error('Destination was not set.'));
       }
     });
+  }
+
+  private notifyTripDeparted(): Promise<void> {
+    if (this.vehicle.trip) {
+      this.vehicle.trip.state = State.DEPARTED;
+      this.vehicle.trip.boarders
+        .filter((b) => b.start === this.vehicle.trip!.start)
+        .forEach((b) => b.onStartDriving());
+      return Promise.resolve();
+    } else {
+      return Promise.reject(new Error('Trip was not set'));
+    }
   }
 
   private mockedBundle(price: number): Bundle {

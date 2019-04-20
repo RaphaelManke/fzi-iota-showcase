@@ -15,7 +15,7 @@ export class Users {
       provider,
       iota = composeAPI({
         provider,
-        attachToTangle: createAttachToTangle(),
+        attachToTangle: createAttachToTangle(provider),
       }),
     }: {
       idSupplier?: () => Trytes;
@@ -44,7 +44,7 @@ export class Users {
     iota: API | undefined = provider
       ? composeAPI({
           provider,
-          attachToTangle: createAttachToTangle(),
+          attachToTangle: createAttachToTangle(provider),
         })
       : undefined,
     mockPayments = false,
