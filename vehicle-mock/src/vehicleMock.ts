@@ -177,59 +177,72 @@ export class VehicleMock {
         if (
           this.vehicle.trip.boarders.length < this.vehicle.info.maxReservations
         ) {
-          const distance = getPathLength(
-            path.waypoints.map((pos) => ({
-              latitude: pos.lat,
-              longitude: pos.lng,
-            })),
-          );
-
-          const price = this.pricePerMeter * distance;
-
-          // use real or mocked payment functions
-          let depositor: (value: number, address: Hash) => Promise<string>;
-          let txReader: (bundleHash: Hash) => Promise<Bundle>;
-          if (this.mockPayments) {
-            depositor = async (value, address) => '';
-            txReader = async (bundleHash) => this.mockedBundle(price);
-          } else {
-            depositor = async (value, address) => {
-              const txTrytes = await this.iota.prepareTransfers(
-                this.vehicle.seed,
-                [{ value, address }],
-              );
-              const txs = await this.iota.sendTrytes(
-                txTrytes,
-                this.depth,
-                this.mwm,
-              );
-              return txs[0].bundle;
-            };
-            txReader = async (bundleHash) =>
-              await this.iota.getBundle(bundleHash);
-          }
-
-          const boarder = new Boarder(
-            this.vehicle,
-            userId,
-            this.nextAddress!,
-            path,
-            this.pricePerMeter,
-            onTripFinished,
-          );
-          this.vehicle.trip.boarders.push(boarder);
-          return boarder
-            .startBoarding(
-              sendToUser,
-              depositor,
-              txReader,
-              setSentVehicleHandler,
+          if (
+            this.allowedDestinations.length === 0 ||
+            this.allowedDestinations.find(
+              (s) => s === path.connections[path.connections.length - 1].from,
             )
-            .then(() => {
-              if (this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING') {
-                this.startDriving();
-              }
-            });
+          ) {
+            const distance = getPathLength(
+              path.waypoints.map((pos) => ({
+                latitude: pos.lat,
+                longitude: pos.lng,
+              })),
+            );
+
+            const price = this.pricePerMeter * distance;
+
+            // use real or mocked payment functions
+            let depositor: (value: number, address: Hash) => Promise<string>;
+            let txReader: (bundleHash: Hash) => Promise<Bundle>;
+            if (this.mockPayments) {
+              depositor = async (value, address) => '';
+              txReader = async (bundleHash) => this.mockedBundle(price);
+            } else {
+              depositor = async (value, address) => {
+                const txTrytes = await this.iota.prepareTransfers(
+                  this.vehicle.seed,
+                  [{ value, address }],
+                );
+                const txs = await this.iota.sendTrytes(
+                  txTrytes,
+                  this.depth,
+                  this.mwm,
+                );
+                return txs[0].bundle;
+              };
+              txReader = async (bundleHash) =>
+                await this.iota.getBundle(bundleHash);
+            }
+
+            const boarder = new Boarder(
+              this.vehicle,
+              userId,
+              this.nextAddress!,
+              path,
+              this.pricePerMeter,
+              onTripFinished,
+            );
+            this.vehicle.trip.boarders.push(boarder);
+            return boarder
+              .startBoarding(
+                sendToUser,
+                depositor,
+                txReader,
+                setSentVehicleHandler,
+              )
+              .then(() => {
+                if (
+                  this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING'
+                ) {
+                  this.startDriving();
+                }
+              });
+          } else {
+            return Promise.reject(
+              new Error('Vehicle does not allow this destination.'),
+            );
+          }
         } else {
           return Promise.reject(
             new Error('Vehicle is booked out. Too many passengers on board.'),
