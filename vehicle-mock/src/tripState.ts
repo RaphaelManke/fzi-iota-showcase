@@ -6,7 +6,6 @@ import {
   Reservation,
 } from 'fzi-iota-showcase-client';
 import { Trytes } from '@iota/core/typings/types';
-import { BoardingHandler } from 'fzi-iota-showcase-vehicle-client';
 import { Boarder } from './boarder';
 import { Path } from './pathFinder';
 

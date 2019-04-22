@@ -29,12 +29,10 @@ import { MamWriter, MAM_MODE } from 'mam.ts';
 import { Boarder } from './boarder';
 
 export class VehicleMock {
-  public allowedDestinations: Trytes[] = [];
   private mover: Mover;
   private masterChannel?: RAAM;
   private currentAddress?: Hash;
   private nextAddress?: Hash;
-  private toOverBoard: Boarder[] = [];
 
   constructor(
     public readonly vehicle: Vehicle,
@@ -101,67 +99,78 @@ export class VehicleMock {
 
   public async checkInAtCurrentStop() {
     if (this.vehicle.stop) {
-      if (!this.masterChannel) {
-        await this.syncTangle();
-      }
-      if (!this.currentAddress) {
-        await this.setupPayments();
-      }
-
-      const nonce = this.generateNonce();
-      const vehicleInfo: VehicleInfo = { ...this.vehicle.info };
-      if (this.allowedDestinations.length > 0) {
-        vehicleInfo.allowedDestinations = this.allowedDestinations;
-      }
-      const checkInMessage: CheckInMessage = {
-        hashedNonce: this.hash(nonce),
-        vehicleId: this.mockMessages
-          ? trits(this.vehicle.seed)
-          : this.masterChannel!.channelRoot,
-        vehicleInfo,
-        tripChannelIndex: this.mockMessages ? 1 : this.masterChannel!.cursor,
-        reservationRate: this.reservationsRate,
-        price: this.pricePerMeter,
-        paymentAddress: this.currentAddress!,
-      };
-      let result: {
-        reservationChannel: MamWriter;
-        tripChannel: RAAM;
-        welcomeMessage: StopWelcomeMessage;
-      };
-      if (!this.mockMessages) {
-        result = await publishCheckIn(
-          this.provider,
-          this.vehicle.seed,
-          this.masterChannel!,
-          this.vehicle.stop,
-          checkInMessage,
-        );
-      } else {
-        result = {
-          reservationChannel: new MamWriter(
-            '',
-            'Z'.repeat(81),
-            MAM_MODE.PUBLIC,
-          ),
-          tripChannel: await RAAM.fromSeed('9', { amount: 2 }),
-          welcomeMessage: {
-            checkInMessageRef: '',
-            tripChannelId: new Int8Array(0),
-          },
-        };
-      }
-      this.vehicle.trip = {
-        ...result,
-        nonce,
-        state: State.CHECKED_IN,
-        checkInMessage,
-        start: this.vehicle.stop,
-        reservations: [],
-        boarders: Array.from(this.toOverBoard),
-      };
-      this.toOverBoard = [];
+      this.checkIn(this.vehicle.stop);
     }
+  }
+
+  public async checkIn(
+    stop: Trytes,
+    index = this.mockMessages ? 1 : this.masterChannel!.cursor,
+    validFrom?: Date,
+    validUntil?: Date,
+    allowedDestinations?: Trytes[],
+  ) {
+    if (!this.masterChannel) {
+      await this.syncTangle();
+    }
+    if (!this.currentAddress) {
+      await this.setupPayments();
+    }
+
+    const nonce = this.generateNonce();
+    const vehicleInfo: VehicleInfo = { ...this.vehicle.info };
+    if (allowedDestinations && allowedDestinations.length > 0) {
+      vehicleInfo.allowedDestinations = allowedDestinations;
+    }
+    const checkInMessage: CheckInMessage = {
+      hashedNonce: this.hash(nonce),
+      vehicleId: this.mockMessages
+        ? trits(this.vehicle.seed)
+        : this.masterChannel!.channelRoot,
+      vehicleInfo,
+      tripChannelIndex: index,
+      reservationRate: this.reservationsRate,
+      price: this.pricePerMeter,
+      paymentAddress: this.currentAddress!,
+    };
+    if (validFrom) {
+      checkInMessage.validFrom = validFrom;
+    }
+    if (validUntil) {
+      checkInMessage.validUntil = validUntil;
+    }
+    let result: {
+      reservationChannel: MamWriter;
+      tripChannel: RAAM;
+      welcomeMessage: StopWelcomeMessage;
+    };
+    if (!this.mockMessages) {
+      result = await publishCheckIn(
+        this.provider,
+        this.vehicle.seed,
+        this.masterChannel!,
+        stop,
+        checkInMessage,
+      );
+    } else {
+      result = {
+        reservationChannel: new MamWriter('', 'Z'.repeat(81), MAM_MODE.PUBLIC),
+        tripChannel: await RAAM.fromSeed('9', { amount: 2 }),
+        welcomeMessage: {
+          checkInMessageRef: '',
+          tripChannelId: new Int8Array(0),
+        },
+      };
+    }
+    this.vehicle.addTrip({
+      ...result,
+      nonce,
+      state: State.CHECKED_IN,
+      checkInMessage,
+      start: stop,
+      reservations: [],
+      boarders: [],
+    });
   }
 
   public startBoarding(
@@ -178,9 +187,11 @@ export class VehicleMock {
           this.vehicle.trip.boarders.length < this.vehicle.info.maxReservations
         ) {
           if (
-            this.allowedDestinations.length === 0 ||
-            this.allowedDestinations.find(
-              (s) => s === path.connections[path.connections.length - 1].from,
+            !this.vehicle.trip.checkInMessage.vehicleInfo ||
+            !this.vehicle.trip.checkInMessage.vehicleInfo.allowedDestinations ||
+            this.vehicle.trip.checkInMessage.vehicleInfo.allowedDestinations.find(
+              (s: Trytes) =>
+                s === path.connections[path.connections.length - 1].from,
             )
           ) {
             const distance = getPathLength(
@@ -294,14 +305,17 @@ export class VehicleMock {
           })
           .then((stop) => {
             this.vehicle.trip!.state = State.FINISHED;
+            const toOverBoard: Boarder[] = [];
             this.vehicle.trip!.boarders.forEach((b) => {
               if (b.destination === stop) {
                 b.tripFinished(stop);
               } else {
-                this.toOverBoard.push(b);
+                toOverBoard.push(b);
               }
             });
+            this.vehicle.advanceTrip(toOverBoard);
             res(stop);
+            // TODO switch this to AUTO_CHECK_IN
             if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
               this.checkInAtCurrentStop();
             }
