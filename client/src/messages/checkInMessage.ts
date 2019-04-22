@@ -19,7 +19,7 @@ export class CheckInMessage {
     public readonly price: number,
     public readonly reservationRate: number,
     public readonly hashedNonce: Hash,
-    public readonly validFrom?: Date,
+    public validFrom?: Date,
     public validUntil?: Date,
     public reservationRoot?: Hash,
     public readonly vehicleInfo?: VehicleInfo,
