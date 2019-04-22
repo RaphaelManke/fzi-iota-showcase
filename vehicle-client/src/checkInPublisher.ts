@@ -48,32 +48,35 @@ export async function publishCheckIn(
     // reservationChannel.EnablePowSrv(true);
     checkInMessage.reservationRoot = reservationChannel.getNextRoot();
     log.debug('Created reservation root');
+    log.silly('\'%s\'', checkInMessage.reservationRoot);
 
-    const [txs, tripChannel] = await Promise.all([
-      await publishCheckInMessage(masterChannel.iota, address, checkInMessage, {
+    const [checkInTx, tripChannel] = await Promise.all([
+      publishCheckInMessage(masterChannel.iota, address, checkInMessage, {
         depth,
         mwm,
         tag: getDateTag(date),
       }),
-      await createTripChannel(
-        seed,
-        masterChannel,
-        checkInMessage.tripChannelIndex,
-      ),
+      createTripChannel(seed, masterChannel, checkInMessage.tripChannelIndex),
     ]);
 
     const welcomeMessage: StopWelcomeMessage = {
-      checkInMessageRef: txs[0].hash,
+      checkInMessageRef: checkInTx.hash,
       tripChannelId: tripChannel.channelRoot,
     };
-    await publishWelcomeMessage(
+    const welcomeMsgBundle = await publishWelcomeMessage(
       masterChannel,
       checkInMessage.tripChannelIndex,
       welcomeMessage,
       { password: checkInMessage.password, depth, mwm },
     );
 
-    return { reservationChannel, tripChannel, welcomeMessage };
+    return {
+      reservationChannel,
+      tripChannel,
+      welcomeMessage,
+      checkInTx,
+      welcomeMsgBundle,
+    };
   } else {
     throw new Error(
       'Master channel must be initialized with an instance of IOTA API.',
@@ -104,8 +107,10 @@ async function publishCheckInMessage(
     ];
     try {
       const trytes = await iota.prepareTransfers('9'.repeat(81), transfers);
-      const result = await iota.sendTrytes(trytes, depth, mwm);
-      log.debug('Published CheckInMessage');
+      const txs = await iota.sendTrytes(trytes, depth, mwm);
+      const result = txs[0];
+      log.debug('Published CheckInMessage.');
+      log.silly('Tx Hash: \'%s\'', result.hash);
       return result;
     } catch (e) {
       throw new Exception('Publishing CheckInMessage failed', e);
@@ -147,6 +152,7 @@ async function publishWelcomeMessage(
     nextRoot: welcomeMessage.tripChannelId,
     messagePassword: password,
   });
-  log.debug('Published WelcomeMessage');
+  log.debug('Published WelcomeMessage.');
+  log.silly('Bundle: \'%s\'', result);
   return result;
 }

@@ -43,7 +43,7 @@ export async function readVehicle(
   if (root) {
     const [vehicleInfo, { messages: trips }] = await Promise.all([
       readMetaInfoStream(provider, root),
-      await masterChannel.syncChannel(),
+      masterChannel.syncChannel(),
     ]);
     return new Vehicle(vehicleId, vehicleInfo);
   } else {
