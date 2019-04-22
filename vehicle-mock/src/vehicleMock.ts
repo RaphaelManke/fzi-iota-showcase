@@ -9,6 +9,7 @@ import {
   CheckInMessage,
   StopWelcomeMessage,
   Exception,
+  VehicleInfo,
 } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
@@ -28,6 +29,7 @@ import { MamWriter, MAM_MODE } from 'mam.ts';
 import { Boarder } from './boarder';
 
 export class VehicleMock {
+  public allowedDestinations: Trytes[] = [];
   private mover: Mover;
   private masterChannel?: RAAM;
   private currentAddress?: Hash;
@@ -107,12 +109,16 @@ export class VehicleMock {
       }
 
       const nonce = this.generateNonce();
+      const vehicleInfo: VehicleInfo = { ...this.vehicle.info };
+      if (this.allowedDestinations.length > 0) {
+        vehicleInfo.allowedDestinations = this.allowedDestinations;
+      }
       const checkInMessage: CheckInMessage = {
         hashedNonce: this.hash(nonce),
         vehicleId: this.mockMessages
           ? trits(this.vehicle.seed)
           : this.masterChannel!.channelRoot,
-        vehicleInfo: this.vehicle.info,
+        vehicleInfo,
         tripChannelIndex: this.mockMessages ? 1 : this.masterChannel!.cursor,
         reservationRate: this.reservationsRate,
         price: this.pricePerMeter,
@@ -167,53 +173,68 @@ export class VehicleMock {
   ): Promise<void> {
     if (this.vehicle.trip) {
       if (this.vehicle.stop === path.connections[0].from) {
-        const distance = getPathLength(
-          path.waypoints.map((pos) => ({
-            latitude: pos.lat,
-            longitude: pos.lng,
-          })),
-        );
+        // TODO adjust if reservations are implemented
+        if (
+          this.vehicle.trip.boarders.length < this.vehicle.info.maxReservations
+        ) {
+          const distance = getPathLength(
+            path.waypoints.map((pos) => ({
+              latitude: pos.lat,
+              longitude: pos.lng,
+            })),
+          );
 
-        const price = this.pricePerMeter * distance;
+          const price = this.pricePerMeter * distance;
 
-        // use real or mocked payment functions
-        let depositor: (value: number, address: Hash) => Promise<string>;
-        let txReader: (bundleHash: Hash) => Promise<Bundle>;
-        if (this.mockPayments) {
-          depositor = async (value, address) => '';
-          txReader = async (bundleHash) => this.mockedBundle(price);
+          // use real or mocked payment functions
+          let depositor: (value: number, address: Hash) => Promise<string>;
+          let txReader: (bundleHash: Hash) => Promise<Bundle>;
+          if (this.mockPayments) {
+            depositor = async (value, address) => '';
+            txReader = async (bundleHash) => this.mockedBundle(price);
+          } else {
+            depositor = async (value, address) => {
+              const txTrytes = await this.iota.prepareTransfers(
+                this.vehicle.seed,
+                [{ value, address }],
+              );
+              const txs = await this.iota.sendTrytes(
+                txTrytes,
+                this.depth,
+                this.mwm,
+              );
+              return txs[0].bundle;
+            };
+            txReader = async (bundleHash) =>
+              await this.iota.getBundle(bundleHash);
+          }
+
+          const boarder = new Boarder(
+            this.vehicle,
+            userId,
+            this.nextAddress!,
+            path,
+            this.pricePerMeter,
+            onTripFinished,
+          );
+          this.vehicle.trip.boarders.push(boarder);
+          return boarder
+            .startBoarding(
+              sendToUser,
+              depositor,
+              txReader,
+              setSentVehicleHandler,
+            )
+            .then(() => {
+              if (this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING') {
+                this.startDriving();
+              }
+            });
         } else {
-          depositor = async (value, address) => {
-            const txTrytes = await this.iota.prepareTransfers(
-              this.vehicle.seed,
-              [{ value, address }],
-            );
-            const txs = await this.iota.sendTrytes(
-              txTrytes,
-              this.depth,
-              this.mwm,
-            );
-            return txs[0].bundle;
-          };
-          txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
+          return Promise.reject(
+            new Error('Vehicle is booked out. Too many passengers on board.'),
+          );
         }
-
-        const boarder = new Boarder(
-          this.vehicle,
-          userId,
-          this.nextAddress!,
-          path,
-          this.pricePerMeter,
-          onTripFinished,
-        );
-        this.vehicle.trip.boarders.push(boarder);
-        return boarder
-          .startBoarding(sendToUser, depositor, txReader, setSentVehicleHandler)
-          .then(() => {
-            if (this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING') {
-              this.startDriving();
-            }
-          });
       } else {
         return Promise.reject(
           new Error('Vehicle is not at the start of the given path'),
