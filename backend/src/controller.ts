@@ -106,7 +106,6 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      // TODO check if user and vehicle are at start stop
       if (
         v.info.checkIns.find(({ message, stop }) => stop === start) &&
         v.info.stop === start

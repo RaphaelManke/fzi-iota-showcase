@@ -187,13 +187,15 @@ export class VehicleMock {
           this.vehicle.trip.boarders.length < this.vehicle.info.maxReservations
         ) {
           if (
-            !this.vehicle.trip.checkInMessage.vehicleInfo ||
-            !this.vehicle.trip.checkInMessage.vehicleInfo.allowedDestinations ||
-            this.vehicle.trip.checkInMessage.vehicleInfo.allowedDestinations.find(
-              (s: Trytes) =>
-                s === path.connections[path.connections.length - 1].from,
+            this.isDestinationAllowed(
+              path.connections[path.connections.length - 1].to,
             )
           ) {
+            if (this.vehicle.trip.boarders.find((b) => b.userId === userId)) {
+              return Promise.reject(
+                new Error('User with this id already boarded.'),
+              );
+            }
             const distance = getPathLength(
               path.waypoints.map((pos) => ({
                 latitude: pos.lat,
@@ -328,6 +330,16 @@ export class VehicleMock {
         rej(new Error('Destination was not set.'));
       }
     });
+  }
+
+  private isDestinationAllowed(dest: Trytes) {
+    const vehicleInfo = this.vehicle.trip.checkInMessage.vehicleInfo;
+    return (
+      !vehicleInfo ||
+      !vehicleInfo.allowedDestinations ||
+      vehicleInfo.allowedDestinations.length === 0 ||
+      vehicleInfo.allowedDestinations.find((s: Trytes) => s === dest)
+    );
   }
 
   private notifyTripDeparted(): Promise<void> {
