@@ -195,7 +195,9 @@ export default {
             }
           })
           .catch(function(response) {
-            window.console.log(response);
+            if (response.status === 400) {
+              // wait for vehicle
+            } else window.console.log(response);
           });
       } else {
         this.showNoRouteAlert();

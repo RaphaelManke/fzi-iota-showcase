@@ -235,7 +235,9 @@ export default {
           .post(this.$hostname + "/trip", trip)
           .catch(function(response) {
             this.refreshRoutes();
-            window.console.log(response);
+            if (response.status === 400) {
+              // wait for vehicle
+            } else window.console.log(response);
             alert(
               "Trip does not seem to be valid anymore. Please select another route!"
             );
