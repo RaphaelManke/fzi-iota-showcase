@@ -212,7 +212,12 @@ export class Controller {
     for (const { mock: vm, info } of this.vehicles.values()) {
       log.info('Init vehicle %s', info.id);
       const p = Promise.all([
-        vm.syncTangle().then(() => vm.checkInAtCurrentStop()),
+        vm.syncTangle().then(() => {
+          // TODO switch this to AUTO_CHECK_IN
+          if (info.info.driveStartingPolicy !== 'MANUAL') {
+            vm.checkInAtCurrentStop();
+          }
+        }),
         vm
           .setupPayments()
           .then((ad: AccountData) => (info.balance = ad.balance)),

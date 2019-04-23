@@ -14,11 +14,11 @@ export async function addMetaInfo(
   provider: string,
   seed: string,
   info: any,
-): Promise<{ root: Hash; txs: Transaction[] }> {
+): Promise<{ root: Hash; bundle: string }> {
   const infoChannel = await createMetaInfoWriter(provider, seed);
   await infoChannel.catchUpThroughNetwork();
   const root: Hash = infoChannel.getNextRoot();
-  return { root, txs: await publishMetaInfo(infoChannel, info) };
+  return { root, bundle: await publishMetaInfo(infoChannel, info) };
 }
 
 export async function publishVehicle(
@@ -34,18 +34,30 @@ export async function publishVehicle(
   masterChannel: RAAM;
   metaInfoChannelRoot: Hash;
   metaInfoChannel: MamWriter;
+  metaInfoRootBundle: Hash;
+  metaInfoBundle: Hash;
   iota: API;
 }> {
   const metaInfoChannel = createMetaInfoWriter(provider, seed);
   const metaInfoChannelRoot: Hash = metaInfoChannel.getNextRoot();
 
-  const [{ hash: txHash, masterChannel }, tx] = await Promise.all([
+  const [
+    { metaInfoRootBundle, masterChannel },
+    metaInfoBundle,
+  ] = await Promise.all([
     createMasterChannel(iota, seed, capacity).then((channel) =>
       publishMetaInfoRoot(channel, metaInfoChannelRoot),
     ),
     publishMetaInfo(metaInfoChannel, vehicleInfo),
   ]);
-  return { masterChannel, metaInfoChannelRoot, metaInfoChannel, iota };
+  return {
+    masterChannel,
+    metaInfoChannelRoot,
+    metaInfoChannel,
+    iota,
+    metaInfoRootBundle,
+    metaInfoBundle,
+  };
 }
 
 export async function createMasterChannel(
@@ -65,19 +77,22 @@ export async function createMasterChannel(
 export async function publishMetaInfoRoot(
   masterChannel: RAAM,
   root: string,
-): Promise<{ hash: Hash; masterChannel: RAAM }> {
-  const hash = await masterChannel.publish(root);
-  log.debug('Published metaInfo root');
-  return { hash, masterChannel };
+): Promise<{ metaInfoRootBundle: Hash; masterChannel: RAAM }> {
+  const metaInfoRootBundle = await masterChannel.publish(root);
+  log.debug('Published metaInfo root.');
+  log.silly('Bundle: \'%s\'', metaInfoRootBundle);
+  return { metaInfoRootBundle, masterChannel };
 }
 
 async function publishMetaInfo(
   writer: MamWriter,
   info: VehicleInfo,
-): Promise<Transaction[]> {
+): Promise<string> {
   const txs = await writer.createAndAttach(JSON.stringify({ put: info }));
-  log.debug('Published metaInfo');
-  return txs;
+  const result = txs[0].bundle;
+  log.debug('Published metaInfo.');
+  log.silly('Bundle: \'%s\'', result);
+  return result;
 }
 
 function createMetaInfoWriter(provider: string, seed: string) {

@@ -3,9 +3,10 @@ import { Observer } from './observer';
 import { Position } from './position';
 import { TripState } from './tripState';
 import { DriveStartingPolicy } from 'fzi-iota-showcase-client';
+import { Boarder } from './boarder';
 
 export class Vehicle {
-  private currentTrip?: TripState;
+  private trips: TripState[] = [];
   private mStop?: Trytes;
   private mPosition: Position;
   private observers = new Map<Partial<Observer>, Observer>();
@@ -29,27 +30,30 @@ export class Vehicle {
   }
 
   get trip() {
-    return this.currentTrip;
+    return this.trips[0];
   }
 
-  set trip(trip: TripState | undefined) {
-    this.currentTrip = trip;
-    if (trip) {
+  public addTrip(trip: TripState) {
+    this.trips.push(trip);
+    Promise.resolve(
+      this.observers.forEach((o) => o.checkedIn(trip.start, trip.checkInMessage)),
+    );
+  }
+
+  public tripStarted(userId: Trytes, destination: Trytes, price: number) {
+    if (this.trip) {
       Promise.resolve(
         this.observers.forEach((o) =>
-          o.checkedIn(trip.start, trip.checkInMessage),
+          o.tripStarted(userId, this.trip.start, destination, price),
         ),
       );
     }
   }
 
-  public tripStarted(userId: Trytes, destination: Trytes, price: number) {
-    if (this.currentTrip) {
-      Promise.resolve(
-        this.observers.forEach((o) =>
-          o.tripStarted(userId, this.currentTrip!.start, destination, price),
-        ),
-      );
+  public advanceTrip(toOverBoard: Boarder[]) {
+    this.trips.splice(0, 1);
+    if (this.trip) {
+      this.trip.boarders = Array.from(toOverBoard);
     }
   }
 
