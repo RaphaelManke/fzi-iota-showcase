@@ -34,6 +34,8 @@ export class MockConstructor {
           : 'AFTER_BOARDING',
         maxReservations: v.maxReservations ? v.maxReservations : 1,
       },
+      trips: [],
+      checkIns: [],
       name: v.name,
       position: this.stops.get(v.stop)!.position,
       balance: 0,
@@ -43,16 +45,18 @@ export class MockConstructor {
 
     const e: Observer = {
       checkedIn(stop, checkInMessage) {
-        info.checkIn = { stop, message: checkInMessage };
+        info.checkIns.push({ stop, message: checkInMessage });
         events.emit('CheckIn', { stopId: stop, vehicleId: info.id });
       },
 
       posUpdated(pos) {
         info.position = pos;
+        info.stop = undefined;
         events.emit('PosUpdated', { id: info.id, position: pos });
       },
 
       reachedStop(stop) {
+        info.stop = stop;
         events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
       },
       tripStarted(userId, start, destination, price) {
@@ -65,10 +69,10 @@ export class MockConstructor {
         });
       },
       transactionReceived(amount, user) {
-        events.emit('TransactionIssued', { from: user, to: info.id, amount });
+        events.emit('PaymentIssued', { from: user, to: info.id, amount });
       },
       transactionSent(amount, user) {
-        events.emit('TransactionIssued', { from: info.id, to: user, amount });
+        events.emit('PaymentIssued', { from: info.id, to: user, amount });
       },
     };
 

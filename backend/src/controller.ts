@@ -5,7 +5,7 @@ import {
   TripStarted,
   TripFinished,
   PosUpdated,
-  TransactionIssued,
+  PaymentIssued,
 } from './events';
 import { EnvironmentInfo, Stop, Connection, User } from './envInfo';
 import { Users } from './users';
@@ -107,7 +107,10 @@ export class Controller {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
       // TODO check if user and vehicle are at start stop
-      if (v.info.checkIn && v.info.checkIn.stop === start) {
+      if (
+        v.info.checkIns.find(({ message, stop }) => stop === start) &&
+        v.info.stop === start
+      ) {
         if (u.info.stop === start) {
           return this.tripStarter.startTrip(
             v,
@@ -158,8 +161,14 @@ export class Controller {
         vehicle: event.vehicleId,
       };
       if (v) {
-        v.info.checkIn = undefined;
-        v.info.trip = trip;
+        const index = v.info.checkIns.findIndex(
+          ({ message, stop }) => stop === event.start,
+        );
+        if (index !== -1) {
+          // remove checkIn for this stop when departed. TODO send proper departed message
+          v.info.checkIns.splice(index, 1);
+        }
+        v.info.trips.push(trip);
       }
       const u = this.users.getById(event.userId);
       if (u) {
@@ -171,7 +180,10 @@ export class Controller {
     this.events.on('TripFinished', (event: TripFinished) => {
       const v = this.vehicles.get(event.vehicleId);
       if (v) {
-        v.info.trip = undefined;
+        const index = v.info.trips.findIndex((t) => t.user === event.userId);
+        if (index !== -1) {
+          v.info.trips.splice(index, 1);
+        }
       }
       const u = this.users.getById(event.userId);
       if (u) {
@@ -183,14 +195,14 @@ export class Controller {
     this.events.on('PosUpdated', (event: PosUpdated) => {
       const v = this.vehicles.get(event.id);
       if (v) {
-        if (v.info.trip) {
-          const u = this.users.getById(v.info.trip.user);
-          u!.info.position = event.position;
-        }
+        v.info.trips
+          .map((t) => this.users.getById(t.user))
+          .filter((u) => u !== undefined)
+          .forEach((u) => (u!.info.position = event.position));
       }
     });
 
-    this.events.on('TransactionIssued', (event: TransactionIssued) => {
+    this.events.on('PaymentIssued', (event: PaymentIssued) => {
       const from =
         this.users.getById(event.from) || this.vehicles.get(event.from);
       if (from) {

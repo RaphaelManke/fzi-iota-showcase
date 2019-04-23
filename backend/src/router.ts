@@ -4,6 +4,7 @@ import { VehicleInfo } from './vehicleInfo';
 import { Trytes } from '@iota/core/typings/types';
 import { RouteInfo, Section } from './routeInfo';
 import { getPathLength } from 'geolib';
+import { CheckInMessage } from 'fzi-iota-showcase-client';
 
 export class Router {
   private pathFinder: PathFinder;
@@ -68,16 +69,16 @@ export class Router {
   ): Section[][] {
     const c = remainingConnections[0];
     const vehicles = this.vehicles
-      .filter((v) => v.checkIn)
-      .filter((v) => v.checkIn!.stop === c.from)
-      .filter((v) => v.info.type === c.type);
+      .filter((v) => v.info.type === c.type)
+      .filter((v) => findCheckIn(c, v) !== undefined);
 
     const distance = getPathLength(
       c.path.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
     const sections = vehicles.map(
       (v): Section => {
-        const validFrom = v.checkIn!.message.validFrom;
+        const checkIn = findCheckIn(c, v)!;
+        const validFrom = checkIn.validFrom;
         const departure = validFrom
           ? validFrom.getTime() > start.getTime()
             ? validFrom
@@ -88,7 +89,7 @@ export class Router {
 
         return {
           vehicle: { id: v.id, type: v.info.type },
-          price: v.checkIn!.message.price * distance,
+          price: checkIn.price * distance,
           from: c.from,
           to: c.to,
           intermediateStops: c.intermediateStops,
@@ -114,6 +115,21 @@ export class Router {
       return result;
     }
   }
+}
+
+function findCheckIn(
+  c: Connection,
+  v: VehicleInfo,
+): CheckInMessage | undefined {
+  const r = v.checkIns.find(
+    ({ message: { vehicleInfo }, stop }) =>
+      stop === c.from &&
+      (!vehicleInfo ||
+        !vehicleInfo.allowedDestinations ||
+        vehicleInfo.allowedDestinations.length === 0 ||
+        vehicleInfo.allowedDestinations.find((s: Trytes) => c.to)),
+  );
+  return r ? r.message : undefined;
 }
 
 interface ReducedConnection extends Connection {

@@ -6,6 +6,7 @@ import {
   Connection,
 } from 'fzi-iota-showcase-vehicle-mock';
 import { log } from 'fzi-iota-showcase-client';
+import { getPathLength } from 'geolib';
 
 export class ScheduleHandler {
   private current = 0;
@@ -14,6 +15,8 @@ export class ScheduleHandler {
   private pathFinder: PathFinder;
   private started = false;
   private timeout?: NodeJS.Timer;
+  private startedCheckIns: Array<Promise<any>> = [];
+  private tripIndex?: number;
 
   constructor(
     private mock: VehicleMock,
@@ -43,7 +46,8 @@ export class ScheduleHandler {
     this.pathFinder = new PathFinder(cons);
   }
 
-  public startSchedule() {
+  public startSchedule(startingIndex = 1) {
+    this.tripIndex = startingIndex;
     while (this.schedule.stops[this.current] !== this.vehicle.stop) {
       this.current++;
       if (this.current >= this.schedule.stops.length) {
@@ -51,20 +55,21 @@ export class ScheduleHandler {
       }
     }
     const schedule = this.schedule;
-    const start = this.getStartNextTrip();
+    const startNextTrip = this.getStartNextTrip();
     const scheduleDeparture = () =>
-      (this.timeout = setTimeout(start, schedule.defaultTransferTime));
+      (this.timeout = setTimeout(startNextTrip, schedule.defaultTransferTime));
     const mock = this.mock;
     const self = this;
     this.mock.vehicle.addObserver({
       reachedStop() {
         if (self.started) {
-          // TODO vehicle should check in in advance and not when reached stop
-          mock.checkInAtCurrentStop().then(scheduleDeparture);
+          scheduleDeparture();
         }
       },
     });
-    scheduleDeparture();
+
+    this.getPublishSchedule(this)();
+    this.startedCheckIns.shift()!.then(scheduleDeparture);
     this.started = true;
   }
 
@@ -75,25 +80,71 @@ export class ScheduleHandler {
     }
   }
 
+  private getPublishSchedule(self = this) {
+    return () => {
+      const schedule = self.schedule;
+      // check into all stops until vehicle reaches current stops again
+      let i = self.current;
+      let forward = self.forward;
+      let start = new Date();
+      while (
+        self.startedCheckIns.length === 0 ||
+        !(i === self.current && forward === self.forward)
+      ) {
+        const stop = schedule.stops[i];
+        const departure = new Date(
+          start.getTime() + schedule.defaultTransferTime,
+        );
+        self.startedCheckIns.push(
+          self.mock.checkIn(
+            stop,
+            self.tripIndex!++,
+            start,
+            departure,
+            self.getDests(i, forward),
+          ),
+        );
+        ({ current: i, forward } = getNextIndex(i, schedule, forward));
+        const [p] = self.pathFinder.getPaths(stop, schedule.stops[i], [
+          self.vehicle.info.type,
+        ]);
+        const distance = getPathLength(
+          p.waypoints.map((pos) => ({
+            latitude: pos.lat,
+            longitude: pos.lng,
+          })),
+        );
+        start = new Date(
+          departure.getTime() + distance / self.vehicle.info.speed,
+        );
+      }
+    };
+  }
+
+  private getDests(i: number, forward: boolean) {
+    const from = this.schedule.stops.slice(i + 1, this.schedule.stops.length);
+    const upTo = this.schedule.stops.slice(0, i);
+    return this.schedule.mode === 'TURNING'
+      ? forward
+        ? from
+        : upTo
+      : [...from, ...upTo];
+  }
+
   private getStartNextTrip() {
     const self = this;
-    return () => {
+    return async () => {
+      if (self.startedCheckIns.length === 0) {
+        self.getPublishSchedule(self)();
+      }
+      await self.startedCheckIns.shift(); // wait until checkIn for current stop resolves
       if (self.vehicle.trip) {
-        if (self.current === 0 && self.schedule.mode === 'TURNING') {
-          self.current = 1;
-          self.forward = true;
-        } else {
-          if (self.current === self.schedule.stops.length - 1) {
-            if (self.schedule.mode === 'TURNING') {
-              self.current--;
-              self.forward = false;
-            } else {
-              self.current = 0;
-            }
-          } else {
-            self.current += self.forward ? 1 : -1;
-          }
-        }
+        ({ current: self.current, forward: self.forward } = getNextIndex(
+          self.current,
+          self.schedule,
+          self.forward,
+        ));
+
         const nextStop = self.schedule.stops[self.current];
         const [path] = self.pathFinder.getPaths(self.vehicle.stop!, nextStop, [
           self.vehicle.info.type,
@@ -108,4 +159,27 @@ export class ScheduleHandler {
       }
     };
   }
+}
+
+function getNextIndex(
+  current: number,
+  schedule: ScheduleDescription,
+  forward: boolean,
+) {
+  if (current === 0 && schedule.mode === 'TURNING') {
+    current = 1;
+    forward = true;
+  } else {
+    if (current === schedule.stops.length - 1) {
+      if (schedule.mode === 'TURNING') {
+        current--;
+        forward = false;
+      } else {
+        current = 0;
+      }
+    } else {
+      current += forward ? 1 : -1;
+    }
+  }
+  return { current, forward };
 }
