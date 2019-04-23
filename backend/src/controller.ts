@@ -13,7 +13,11 @@ import { VehicleDescription } from './vehicleImporter';
 import { Trytes } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
-import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
+import {
+  createAttachToTangle,
+  log,
+  CheckInMessage,
+} from 'fzi-iota-showcase-client';
 import { VehicleMock } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
@@ -107,7 +111,10 @@ export class Controller {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
       if (
-        v.info.checkIns.find(({ message, stop }) => stop === start) &&
+        v.info.checkIns.find(
+          ({ message, stop }) =>
+            stop === start && this.destAllowed(message, destination),
+        ) &&
         v.info.stop === start
       ) {
         if (u.info.stop === start) {
@@ -161,7 +168,8 @@ export class Controller {
       };
       if (v) {
         const index = v.info.checkIns.findIndex(
-          ({ message, stop }) => stop === event.start,
+          ({ message, stop }) =>
+            stop === event.start && this.destAllowed(message, event.destination),
         );
         if (index !== -1) {
           // remove checkIn for this stop when departed. TODO send proper departed message
@@ -216,6 +224,16 @@ export class Controller {
     await this.initVehicles();
     return this;
   }
+
+  private destAllowed = (
+    { vehicleInfo }: CheckInMessage,
+    destination: Trytes,
+  ) =>
+    !vehicleInfo ||
+    !vehicleInfo.allowedDestinations ||
+    vehicleInfo.allowedDestinations.length === 0 ||
+    vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
+      undefined
 
   private async initVehicles(parallelCheckIn = true) {
     log.info('Initializing all vehicles...');
