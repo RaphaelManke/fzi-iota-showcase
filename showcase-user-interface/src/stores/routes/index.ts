@@ -6,7 +6,8 @@ export const routes: Module<RouteStore, RootState> = {
   state: {
     routesAvailable: [],
     routeSelectedIndex: -1,
-    routeSelected: undefined
+    routeSelected: undefined,
+    trip: undefined
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
@@ -29,11 +30,19 @@ export const routes: Module<RouteStore, RootState> = {
       state.routeSelectedIndex = -1;
       state.routesAvailable = [];
     },
-    SOCKET_PosUpdated(state: any, data: any) {
-      state.routeSelected.sections.find(
-        (sec: any) => sec.vehicle.id === data.id
-      ).passed_count++;
-      state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
+    SOCKET_PosUpdated(state: any) {
+      if (state.trip) {
+        state.routeSelected.sections.find(
+          (sec: any) => sec.vehicle.id === state.trip.vehicleId
+        ).passed_count++;
+        state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
+      }
+    },
+    SOCKET_TripStarted(state: any, trip: any) {
+      state.trip = trip;
+    },
+    SOCKET_TripFinished(state: any) {
+      state.trip = undefined;
     }
   },
   getters: {
