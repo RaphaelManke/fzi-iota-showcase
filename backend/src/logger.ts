@@ -15,7 +15,7 @@ export function enableLogging(
       case 'Logout':
         format = { skip: 'id', entity: 'User' };
         break;
-      case 'TransactionIssued':
+      case 'PaymentIssued':
         format = {
           skip: 'from',
           entity: isUser(data.from) ? 'User' : 'Vehicle',
@@ -88,7 +88,7 @@ bgs.set('Login', colors.bgMagenta);
 bgs.set('ReachedStop', colors.bgYellow);
 bgs.set('CheckIn', colors.bgWhite);
 bgs.set('BoardingStarted', colors.bgBlue);
-bgs.set('TransactionIssued', colors.bgCyan);
+bgs.set('PaymentIssued', colors.bgCyan);
 bgs.set('TripStarted', colors.bgGreen);
 bgs.set('TripFinished', colors.bgRed);
 bgs.set('Logout', colors.bgRed);

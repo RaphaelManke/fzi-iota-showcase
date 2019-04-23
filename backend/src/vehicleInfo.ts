@@ -7,7 +7,8 @@ export interface VehicleInfo {
   name: string;
   id: Trytes;
   position: Position;
-  checkIn?: { stop: Trytes; message: CheckInMessage };
-  trip?: Trip;
+  stop?: Trytes;
+  checkIns: Array<{ stop: Trytes; message: CheckInMessage }>;
+  trips: Trip[];
   balance: number;
 }
