@@ -56,8 +56,8 @@
       <b-list-group-item v-for="event in events" class="d-flex justify-content-between align-items-center">
           <div v-if="event.type==='tripStarted'">Trip from {{getStop(event.info.start).name}} to {{getStop(event.info.destination).name}} started</div>
           <div v-if="event.type==='tripFinished'">Arrived at {{getStop(event.info.destination).name}}</div>
-          <div v-if="event.type==='payment'">{{formatIota(event.info.amount)}} transfered to {{getVehicleById(event.info.to).name}}</div>
-          <b-badge variant="primary" pill>{{event.time}}</b-badge>
+          <div v-if="event.type==='payment'"><b-badge variant="primary" pill>{{formatIota(event.info.amount)}}<img src="assets/images/iota.png"/></b-badge> transfered to {{getVehicleById(event.info.to).name}}</div>
+          <b-badge variant="light" pill>{{event.time}}</b-badge>
       </b-list-group-item>
     </b-list-group>
     </b-col>
