@@ -5,7 +5,7 @@
       <map-visu/>
       </b-col>
       <b-col>
-      <event-list />
+      <route-list />
       </b-col>
     </b-row>
     <tangle-panel style="height: 25vh"/>
@@ -17,13 +17,13 @@ import { Component, Vue } from "vue-property-decorator";
 
 // components
 import MapVisu from "./components/MapVisu.vue";
-import EventList from "./components/EventList.vue";
+import RouteList from "./components/RouteList.vue";
 import TanglePanel from "./components/TanglePanel.vue";
 
 export default {
   components: {
     MapVisu,
-    EventList,
+    RouteList,
     TanglePanel
   },
   sockets: {
