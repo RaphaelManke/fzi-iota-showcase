@@ -101,7 +101,7 @@ export class ScheduleHandler {
             self.tripIndex!++,
             start,
             departure,
-            self.getDests(i, forward),
+            getDests(i, forward, schedule),
           ),
         );
         ({ current: i, forward } = getNextIndex(i, schedule, forward));
@@ -119,16 +119,6 @@ export class ScheduleHandler {
         );
       }
     };
-  }
-
-  private getDests(i: number, forward: boolean) {
-    const from = this.schedule.stops.slice(i + 1, this.schedule.stops.length);
-    const upTo = this.schedule.stops.slice(0, i);
-    return this.schedule.mode === 'TURNING'
-      ? forward
-        ? from
-        : upTo
-      : [...from, ...upTo];
   }
 
   private getStartNextTrip() {
@@ -168,12 +158,10 @@ function getNextIndex(
 ) {
   if (current === 0 && schedule.mode === 'TURNING') {
     current = 1;
-    forward = true;
   } else {
     if (current === schedule.stops.length - 1) {
       if (schedule.mode === 'TURNING') {
         current--;
-        forward = false;
       } else {
         current = 0;
       }
@@ -181,5 +169,14 @@ function getNextIndex(
       current += forward ? 1 : -1;
     }
   }
+  if (current === 0 || current === schedule.stops.length - 1) {
+    forward = !forward;
+  }
   return { current, forward };
+}
+
+function getDests(i: number, forward: boolean, schedule: ScheduleDescription) {
+  const from = schedule.stops.slice(i + 1, schedule.stops.length);
+  const upTo = schedule.stops.slice(0, i);
+  return schedule.mode === 'RING' ? [...from, ...upTo] : forward ? from : upTo;
 }
