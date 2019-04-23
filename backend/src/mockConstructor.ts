@@ -49,9 +49,13 @@ export class MockConstructor {
         events.emit('CheckIn', { stopId: stop, vehicleId: info.id });
       },
 
+      departed(stop, destination) {
+        info.stop = undefined;
+        events.emit('Departed', { vehicleId: info.id, stop, destination });
+      },
+
       posUpdated(pos) {
         info.position = pos;
-        info.stop = undefined;
         events.emit('PosUpdated', { id: info.id, position: pos });
       },
 

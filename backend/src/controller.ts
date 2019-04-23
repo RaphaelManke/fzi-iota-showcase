@@ -6,6 +6,7 @@ import {
   TripFinished,
   PosUpdated,
   PaymentIssued,
+  Departed,
 } from './events';
 import { EnvironmentInfo, Stop, Connection, User } from './envInfo';
 import { Users } from './users';
@@ -159,6 +160,20 @@ export class Controller {
       this.env.users.splice(index, 1);
     });
 
+    this.events.on('Departed', (event: Departed) => {
+      const v = this.vehicles.get(event.vehicleId);
+      if (v) {
+        const index = v.info.checkIns.findIndex(
+          ({ message, stop }) =>
+            stop === event.stop && this.destAllowed(message, event.destination),
+        );
+        if (index !== -1) {
+          // remove checkIn for this stop when departed.
+          v.info.checkIns.splice(index, 1);
+        }
+      }
+    });
+
     this.events.on('TripStarted', (event: TripStarted) => {
       const v = this.vehicles.get(event.vehicleId);
       const trip = {
@@ -167,14 +182,6 @@ export class Controller {
         vehicle: event.vehicleId,
       };
       if (v) {
-        const index = v.info.checkIns.findIndex(
-          ({ message, stop }) =>
-            stop === event.start && this.destAllowed(message, event.destination),
-        );
-        if (index !== -1) {
-          // remove checkIn for this stop when departed. TODO send proper departed message
-          v.info.checkIns.splice(index, 1);
-        }
         v.info.trips.push(trip);
       }
       const u = this.users.getById(event.userId);
