@@ -7,7 +7,7 @@ export const transactions: Module<TransactionStore, RootState> = {
     transactions: []
   },
   mutations: {
-    SOCKET_TransactionIssued(state: any, data: any) {
+    SOCKET_PaymentIssued(state: any, data: any) {
       if (state.transactions.length > 50) {
         state.transactions.shift();
       }
@@ -15,7 +15,7 @@ export const transactions: Module<TransactionStore, RootState> = {
     }
   },
   getters: {
-    getTransactions: (state: any) => {
+    getPayments: (state: any) => {
       return state.transactions;
     }
   }

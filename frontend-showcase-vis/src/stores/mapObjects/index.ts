@@ -25,10 +25,6 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
         user.position = data.position;
       }
     },
-    SOCKET_CheckIn(state: any, data: any) {
-      const veh = state.env.vehicles.find((v: any) => v.id === data.vehicleId);
-      veh.checkIn.stop = data.stopId;
-    },
     SOCKET_Login(state: any, user: any) {
       state.env.users.push(user);
     },

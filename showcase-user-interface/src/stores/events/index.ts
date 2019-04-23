@@ -21,11 +21,11 @@ export const events: Module<EventStore, RootState> = {
     routeFinished(state: any) {
       state.events = [];
     },
-    SOCKET_TransactionIssued(state: any, data: any) {
+    SOCKET_PaymentIssued(state: any, data: any) {
       if (state.events.length > state.max_length) {
         state.events.shift();
       }
-      state.events.push(getNewEvent("transaction", data.from, data));
+      state.events.push(getNewEvent("payment", data.from, data));
     },
     SOCKET_TripStarted(state: any, data: any) {
       if (state.events.length > state.max_length) {
