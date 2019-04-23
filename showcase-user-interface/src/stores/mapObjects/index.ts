@@ -15,7 +15,7 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     initState(state: any, event: any) {
       state.env = event;
     },
-    SOCKET_PosUpdated(state: any, data: any) {
+    PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
     },
@@ -29,6 +29,12 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
       const newVehicles = [...state.env.vehicles];
       newVehicles.find((el: any) => el.id === data.vehicleId).trip = undefined;
       state.env.vehicles = newVehicles;
+    }
+  },
+  actions: {
+    SOCKET_PosUpdated({ state, rootGetters, commit }, data: any) {
+      commit("PosUpdated", data);
+      window.console.log(rootGetters["user/getUserInfo"].id);
     }
   },
   getters: {
