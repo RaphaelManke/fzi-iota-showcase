@@ -41,11 +41,24 @@ export const routes: Module<RouteStore, RootState> = {
         window.console.log();
       }
     },
-    SOCKET_TripStarted(state: any, trip: any) {
+    TripStarted(state: any, trip: any) {
+      window.console.log(trip);
       state.trip = trip;
     },
-    SOCKET_TripFinished(state: any) {
+    TripFinished(state: any) {
       state.trip = undefined;
+    }
+  },
+  actions: {
+    SOCKET_TripStarted({ state, commit, rootGetters }, trip: any) {
+      if (trip.userId === rootGetters["user/getUserInfo"].id) {
+        commit("TripStarted", trip);
+      }
+    },
+    SOCKET_TripFinished({ state, commit, rootGetters }, trip: any) {
+      if (trip.userId === rootGetters["user/getUserInfo"].id) {
+        commit("TripFinished");
+      }
     }
   },
   getters: {

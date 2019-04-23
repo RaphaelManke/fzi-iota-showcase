@@ -32,9 +32,8 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     }
   },
   actions: {
-    SOCKET_PosUpdated({ state, rootGetters, commit }, data: any) {
+    SOCKET_PosUpdated({ state, commit }, data: any) {
       commit("PosUpdated", data);
-      window.console.log(rootGetters["user/getUserInfo"].id);
     }
   },
   getters: {
