@@ -292,9 +292,12 @@ export class VehicleMock {
           ? Promise.resolve('')
           : publishCheckOutMessage(this.vehicle.trip.tripChannel);
         checkOut
-          .then(() => this.notifyTripDeparted())
           .then(() => {
             if (this.vehicle.trip && this.vehicle.trip.path) {
+              this.notifyVehicleDeparted(
+                this.vehicle.trip.start,
+                this.vehicle.trip.destination!,
+              );
               return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
                 this.vehicle.stop = stop;
                 if (onStop) {
@@ -342,7 +345,11 @@ export class VehicleMock {
     );
   }
 
-  private notifyTripDeparted(): Promise<void> {
+  private notifyVehicleDeparted(
+    stop: Trytes,
+    destination: Trytes,
+  ): Promise<void> {
+    this.vehicle.departed(stop, destination);
     if (this.vehicle.trip) {
       this.vehicle.trip.state = State.DEPARTED;
       this.vehicle.trip.boarders
