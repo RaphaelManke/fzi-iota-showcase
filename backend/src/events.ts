@@ -46,6 +46,7 @@ export class SafeEmitter {
 
 export type Event =
   | ['CheckIn', CheckIn]
+  | ['Departed', Departed]
   | ['ReachedStop', ReachedStop]
   | ['Login', Login]
   | ['ReservationIssued', ReservationIssued]
@@ -65,6 +66,12 @@ export interface ReachedStop {
 export interface CheckIn {
   stopId: Trytes;
   vehicleId: Trytes;
+}
+
+export interface Departed {
+  vehicleId: Trytes;
+  stop: Trytes;
+  destination: Trytes;
 }
 
 export interface Login {

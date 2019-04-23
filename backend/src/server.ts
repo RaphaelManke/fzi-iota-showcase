@@ -218,11 +218,12 @@ function getId(type: string[], data: any) {
     case 'PosUpdated':
       prop = 'id';
       break;
-    case 'TransactionIssued':
+    case 'PaymentIssued':
       prop = 'from';
       break;
     case 'CheckIn':
     case 'ReachedStop':
+    case 'Departed':
       prop = 'vehicleId';
       break;
     default:

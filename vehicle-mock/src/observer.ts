@@ -9,6 +9,8 @@ export interface Observer {
 
   reachedStop(stop: Trytes): void;
 
+  departed(stop: Trytes, destination: Trytes): void;
+
   tripStarted(
     userId: Trytes,
     start: Trytes,

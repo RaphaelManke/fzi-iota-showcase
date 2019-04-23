@@ -1,7 +1,7 @@
 import { Connection, User } from './envInfo';
 import { Trytes } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
-import { log, Exception } from 'fzi-iota-showcase-client';
+import { Exception, CheckInMessage } from 'fzi-iota-showcase-client';
 import {
   UserState,
   Sender as UserSender,
@@ -38,8 +38,16 @@ export class TripStarter {
     const distance = getPathLength(
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
+
+    const destAllowed = ({ vehicleInfo }: CheckInMessage) =>
+      !vehicleInfo ||
+      !vehicleInfo.allowedDestinations ||
+      vehicleInfo.allowedDestinations.length === 0 ||
+      vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
+        undefined;
+
     const checkIn = v.info.checkIns.find(
-      ({ message, stop }) => stop === start,
+      ({ message, stop }) => stop === start && destAllowed(message),
     )!;
     const maxPrice = distance * checkIn.message.price;
     const tripHandler = userState.createTripHandler(
@@ -66,7 +74,9 @@ export class TripStarter {
         });
       })
       .catch((e: any) =>
-        Promise.reject(new Exception('Starting trip failed', e)),
+        Promise.reject(
+          new Exception('Starting trip failed. ' + (e.message || e), e),
+        ),
       );
   }
 

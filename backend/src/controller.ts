@@ -6,6 +6,7 @@ import {
   TripFinished,
   PosUpdated,
   PaymentIssued,
+  Departed,
 } from './events';
 import { EnvironmentInfo, Stop, Connection, User } from './envInfo';
 import { Users } from './users';
@@ -13,7 +14,11 @@ import { VehicleDescription } from './vehicleImporter';
 import { Trytes } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
-import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
+import {
+  createAttachToTangle,
+  log,
+  CheckInMessage,
+} from 'fzi-iota-showcase-client';
 import { VehicleMock } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
@@ -106,9 +111,11 @@ export class Controller {
   ) {
     const v = this.vehicles.get(vehicleInfo.id);
     if (v) {
-      // TODO check if user and vehicle are at start stop
       if (
-        v.info.checkIns.find(({ message, stop }) => stop === start) &&
+        v.info.checkIns.find(
+          ({ message, stop }) =>
+            stop === start && this.destAllowed(message, destination),
+        ) &&
         v.info.stop === start
       ) {
         if (u.info.stop === start) {
@@ -153,6 +160,20 @@ export class Controller {
       this.env.users.splice(index, 1);
     });
 
+    this.events.on('Departed', (event: Departed) => {
+      const v = this.vehicles.get(event.vehicleId);
+      if (v) {
+        const index = v.info.checkIns.findIndex(
+          ({ message, stop }) =>
+            stop === event.stop && this.destAllowed(message, event.destination),
+        );
+        if (index !== -1) {
+          // remove checkIn for this stop when departed.
+          v.info.checkIns.splice(index, 1);
+        }
+      }
+    });
+
     this.events.on('TripStarted', (event: TripStarted) => {
       const v = this.vehicles.get(event.vehicleId);
       const trip = {
@@ -161,13 +182,6 @@ export class Controller {
         vehicle: event.vehicleId,
       };
       if (v) {
-        const index = v.info.checkIns.findIndex(
-          ({ message, stop }) => stop === event.start,
-        );
-        if (index !== -1) {
-          // remove checkIn for this stop when departed. TODO send proper departed message
-          v.info.checkIns.splice(index, 1);
-        }
         v.info.trips.push(trip);
       }
       const u = this.users.getById(event.userId);
@@ -217,6 +231,16 @@ export class Controller {
     await this.initVehicles();
     return this;
   }
+
+  private destAllowed = (
+    { vehicleInfo }: CheckInMessage,
+    destination: Trytes,
+  ) =>
+    !vehicleInfo ||
+    !vehicleInfo.allowedDestinations ||
+    vehicleInfo.allowedDestinations.length === 0 ||
+    vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
+      undefined
 
   private async initVehicles(parallelCheckIn = true) {
     log.info('Initializing all vehicles...');

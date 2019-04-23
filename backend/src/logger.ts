@@ -26,6 +26,7 @@ export function enableLogging(
         break;
       case 'ReachedStop':
       case 'CheckIn':
+      case 'Departed':
         format = { skip: 'vehicleId', entity: 'Vehicle' };
         break;
       default:
@@ -86,6 +87,7 @@ const text = [
 const bgs = new Map<Event[0], colors.Color>();
 bgs.set('Login', colors.bgMagenta);
 bgs.set('ReachedStop', colors.bgYellow);
+bgs.set('Departed', colors.bgCyan);
 bgs.set('CheckIn', colors.bgWhite);
 bgs.set('BoardingStarted', colors.bgBlue);
 bgs.set('PaymentIssued', colors.bgCyan);

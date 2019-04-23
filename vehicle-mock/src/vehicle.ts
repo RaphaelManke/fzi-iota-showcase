@@ -40,6 +40,10 @@ export class Vehicle {
     );
   }
 
+  public departed(stop: Trytes, destination: Trytes) {
+    Promise.resolve(this.observers.forEach((o) => o.departed(stop, destination)));
+  }
+
   public tripStarted(userId: Trytes, destination: Trytes, price: number) {
     if (this.trip) {
       Promise.resolve(
@@ -77,6 +81,7 @@ export class Vehicle {
       transactionReceived: o.transactionReceived || (() => {}),
       transactionSent: o.transactionSent || (() => {}),
       tripStarted: o.tripStarted || (() => {}),
+      departed: o.departed || (() => {}),
     });
   }
 
