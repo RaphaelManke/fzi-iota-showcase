@@ -30,12 +30,15 @@ export const routes: Module<RouteStore, RootState> = {
       state.routeSelectedIndex = -1;
       state.routesAvailable = [];
     },
-    SOCKET_PosUpdated(state: any) {
+    SOCKET_PosUpdated(state: any, data: any) {
       if (state.trip) {
         state.routeSelected.sections.find(
-          (sec: any) => sec.vehicle.id === state.trip.vehicleId
+          (sec: any) =>
+            sec.vehicle.id === state.trip.vehicleId &&
+            data.id === state.trip.vehicleId
         ).passed_count++;
         state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
+        window.console.log();
       }
     },
     SOCKET_TripStarted(state: any, trip: any) {
