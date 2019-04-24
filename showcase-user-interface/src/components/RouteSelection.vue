@@ -197,6 +197,8 @@ export default {
           .catch(function(response) {
             if (response.status === 400) {
               // wait for vehicle
+              this.$store.commit("routes/setNextTrip", trip);
+              this.$router.push("route-observer");
             } else window.console.log(response);
           });
       } else {

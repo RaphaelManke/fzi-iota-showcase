@@ -3,6 +3,7 @@ export interface RouteStore {
   routeSelectedIndex: number;
   routeSelected: any;
   trip: any;
+  nextTrip: any;
 }
 
 export interface RouteInfo {

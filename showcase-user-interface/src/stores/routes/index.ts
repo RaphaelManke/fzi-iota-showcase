@@ -7,7 +7,8 @@ export const routes: Module<RouteStore, RootState> = {
     routesAvailable: [],
     routeSelectedIndex: -1,
     routeSelected: undefined,
-    trip: undefined
+    trip: undefined,
+    nextTrip: undefined
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
@@ -40,11 +41,24 @@ export const routes: Module<RouteStore, RootState> = {
         state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
       }
     },
+    SOCKET_ReachedStop(state: any, data: any) {
+      if (
+        data.stopId === state.nextTrip.start &&
+        data.vehicleId === state.nextTrip.vehicle
+      ) {
+        // make the post request here?
+        state.nextTrip = undefined;
+      }
+    },
     TripStarted(state: any, trip: any) {
       state.trip = trip;
+      state.nextTrip = undefined;
     },
     TripFinished(state: any) {
       state.trip = undefined;
+    },
+    setNextTrip(state: any, nextTrip: any) {
+      state.nextTrip = nextTrip;
     }
   },
   actions: {
@@ -71,6 +85,9 @@ export const routes: Module<RouteStore, RootState> = {
     },
     getRouteSelected(state: any) {
       return state.routeSelected;
+    },
+    getNextTrip(state: any) {
+      return state.nextTrip;
     }
   }
 };

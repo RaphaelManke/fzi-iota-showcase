@@ -19,8 +19,11 @@
                                 <b-col v-if="section.to===destination" :id="section.to" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
-                                <b-popover :show.sync="!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
+                                <b-popover :show.sync="!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
         <b-button variant="primary" @click="resumeRoute">Resume</b-button>
+      </b-popover>
+      <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Wait for vehicle to resume">
+        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="Waiting.."></b-spinner> Waiting for {{getVehicleById(section.vehicle.id).name}}
       </b-popover>
       <b-popover v-if="destination===section.to" :show.sync="!userInfo.trip&&currentStopId===destination" :target="section.to" placement="top" title="Route ended">
         <b-button variant="primary" @click="finishRoute">Finish route</b-button>
@@ -165,6 +168,9 @@ export default {
     },
     destination() {
       return this.$store.getters["user/getDestination"];
+    },
+    nextTrip() {
+      return this.$store.getters["routes/getNextTrip"];
     }
   },
   updated() {
@@ -237,10 +243,8 @@ export default {
             this.refreshRoutes();
             if (response.status === 400) {
               // wait for vehicle
+              this.$store.commit("routes/setNextTrip", trip);
             } else window.console.log(response);
-            alert(
-              "Trip does not seem to be valid anymore. Please select another route!"
-            );
           });
       } else {
         this.refreshRoutes();

@@ -49,7 +49,8 @@ export const user: Module<User, RootState> = {
         state.info.trip = undefined;
         state.info.stop = data.destination;
       }
-    }
+    },
+    SOCKET_PaymentIssued(state: any, payment: any) {}
   },
   getters: {
     getSeed: (state: any) => {
