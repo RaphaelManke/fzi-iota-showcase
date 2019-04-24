@@ -32,7 +32,7 @@ export const routes: Module<RouteStore, RootState> = {
       state.routesAvailable = [];
     },
     SOCKET_PosUpdated(state: any, data: any) {
-      if (state.trip) {
+      if (state.trip && state.routeSelected) {
         state.routeSelected.sections.find(
           (sec: any) =>
             sec.vehicle.id === state.trip.vehicleId &&
@@ -43,6 +43,7 @@ export const routes: Module<RouteStore, RootState> = {
     },
     SOCKET_ReachedStop(state: any, data: any) {
       if (
+        state.nextTrip &&
         data.stopId === state.nextTrip.start &&
         data.vehicleId === state.nextTrip.vehicle
       ) {

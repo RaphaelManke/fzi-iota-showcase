@@ -50,7 +50,11 @@ export const user: Module<User, RootState> = {
         state.info.stop = data.destination;
       }
     },
-    SOCKET_PaymentIssued(state: any, payment: any) {}
+    SOCKET_PaymentIssued(state: any, payment: any) {
+      if (payment.from === state.info.id) {
+        state.info.balance -= payment.amount;
+      }
+    }
   },
   getters: {
     getSeed: (state: any) => {
