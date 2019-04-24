@@ -1,10 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import {
-  log,
-  createAttachToTangle,
-  CheckInMessage,
-} from 'fzi-iota-showcase-client';
+import { log, createAttachToTangle } from 'fzi-iota-showcase-client';
 import {
   VehicleMock,
   Vehicle,
@@ -142,11 +138,11 @@ describe('Scheduler', () => {
   };
 
   it('should move scheduled vehicle from one stop to the next', function() {
-    this.timeout(20000);
-    const { v, scheduler } = getVehicle(10000000);
+    this.timeout(200000);
+    const { v, scheduler } = getVehicle(1000000);
 
     return new Promise<any>((res, rej) => {
-      ScheduleHandler.START_DELAY = 2000;
+      ScheduleHandler.START_DELAY = 5000;
       v.addObserver({
         reachedStop(stop) {
           if (stop === 'C') {
@@ -161,6 +157,7 @@ describe('Scheduler', () => {
   });
 
   it('should calculate validFrom/to times correctly', function() {
+    this.timeout(10000);
     const { v, mock, scheduler } = getVehicle(500000);
     ScheduleHandler.START_DELAY = 5000;
     return new Promise<any>((res, rej) => {
@@ -169,7 +166,8 @@ describe('Scheduler', () => {
       v.addObserver({
         departed(stop) {
           if (stop === 'A') {
-            console.log(
+            log.info(
+              '%O',
               Object.getOwnPropertyDescriptor(v, 'trips')!.value.map(
                 ({
                   checkInMessage: { validFrom, validUntil },
