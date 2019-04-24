@@ -115,24 +115,27 @@ export class Controller {
         v.info.checkIns.find(
           ({ message, stop }) =>
             stop === start && this.destAllowed(message, destination),
-        ) &&
-        v.info.stop === start
+        )
       ) {
-        if (u.info.stop === start) {
-          return this.tripStarter.startTrip(
-            v,
-            u,
-            start,
-            destination,
-            intermediateStops,
-          );
+        if (v.info.stop === start) {
+          if (u.info.stop === start) {
+            return this.tripStarter.startTrip(
+              v,
+              u,
+              start,
+              destination,
+              intermediateStops,
+            );
+          } else {
+            return Promise.reject(new Error('User isn\'t at start stop.'));
+          }
         } else {
-          return Promise.reject(new Error('User isn\'t at start stop.'));
+          return Promise.reject(
+            new Error('Vehicle isn\'t checked in at start stop.'),
+          );
         }
       } else {
-        return Promise.reject(
-          new Error('Vehicle isn\'t checked in at start stop.'),
-        );
+        return Promise.reject(new Error('Destination is not allowed.'));
       }
     } else {
       return Promise.reject(new Error('Vehicle not found.'));
