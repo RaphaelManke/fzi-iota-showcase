@@ -50,9 +50,11 @@
     "all": false
   },
   "dependencies": {
+    "@types/node-schedule": "^1.2.3",
     "fzi-iota-showcase-client": "alpha",
     "fzi-iota-showcase-vehicle-client": "alpha",
-    "fzi-iota-showcase-vehicle-mock": "alpha"
+    "fzi-iota-showcase-vehicle-mock": "alpha",
+    "node-schedule": "^1.3.2"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.26",

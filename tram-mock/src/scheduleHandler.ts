@@ -4,26 +4,34 @@ import {
   Vehicle,
   PathFinder,
   Connection,
+  Path,
 } from 'fzi-iota-showcase-vehicle-mock';
 import { log } from 'fzi-iota-showcase-client';
 import { getPathLength } from 'geolib';
+import { scheduleJob, Job } from 'node-schedule';
 
 export class ScheduleHandler {
   public static START_DELAY = 20000;
 
-  private current = 0;
-  private forward = true;
-  private vehicle: Vehicle;
-  private pathFinder: PathFinder;
+  private readonly vehicle: Vehicle;
+  private readonly pathFinder: PathFinder;
+
   private started = false;
-  private timeout?: NodeJS.Timer;
-  private startedCheckIns: Array<Promise<any>> = [];
-  private tripIndex?: number;
+  private current = 0;
+  private last = { index: 0, forward: true };
+  private forward = true;
+  private startedCheckIns: Array<{
+    departure: Date;
+    promise: Promise<any>;
+  }> = [];
+  private job?: Job;
+  private lastValidFrom?: Date;
 
   constructor(
     private mock: VehicleMock,
     private schedule: ScheduleDescription,
     connections: Connection[],
+    private tripIndex = 1,
   ) {
     this.vehicle = mock.vehicle;
     const cons = [];
@@ -48,8 +56,7 @@ export class ScheduleHandler {
     this.pathFinder = new PathFinder(cons);
   }
 
-  public startSchedule(startingIndex = 1) {
-    this.tripIndex = startingIndex;
+  public startSchedule() {
     while (this.schedule.stops[this.current] !== this.vehicle.stop) {
       this.current++;
       if (this.current >= this.schedule.stops.length) {
@@ -57,14 +64,46 @@ export class ScheduleHandler {
       }
     }
     const schedule = this.schedule;
-    const startNextTrip = this.getStartNextTrip();
-    const scheduleDeparture = (delay = schedule.defaultTransferTime) =>
-      (this.timeout = setTimeout(startNextTrip, delay));
     const self = this;
+    const startNextTrip = this.getStartNextTrip();
+    const scheduleDeparture = () =>
+      (self.job = scheduleJob(
+        self.startedCheckIns[0].departure,
+        startNextTrip,
+      ));
+
     this.mock.vehicle.addObserver({
       reachedStop() {
         if (self.started) {
           scheduleDeparture();
+        }
+      },
+      departed(stop) {
+        if (self.started && self.lastValidFrom) {
+          const departure = new Date(
+            self.lastValidFrom.getTime() + schedule.defaultTransferTime,
+          );
+          self.startedCheckIns.push({
+            promise: self.mock.checkIn(
+              stop,
+              self.tripIndex!++,
+              self.lastValidFrom,
+              departure,
+              getDests(self.last.index, self.last.forward, schedule),
+            ),
+            departure,
+          });
+          const nextStop = self.schedule.stops[self.current];
+          const [path] = self.pathFinder.getPaths(
+            self.vehicle.stop!,
+            nextStop,
+            [self.vehicle.info.type],
+          );
+          self.lastValidFrom = getArrivalTime(
+            departure,
+            path,
+            self.vehicle.info.speed,
+          );
         }
       },
     });
@@ -72,21 +111,19 @@ export class ScheduleHandler {
     const startSchedule = new Date(Date.now() + ScheduleHandler.START_DELAY);
     this.getPublishSchedule()(startSchedule);
 
-    scheduleDeparture(
-      startSchedule.getTime() - Date.now() + schedule.defaultTransferTime,
-    );
+    scheduleDeparture();
     this.started = true;
   }
 
   public stopSchedule() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    if (this.job) {
+      this.job.cancel();
       this.started = false;
     }
   }
 
   private getPublishSchedule(self = this) {
-    return (start = new Date()) => {
+    return async (start = new Date()) => {
       const schedule = self.schedule;
       // check into all stops until vehicle reaches current stops again
       let i = self.current;
@@ -100,50 +137,41 @@ export class ScheduleHandler {
         const departure = new Date(
           arrival.getTime() + schedule.defaultTransferTime,
         );
-        self.startedCheckIns.push(
-          self.mock.checkIn(
-            stop,
-            self.tripIndex!++,
-            arrival,
-            departure,
-            getDests(i, forward, schedule),
-          ),
+        const checkIn = self.mock.checkIn(
+          stop,
+          self.tripIndex!++,
+          arrival,
+          departure,
+          getDests(i, forward, schedule),
         );
+        self.startedCheckIns.push({ promise: checkIn, departure });
+        await checkIn;
         ({ current: i, forward } = getNextIndex(i, schedule, forward));
         const [p] = self.pathFinder.getPaths(stop, schedule.stops[i], [
           self.vehicle.info.type,
         ]);
-        const distance = getPathLength(
-          p.waypoints.map((pos) => ({
-            latitude: pos.lat,
-            longitude: pos.lng,
-          })),
-        );
-        arrival = new Date(
-          departure.getTime() + (distance * 1000) / self.vehicle.info.speed,
-        );
+        arrival = getArrivalTime(departure, p, self.vehicle.info.speed);
+        self.lastValidFrom = arrival;
       }
     };
   }
 
   private getStartNextTrip() {
     const self = this;
-    const publishSchedule = this.getPublishSchedule();
     return async () => {
+      self.last = { index: self.current, forward: self.forward };
+      ({ current: self.current, forward: self.forward } = getNextIndex(
+        self.current,
+        self.schedule,
+        self.forward,
+      ));
+
+      const checkIn = self.startedCheckIns.shift();
+      if (checkIn) {
+        await checkIn.promise; // wait until checkIn for current stop resolves
+      }
+
       if (self.vehicle.trip) {
-        ({ current: self.current, forward: self.forward } = getNextIndex(
-          self.current,
-          self.schedule,
-          self.forward,
-        ));
-
-        if (self.startedCheckIns.length === 0) {
-          publishSchedule(
-            new Date(Date.now() - self.schedule.defaultTransferTime),
-          );
-        }
-        await self.startedCheckIns.shift(); // wait until checkIn for current stop resolves
-
         const nextStop = self.schedule.stops[self.current];
         const [path] = self.pathFinder.getPaths(self.vehicle.stop!, nextStop, [
           self.vehicle.info.type,
@@ -188,4 +216,14 @@ function getDests(i: number, forward: boolean, schedule: ScheduleDescription) {
   const from = schedule.stops.slice(i + 1, schedule.stops.length);
   const upTo = schedule.stops.slice(0, i);
   return schedule.mode === 'RING' ? [...from, ...upTo] : forward ? from : upTo;
+}
+
+function getArrivalTime(departure: Date, p: Path, speed: number) {
+  const distance = getPathLength(
+    p.waypoints.map((pos) => ({
+      latitude: pos.lat,
+      longitude: pos.lng,
+    })),
+  );
+  return new Date(departure.getTime() + (distance * 1000) / speed);
 }
