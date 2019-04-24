@@ -96,6 +96,9 @@ describe('Scheduler', () => {
         tripStarted(userId, start, dest) {
           log.info('Trip started');
         },
+        departed(stop, destination) {
+          log.info('Departed');
+        },
       };
       const v = new Vehicle(e, 'SEED', { lat: 49.00954, lng: 8.403885 }, 'A', {
         co2emission: 0,
