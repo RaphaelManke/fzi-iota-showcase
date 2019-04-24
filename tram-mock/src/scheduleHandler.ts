@@ -1,4 +1,4 @@
-import { ScheduleDescription, Mode } from './scheduleDescription';
+import { ScheduleDescription } from './scheduleDescription';
 import {
   VehicleMock,
   Vehicle,
@@ -9,6 +9,8 @@ import { log } from 'fzi-iota-showcase-client';
 import { getPathLength } from 'geolib';
 
 export class ScheduleHandler {
+  public static START_DELAY = 20000;
+
   private current = 0;
   private forward = true;
   private vehicle: Vehicle;
@@ -56,8 +58,8 @@ export class ScheduleHandler {
     }
     const schedule = this.schedule;
     const startNextTrip = this.getStartNextTrip();
-    const scheduleDeparture = () =>
-      (this.timeout = setTimeout(startNextTrip, schedule.defaultTransferTime));
+    const scheduleDeparture = (delay = schedule.defaultTransferTime) =>
+      (this.timeout = setTimeout(startNextTrip, delay));
     const self = this;
     this.mock.vehicle.addObserver({
       reachedStop() {
@@ -67,8 +69,12 @@ export class ScheduleHandler {
       },
     });
 
-    this.getPublishSchedule(this)();
-    this.startedCheckIns.shift()!.then(scheduleDeparture);
+    const startSchedule = new Date(Date.now() + ScheduleHandler.START_DELAY);
+    this.getPublishSchedule()(startSchedule);
+
+    scheduleDeparture(
+      startSchedule.getTime() - Date.now() + schedule.defaultTransferTime,
+    );
     this.started = true;
   }
 
@@ -80,25 +86,25 @@ export class ScheduleHandler {
   }
 
   private getPublishSchedule(self = this) {
-    return () => {
+    return (start = new Date()) => {
       const schedule = self.schedule;
       // check into all stops until vehicle reaches current stops again
       let i = self.current;
       let forward = self.forward;
-      let start = new Date();
+      let arrival = start;
       while (
         self.startedCheckIns.length === 0 ||
         !(i === self.current && forward === self.forward)
       ) {
         const stop = schedule.stops[i];
         const departure = new Date(
-          start.getTime() + schedule.defaultTransferTime,
+          arrival.getTime() + schedule.defaultTransferTime,
         );
         self.startedCheckIns.push(
           self.mock.checkIn(
             stop,
             self.tripIndex!++,
-            start,
+            arrival,
             departure,
             getDests(i, forward, schedule),
           ),
@@ -113,8 +119,8 @@ export class ScheduleHandler {
             longitude: pos.lng,
           })),
         );
-        start = new Date(
-          departure.getTime() + distance / self.vehicle.info.speed,
+        arrival = new Date(
+          departure.getTime() + (distance * 1000) / self.vehicle.info.speed,
         );
       }
     };
@@ -122,6 +128,7 @@ export class ScheduleHandler {
 
   private getStartNextTrip() {
     const self = this;
+    const publishSchedule = this.getPublishSchedule();
     return async () => {
       if (self.vehicle.trip) {
         ({ current: self.current, forward: self.forward } = getNextIndex(
@@ -131,7 +138,9 @@ export class ScheduleHandler {
         ));
 
         if (self.startedCheckIns.length === 0) {
-          self.getPublishSchedule(self)();
+          publishSchedule(
+            new Date(Date.now() - self.schedule.defaultTransferTime),
+          );
         }
         await self.startedCheckIns.shift(); // wait until checkIn for current stop resolves
 
