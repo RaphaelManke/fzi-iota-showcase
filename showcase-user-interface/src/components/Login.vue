@@ -8,17 +8,20 @@
 
     <b-row align-h="center">
       <b-col cols="8">
-        <b-form-group description="Your seed" :state="state">
+        <b-form-group description="Your seed" :state="state" id="seed">
           <b-form-input v-model="seed" :state="state"></b-form-input>
         </b-form-group>
       </b-col>
     </b-row>
     <b-row align-h="center">
-      <b-form-group>
-        <b-button>
+      <b-form-group v-if="!scanning">
+        <b-button @click="scanning=true">
           Scan QR-Code
         </b-button>
       </b-form-group>
+      <b-popover :show.sync="scanning" target="seed" placement="bottom" title="Scan QR-Code">
+        <qrcode-stream @decode="onDecode"></qrcode-stream>
+      </b-popover>
     </b-row>
     <b-row align-h="center">
       <b-form-group>
@@ -33,6 +36,11 @@
 <script>
 export default {
   name: "Login",
+  data() {
+    return {
+      scanning: false
+    };
+  },
   computed: {
     // check if seed is valid
     state() {
@@ -48,6 +56,9 @@ export default {
     }
   },
   methods: {
+    onDecode(decodedString) {
+      this.seed = decodedString;
+    },
     login() {
       this.$http
         .post(this.$hostname + "/login", this.seed)

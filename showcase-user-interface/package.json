@@ -21,6 +21,7 @@
     "vue": "^2.6.10",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
+    "vue-qrcode-reader": "^1.4.2",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.2",
     "vue-socket.io": "^3.0.5",
