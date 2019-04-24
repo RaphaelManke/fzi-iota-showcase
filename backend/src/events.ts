@@ -61,6 +61,7 @@ export type Event =
 export interface ReachedStop {
   stopId: Trytes;
   vehicleId: Trytes;
+  allowedDestinations: Trytes[];
 }
 
 export interface CheckIn {

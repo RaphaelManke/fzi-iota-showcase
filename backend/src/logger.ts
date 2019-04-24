@@ -4,6 +4,8 @@ import { Trytes } from '@iota/core/typings/types';
 import { trits, value } from '@iota/converter';
 import * as colors from 'colors';
 
+const skipAlways = ['allowedDestinations'];
+
 export function enableLogging(
   events: SafeEmitter,
   isUser: (id: Trytes) => boolean,
@@ -38,6 +40,7 @@ export function enableLogging(
     if (data) {
       Object.keys(data)
         .filter((p) => p !== format.skip)
+        .filter((p) => skipAlways.find((s) => s === p) === undefined)
         .forEach((p) => {
           let v = data[p];
           if (typeof v === 'number') {

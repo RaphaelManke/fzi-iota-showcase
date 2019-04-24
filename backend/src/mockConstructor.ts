@@ -10,6 +10,7 @@ import {
 } from 'fzi-iota-showcase-vehicle-mock';
 import { VehicleInfo } from './vehicleInfo';
 import { getNextId } from './idSupplier';
+import { log } from 'fzi-iota-showcase-client';
 
 export class MockConstructor {
   constructor(
@@ -61,7 +62,28 @@ export class MockConstructor {
 
       reachedStop(stop) {
         info.stop = stop;
-        events.emit('ReachedStop', { stopId: stop, vehicleId: info.id });
+        const checkIn = info.checkIns[0];
+        const allowedDestinations = [];
+        if (checkIn) {
+          if (checkIn.stop === stop) {
+            if (checkIn.message.vehicleInfo) {
+              allowedDestinations.push(
+                ...checkIn.message.vehicleInfo.allowedDestinations,
+              );
+            }
+          } else {
+            log.warn(
+              'First checkIn of vehicle %s is not for reached stop %s',
+              info.id,
+              stop,
+            );
+          }
+        }
+        events.emit('ReachedStop', {
+          stopId: stop,
+          vehicleId: info.id,
+          allowedDestinations,
+        });
       },
       tripStarted(userId, start, destination, price) {
         events.emit('TripStarted', {
