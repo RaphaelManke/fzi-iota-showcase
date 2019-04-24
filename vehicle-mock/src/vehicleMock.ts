@@ -99,7 +99,7 @@ export class VehicleMock {
 
   public async checkInAtCurrentStop() {
     if (this.vehicle.stop) {
-      this.checkIn(this.vehicle.stop);
+      return this.checkIn(this.vehicle.stop);
     }
   }
 
@@ -171,6 +171,7 @@ export class VehicleMock {
       reservations: [],
       boarders: [],
     });
+    return checkInMessage;
   }
 
   public startBoarding(
