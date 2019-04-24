@@ -58,7 +58,6 @@ export class ScheduleHandler {
     const startNextTrip = this.getStartNextTrip();
     const scheduleDeparture = () =>
       (this.timeout = setTimeout(startNextTrip, schedule.defaultTransferTime));
-    const mock = this.mock;
     const self = this;
     this.mock.vehicle.addObserver({
       reachedStop() {
@@ -124,16 +123,17 @@ export class ScheduleHandler {
   private getStartNextTrip() {
     const self = this;
     return async () => {
-      if (self.startedCheckIns.length === 0) {
-        self.getPublishSchedule(self)();
-      }
-      await self.startedCheckIns.shift(); // wait until checkIn for current stop resolves
       if (self.vehicle.trip) {
         ({ current: self.current, forward: self.forward } = getNextIndex(
           self.current,
           self.schedule,
           self.forward,
         ));
+
+        if (self.startedCheckIns.length === 0) {
+          self.getPublishSchedule(self)();
+        }
+        await self.startedCheckIns.shift(); // wait until checkIn for current stop resolves
 
         const nextStop = self.schedule.stops[self.current];
         const [path] = self.pathFinder.getPaths(self.vehicle.stop!, nextStop, [
