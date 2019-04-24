@@ -38,11 +38,9 @@ export const routes: Module<RouteStore, RootState> = {
             data.id === state.trip.vehicleId
         ).passed_count++;
         state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
-        window.console.log();
       }
     },
     TripStarted(state: any, trip: any) {
-      window.console.log(trip);
       state.trip = trip;
     },
     TripFinished(state: any) {
