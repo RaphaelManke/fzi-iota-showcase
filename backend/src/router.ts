@@ -70,20 +70,15 @@ export class Router {
     const c = remainingConnections[0];
     const vehicles = this.vehicles
       .filter((v) => v.info.type === c.type)
-      .filter((v) => findCheckIn(c, v) !== undefined);
+      .filter((v) => findCheckIn(c, v, start) !== undefined);
 
     const distance = getPathLength(
       c.path.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
     const sections = vehicles.map(
       (v): Section => {
-        const checkIn = findCheckIn(c, v)!;
-        const validFrom = checkIn.validFrom;
-        const departure = validFrom
-          ? validFrom.getTime() > start.getTime()
-            ? validFrom
-            : start
-          : start;
+        const checkIn = findCheckIn(c, v, start)!;
+        const departure = checkIn.validUntil || start;
         const secs = (distance * 1000) / v.info.speed;
         const arrival = new Date(departure.getTime() + secs);
 
@@ -120,6 +115,7 @@ export class Router {
 function findCheckIn(
   c: Connection,
   v: VehicleInfo,
+  start: Date,
 ): CheckInMessage | undefined {
   const r = v.checkIns.find(
     ({ message: { vehicleInfo }, stop }) =>
@@ -129,7 +125,17 @@ function findCheckIn(
         vehicleInfo.allowedDestinations.length === 0 ||
         vehicleInfo.allowedDestinations.find((s: Trytes) => c.to)),
   );
-  return r ? r.message : undefined;
+  if (r) {
+    if (
+      r.message.validUntil &&
+      r.message.validUntil.getTime() < start.getTime()
+    ) {
+      return undefined;
+    }
+    return r.message;
+  } else {
+    return undefined;
+  }
 }
 
 interface ReducedConnection extends Connection {
