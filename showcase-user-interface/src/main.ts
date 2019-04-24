@@ -12,7 +12,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$hostname = process.env.VUE_APP_BACKEND_URL;
+Vue.prototype.$hostname = `${window.location.protocol}//${window.location.hostname}:${process.env.VUE_APP_BACKEND_PORT}`;
 
 // enable http requests
 Vue.use(VueResource);
@@ -21,7 +21,7 @@ Vue.use(BootstrapVue);
 
 Vue.use(
   new VueSocketIO({
-    debug: true,
+    debug: false,
     connection: Vue.prototype.$hostname,
     vuex: {
       store,
