@@ -2,7 +2,7 @@ import { Vehicle } from './vehicle';
 import { Mover } from './mover';
 import { Path } from './pathFinder';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
-import { API, composeAPI, AccountData } from '@iota/core';
+import { API, composeAPI, AccountData, generateAddress } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
   createAttachToTangle,
@@ -10,6 +10,7 @@ import {
   StopWelcomeMessage,
   Exception,
   VehicleInfo,
+  log,
 } from 'fzi-iota-showcase-client';
 import {
   createMasterChannel,
@@ -33,6 +34,7 @@ export class VehicleMock {
   private masterChannel?: RAAM;
   private currentAddress?: Hash;
   private nextAddress?: Hash;
+  private addressIndex = 0;
 
   constructor(
     public readonly vehicle: Vehicle,
@@ -52,21 +54,25 @@ export class VehicleMock {
     this.mover = new Mover(vehicle);
   }
 
+  public get address() {
+    return this.currentAddress;
+  }
+
   public async setupPayments(): Promise<AccountData> {
+    let result;
+    const seed = trytes(getPaymentSeed(this.vehicle.seed));
     if (!this.mockPayments) {
-      const seed = trytes(getPaymentSeed(this.vehicle.seed));
-      const result = await this.iota.getNewAddress(seed);
-      if (typeof result === 'string') {
-        this.currentAddress = result;
+      log.debug('Payment seed: %s', seed);
+      const address = await this.iota.getNewAddress(seed);
+      if (typeof address === 'string') {
+        this.currentAddress = address;
       } else {
-        this.currentAddress = result[0];
-        this.nextAddress = result[1];
+        this.currentAddress = address[0];
       }
-      return await this.iota.getAccountData(seed);
+      result = await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = 'A';
-      this.nextAddress = 'B';
-      return {
+      this.currentAddress = generateAddress(seed, this.addressIndex);
+      result = {
         addresses: [''],
         balance: 3000,
         latestAddress: 'A',
@@ -75,6 +81,12 @@ export class VehicleMock {
         transfers: [],
       };
     }
+    let addr;
+    do {
+      addr = generateAddress(seed, this.addressIndex++);
+    } while (addr !== this.currentAddress);
+    this.nextAddress = generateAddress(seed, this.addressIndex);
+    return result;
   }
 
   public async syncTangle() {
@@ -167,10 +179,12 @@ export class VehicleMock {
       nonce,
       state: State.CHECKED_IN,
       checkInMessage,
+      settlementAddress: this.nextAddress!,
       start: stop,
       reservations: [],
       boarders: [],
     });
+    this.advanceAddresses();
     return checkInMessage;
   }
 
@@ -215,7 +229,7 @@ export class VehicleMock {
             } else {
               depositor = async (value, address) => {
                 const txTrytes = await this.iota.prepareTransfers(
-                  this.vehicle.seed,
+                  getPaymentSeed(this.vehicle.seed),
                   [{ value, address }],
                 );
                 const txs = await this.iota.sendTrytes(
@@ -232,7 +246,7 @@ export class VehicleMock {
             const boarder = new Boarder(
               this.vehicle,
               userId,
-              this.nextAddress!,
+              this.vehicle.trip.settlementAddress,
               path,
               this.pricePerMeter,
               onTripFinished,
@@ -334,6 +348,15 @@ export class VehicleMock {
         rej(new Error('Destination was not set.'));
       }
     });
+  }
+
+  private advanceAddresses() {
+    this.addressIndex++;
+    this.currentAddress = this.nextAddress;
+    this.nextAddress = generateAddress(
+      trytes(getPaymentSeed(this.vehicle.seed)),
+      this.addressIndex,
+    );
   }
 
   private isDestinationAllowed(dest: Trytes) {

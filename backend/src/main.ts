@@ -70,6 +70,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       iota,
       args.mockPayments,
       args.mockMessages,
+      args.masterSeed,
     );
     await c.setup();
 

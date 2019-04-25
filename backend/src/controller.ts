@@ -11,7 +11,7 @@ import {
 import { EnvironmentInfo, Stop, Connection, User, Trip } from './envInfo';
 import { Users } from './users';
 import { VehicleDescription } from './vehicleImporter';
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Transfer, Hash } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import {
@@ -49,12 +49,13 @@ export class Controller {
     private schedules: ScheduleDescription[],
     public readonly users: Users,
     provider: string,
-    iota: API = composeAPI({
+    private iota: API = composeAPI({
       provider,
       attachToTangle: createAttachToTangle(provider),
     }),
     mockPayments = false,
     mockMessages = false,
+    private masterSeed?: Hash,
   ) {
     stops.forEach((s) => this.stops.set(s.id, s));
     const c = new MockConstructor(
@@ -245,9 +246,9 @@ export class Controller {
     vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
       undefined
 
-  private async initVehicles(parallelCheckIn = true) {
+  private async initVehicles(parallelCheckIn = true, fundAmount = 1000) {
     log.info('Initializing all vehicles...');
-    const vehicles = [];
+    const promises = [];
     for (const { mock: vm, info } of this.vehicles.values()) {
       log.info('Init vehicle %s', info.id);
       const p = Promise.all([
@@ -264,9 +265,22 @@ export class Controller {
       if (!parallelCheckIn) {
         await p;
       }
-      vehicles.push(p);
+      promises.push(p);
     }
-    await Promise.all(vehicles);
+    await Promise.all(promises);
+    if (this.masterSeed) {
+      const transfers: Transfer[] = Array.from(this.vehicles.values())
+        .filter(({ info }) => info.balance === 0) // only include empty accounts -> random generated seed
+        .map(
+          ({ mock: { address } }): Transfer => ({
+            address: address!,
+            value: fundAmount,
+          }),
+        );
+      await this.iota
+        .prepareTransfers(this.masterSeed, transfers)
+        .then((trytes) => this.iota.sendTrytes(trytes, 3, 14));
+    }
 
     log.info('Starting schedules...');
     this.schedules.forEach((s) => {
