@@ -137,58 +137,55 @@ describe('Scheduler', () => {
     return { scheduler, mock, v };
   };
 
-  it('should move scheduled vehicle from one stop to the next', async function() {
-    this.timeout(40000);
+  it('should move scheduled vehicle from one stop to the next', function(done) {
+    this.timeout(20000);
 
-    await new Promise<void>((res, rej) => {
-      const { v, scheduler } = getVehicle(1000000);
+    const { v, scheduler } = getVehicle(1000000);
 
-      ScheduleHandler.START_DELAY = 5000;
-      v.addObserver({
-        reachedStop(stop) {
-          if (stop === 'C') {
-            scheduler.stopSchedule();
-            res();
-          }
-        },
-      });
-
-      scheduler.startSchedule();
+    ScheduleHandler.START_DELAY = 5000;
+    v.addObserver({
+      reachedStop(stop) {
+        if (stop === 'C') {
+          scheduler.stopSchedule();
+          done();
+        }
+      },
     });
+
+    scheduler.startSchedule();
   });
 
-  it('should calculate validFrom/to times correctly', async function() {
-    this.timeout(40000);
+  it('should calculate validFrom/to times correctly', function(done) {
+    this.timeout(20000);
+
     const { v, mock, scheduler } = getVehicle(500000);
     ScheduleHandler.START_DELAY = 5000;
     scheduler.startSchedule();
 
-    await new Promise<void>((res, rej) => {
-      v.addObserver({
-        departed(stop) {
-          if (stop === 'A') {
-            log.info(
-              '%O',
-              Object.getOwnPropertyDescriptor(v, 'trips')!.value.map(
-                ({
-                  checkInMessage: { validFrom, validUntil },
-                  start,
-                }: TripState) => ({
-                  start,
-                  validFrom,
-                  validUntil,
-                }),
-              ),
-            );
-          }
-        },
-        reachedStop(stop) {
-          if (stop === 'C') {
-            scheduler.stopSchedule();
-            res();
-          }
-        },
-      });
+    v.addObserver({
+      departed(stop) {
+        if (stop === 'A') {
+          log.info(
+            '%O',
+            Object.getOwnPropertyDescriptor(v, 'trips')!.value.map(
+              ({
+                checkInMessage: { validFrom, validUntil },
+                start,
+              }: TripState) => ({
+                start,
+                validFrom,
+                validUntil,
+              }),
+            ),
+          );
+        }
+      },
+      reachedStop(stop) {
+        if (stop === 'C') {
+          scheduler.stopSchedule();
+          done();
+        }
+      },
     });
   });
 });

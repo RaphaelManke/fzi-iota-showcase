@@ -62,21 +62,14 @@ export class MockConstructor {
 
       reachedStop(stop) {
         info.stop = stop;
-        const checkIn = info.checkIns[0];
+        const checkIn = info.checkIns.find((c) => c.stop === stop);
         const allowedDestinations = [];
         if (checkIn) {
-          if (checkIn.stop === stop) {
-            if (checkIn.message.vehicleInfo) {
-              allowedDestinations.push(
-                ...checkIn.message.vehicleInfo.allowedDestinations,
-              );
-            }
-          } else {
-            log.warn(
-              'First checkIn of vehicle %s is not for reached stop %s',
-              info.id,
-              stop,
+          if (checkIn.message.vehicleInfo) {
+            allowedDestinations.push(
+              ...checkIn.message.vehicleInfo.allowedDestinations,
             );
+            log.silly('Allowed destinations: %O', allowedDestinations);
           }
         }
         events.emit('ReachedStop', {

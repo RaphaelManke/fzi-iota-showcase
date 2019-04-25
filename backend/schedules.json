@@ -1,6 +1,6 @@
 [
   {
-    "defaultTransferTime": 5000,
+    "defaultTransferTime": 10000,
     "forVehicle": "Lukas",
     "mode": "TURNING",
     "stops": [
