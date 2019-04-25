@@ -8,18 +8,18 @@
 
     <b-row align-h="center">
       <b-col cols="8">
-        <b-form-group description="Your seed" :state="state" id="seed">
+        <b-form-group description="Your seed" :state="state" id="seed_form">
           <b-form-input v-model="seed" :state="state"></b-form-input>
         </b-form-group>
       </b-col>
     </b-row>
     <b-row align-h="center">
-      <b-form-group v-if="!scanning">
-        <b-button @click="scanning=true">
+      <b-form-group>
+        <b-button @click="scanning=!scanning">
           Scan QR-Code
         </b-button>
       </b-form-group>
-      <b-popover :show.sync="scanning" target="seed" placement="bottom" title="Scan QR-Code">
+      <b-popover triggers="" :show.sync="scanning" target="seed_form" placement="top" title="Scan QR-Code">
         <qrcode-stream @decode="onDecode"></qrcode-stream>
       </b-popover>
     </b-row>
@@ -58,7 +58,7 @@ export default {
   methods: {
     onDecode(decodedString) {
       this.seed = decodedString;
-      this.scanning = false;
+      if (this.state) this.scanning = false;
     },
     login() {
       this.$http
