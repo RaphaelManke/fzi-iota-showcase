@@ -52,6 +52,7 @@ export const routes: Module<RouteStore, RootState> = {
       ) {
         window.console.log(data);
         // make the post request
+        // @ts-ignore
         Vue.http
           .post(Vue.prototype.$hostname + "/trip", state.nextTrip)
           .then(function(response: any) {
