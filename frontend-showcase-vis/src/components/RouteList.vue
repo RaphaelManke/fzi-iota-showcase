@@ -4,8 +4,10 @@
             <b-row>
               <b-col>
 
-      <b-card v-for="user in tripinUsers" :header="user.name">
-          {{getStopById(user.trip.start).name}} <b-spinner style="height: 18px; width: 18px;" variant="primary" label="Moving.."></b-spinner> {{getStopById(user.trip.destination).name}}
+      <b-card v-for="user in tripinUsers" :header="getHeader(user)">
+        <b-row align-h="center">
+          <b-col class="no-space-break">{{getStopById(user.trip.start).name}}</b-col><b-col cols="1"><b-spinner style="height: 18px; width: 18px;" variant="primary" label="Moving.."></b-spinner></b-col><b-col class="no-space-break">{{getStopById(user.trip.destination).name}}</b-col>
+        </b-row>
       </b-card>
 
     </b-col>
@@ -33,6 +35,14 @@ export default {
     },
     getStopById(id) {
       return this.$store.getters["mapObjects/getStopById"](id);
+    },
+    getHeader(user) {
+      return (
+        user.name +
+        " with " +
+        this.$store.getters["mapObjects/getVehicleById"](user.trip.vehicleId)
+          .name
+      );
     }
   }
 };
