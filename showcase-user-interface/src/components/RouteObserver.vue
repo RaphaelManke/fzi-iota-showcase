@@ -239,6 +239,9 @@ export default {
       if (trip !== undefined) {
         this.$http
           .post(this.$hostname + "/trip", trip)
+          .then(function(response) {
+            this.$store.commit("routes/setNextTrip", trip);
+          })
           .catch(function(response) {
             this.refreshRoutes();
             if (response.status === 400) {
