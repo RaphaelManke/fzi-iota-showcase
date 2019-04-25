@@ -57,11 +57,6 @@ export default {
 </script>
 
 <style>
-html {
-  overflow: hidden;
-  min-height: 100vh;
-  height: 100%;
-}
 .navbar-brand img {
   height: 30px;
 }

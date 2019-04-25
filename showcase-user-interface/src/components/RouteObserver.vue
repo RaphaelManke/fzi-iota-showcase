@@ -22,8 +22,8 @@
                                 <b-popover :show.sync="!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
         <b-button variant="primary" @click="resumeRoute">Resume</b-button>
       </b-popover>
-      <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Wait for vehicle to resume">
-        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="Waiting.."></b-spinner> Waiting for {{getVehicleById(section.vehicle.id).name}}
+      <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Waiting for next step">
+        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="RouteState"></b-spinner>{{routeState}}{{getVehicleById(section.vehicle.id).name}}
       </b-popover>
       <b-popover v-if="destination===section.to" :show.sync="!userInfo.trip&&currentStopId===destination" :target="section.to" placement="top" title="Route ended">
         <b-button variant="primary" @click="finishRoute">Finish route</b-button>
@@ -90,17 +90,17 @@
     </b-col>
     </b-row>
     </div>
-    <b-row class="text-center mt-4">
+    <b-row class="text-center">
       <b-col>
-    <b-button block variant='primary' @click="refreshRoutes">Refresh routes</b-button>
+    <b-button block variant='primary' @click="refreshRoutes">Refresh</b-button>
     </b-col>
     <b-col>
-    <b-button block variant='warning' @click="changeRoute">Change route</b-button>
+    <b-button block variant='warning' @click="changeRoute">Change</b-button>
     </b-col>
     <b-col id="haltNextStopButton">
-    <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish route</b-button>
-    <b-button v-else block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
-    <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next stop:">{{currentStop.name}}</b-popover>
+    <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish</b-button>
+    <b-button v-else block variant='danger' @click="haltAtNextStop">Stop</b-button>
+    <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next Stop">{{currentStop.name}}</b-popover>
     </b-col>
         </b-row>
         </div>
@@ -131,6 +131,9 @@ export default {
     this.locallySelectedRouteIndex = this.selectedRouteIndex;
   },
   computed: {
+    routeState() {
+      return this.$store.getters["routes/getRouteState"];
+    },
     userInfo() {
       return this.$store.getters["user/getUserInfo"];
     },
@@ -195,7 +198,6 @@ export default {
           }
         })
         .catch(function(response) {
-          alert("Server error. PLease look in console!");
           window.console.log(response);
         });
     },
@@ -239,6 +241,9 @@ export default {
       if (trip !== undefined) {
         this.$http
           .post(this.$hostname + "/trip", trip)
+          .then(function(response) {
+            this.$store.commit("routes/setNextTrip", trip);
+          })
           .catch(function(response) {
             this.refreshRoutes();
             if (response.status === 400) {
@@ -296,6 +301,12 @@ export default {
 <style scoped>
 img {
   height: 12px;
+}
+.card-body {
+  padding: 0.25rem 1.25rem;
+}
+.card-header {
+  padding: 0.25rem 1.25rem;
 }
 </style>
 

@@ -1,6 +1,7 @@
 import { RouteStore } from "./types";
 import { Module } from "vuex";
 import { RootState } from "../types";
+import Vue from "vue";
 export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
@@ -8,7 +9,8 @@ export const routes: Module<RouteStore, RootState> = {
     routeSelectedIndex: -1,
     routeSelected: undefined,
     trip: undefined,
-    nextTrip: undefined
+    nextTrip: undefined,
+    routeState: ""
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
@@ -45,10 +47,20 @@ export const routes: Module<RouteStore, RootState> = {
       if (
         state.nextTrip &&
         data.stopId === state.nextTrip.start &&
-        data.vehicleId === state.nextTrip.vehicle
+        data.vehicleId === state.nextTrip.vehicle &&
+        data.allowedDestinations.includes(state.nextTrip.destination)
       ) {
-        // make the post request here?
-        state.nextTrip = undefined;
+        window.console.log(data);
+        // make the post request
+        // @ts-ignore
+        Vue.http
+          .post(Vue.prototype.$hostname + "/trip", state.nextTrip)
+          .then(function(response: any) {
+            state.routeState = " Boarding ";
+          })
+          .catch(function(response: any) {
+            window.console.log(response);
+          });
       }
     },
     TripStarted(state: any, trip: any) {
@@ -60,6 +72,7 @@ export const routes: Module<RouteStore, RootState> = {
     },
     setNextTrip(state: any, nextTrip: any) {
       state.nextTrip = nextTrip;
+      state.routeState = " Await arrival of ";
     }
   },
   actions: {
@@ -89,6 +102,9 @@ export const routes: Module<RouteStore, RootState> = {
     },
     getNextTrip(state: any) {
       return state.nextTrip;
+    },
+    getRouteState(state: any) {
+      return state.routeState;
     }
   }
 };

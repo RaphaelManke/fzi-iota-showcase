@@ -5,19 +5,19 @@
             <b-card header="Start/Stop Station">
                 <b-form-group>
                     <b-row>
-                    <b-col class="padded">
+                    <b-col>
                     Start
                     <b-form-select v-model="currentStop.id" :options="[currentStop]"
                     value-field="id" text-field="name" disabled=true
                     ></b-form-select>
                     </b-col>
-                    <b-col class="padded">
+                    <b-col>
                     Destination
                     <b-form-select v-model="selectedDestination" :options="stops"
                     value-field="id" text-field="name"
                     ></b-form-select>
                     </b-col>
-                    <b-col class="padded" md="auto">
+                    <b-col md="auto">
                       <b-form-group label="Vehicle types">
       <b-form-checkbox-group v-model="vehicleTypes">
         <b-form-checkbox value="car">Car</b-form-checkbox>
@@ -70,7 +70,7 @@
     </b-col>
     </b-row>
     </div>
-    <b-row class="text-center mt-4">
+    <b-row class="text-center">
       <b-col>
     <b-button block variant='primary' @click='submitRoute'>GO!</b-button>
        </b-col>
@@ -223,9 +223,10 @@ export default {
 img {
   height: 12px;
 }
-
-.padded {
-  padding-top: 10px;
-  padding-bottom: 10px;
+.card-body {
+  padding: 0.25rem 1.25rem;
+}
+.card-header {
+  padding: 0.25rem 1.25rem;
 }
 </style>

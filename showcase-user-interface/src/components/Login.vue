@@ -58,7 +58,10 @@ export default {
   methods: {
     onDecode(decodedString) {
       this.seed = decodedString;
-      if (this.state) this.scanning = false;
+      if (this.state) {
+        this.scanning = false;
+        this.login();
+      }
     },
     login() {
       this.$http

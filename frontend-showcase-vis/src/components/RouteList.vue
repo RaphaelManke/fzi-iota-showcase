@@ -6,7 +6,7 @@
 
       <b-card v-for="user in tripinUsers" :header="getHeader(user)">
         <b-row align-h="center">
-          <b-col class="no-space-break">{{getStopById(user.trip.start).name}}</b-col><b-col cols="1"><b-spinner style="height: 18px; width: 18px;" variant="primary" label="Moving.."></b-spinner></b-col><b-col class="no-space-break">{{getStopById(user.trip.destination).name}}</b-col>
+          <b-col class="no-space-break text-center">{{getStopById(user.trip.start).name}}</b-col><b-col class="text-center" cols="1"><b-spinner style="height: 18px; width: 18px;" variant="primary" label="Moving.."></b-spinner></b-col><b-col class="no-space-break text-center">{{getStopById(user.trip.destination).name}}</b-col>
         </b-row>
       </b-card>
 
