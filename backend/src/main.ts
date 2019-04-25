@@ -16,11 +16,11 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
     const args = minimist(process.argv.slice(2), {
       boolean: ['mockPayments', 'mockMessages'],
       default: {
-        vehicles: './vehicles.json',
-        stops: './stops.json',
-        connections: './connections.json',
-        users: './users.json',
-        schedules: './schedules.json',
+        vehicles: './config/vehicles.json',
+        stops: './config/stops.json',
+        connections: './config/connections.json',
+        users: './config/users.json',
+        schedules: './config/schedules.json',
         provider: 'https://nodes.devnet.iota.org',
         mockPayments: false,
         mockMessages: false,
