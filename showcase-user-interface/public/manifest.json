@@ -1,0 +1,16 @@
+{
+  "short_name": "FZI IOTA",
+  "name": "FZI IOTA Mobility Clients",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "type": "image/ico",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/#",
+  "background_color": "#3367D6",
+  "display": "fullscreen",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}
