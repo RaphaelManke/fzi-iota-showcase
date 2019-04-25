@@ -8,7 +8,7 @@ import {
   PaymentIssued,
   Departed,
 } from './events';
-import { EnvironmentInfo, Stop, Connection, User } from './envInfo';
+import { EnvironmentInfo, Stop, Connection, User, Trip } from './envInfo';
 import { Users } from './users';
 import { VehicleDescription } from './vehicleImporter';
 import { Trytes } from '@iota/core/typings/types';
@@ -179,10 +179,10 @@ export class Controller {
 
     this.events.on('TripStarted', (event: TripStarted) => {
       const v = this.vehicles.get(event.vehicleId);
-      const trip = {
+      const trip: Trip = {
         destination: event.destination,
-        user: event.userId,
-        vehicle: event.vehicleId,
+        userId: event.userId,
+        vehicleId: event.vehicleId,
       };
       if (v) {
         v.info.trips.push(trip);
@@ -197,7 +197,7 @@ export class Controller {
     this.events.on('TripFinished', (event: TripFinished) => {
       const v = this.vehicles.get(event.vehicleId);
       if (v) {
-        const index = v.info.trips.findIndex((t) => t.user === event.userId);
+        const index = v.info.trips.findIndex((t) => t.userId === event.userId);
         if (index !== -1) {
           v.info.trips.splice(index, 1);
         }
@@ -213,7 +213,7 @@ export class Controller {
       const v = this.vehicles.get(event.id);
       if (v) {
         v.info.trips
-          .map((t) => this.users.getById(t.user))
+          .map((t) => this.users.getById(t.userId))
           .filter((u) => u !== undefined)
           .forEach((u) => (u!.info.position = event.position));
       }
