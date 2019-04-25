@@ -100,7 +100,7 @@
     <b-col id="haltNextStopButton">
     <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish route</b-button>
     <b-button v-else block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
-    <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next stop:">{{currentStop.name}}</b-popover>
+    <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next Stop">{{currentStop.name}}</b-popover>
     </b-col>
         </b-row>
         </div>
@@ -198,7 +198,6 @@ export default {
           }
         })
         .catch(function(response) {
-          alert("Server error. PLease look in console!");
           window.console.log(response);
         });
     },

@@ -47,8 +47,10 @@ export const routes: Module<RouteStore, RootState> = {
       if (
         state.nextTrip &&
         data.stopId === state.nextTrip.start &&
-        data.vehicleId === state.nextTrip.vehicle
+        data.vehicleId === state.nextTrip.vehicle &&
+        data.allowedDestinations.includes(state.nextTrip.destination)
       ) {
+        window.console.log(data);
         // make the post request
         Vue.http
           .post(Vue.prototype.$hostname + "/trip", state.nextTrip)
