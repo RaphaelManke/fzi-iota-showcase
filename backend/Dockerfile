@@ -20,6 +20,6 @@ RUN npm install && \
 FROM node:lts-alpine as production-stage
 COPY --from=build-stage /app/out ./out
 COPY --from=build-stage /app/node_modules ./node_modules
-COPY ./schedules.json ./stops.json ./users.json ./vehicles.json ./connections.json ./
+COPY ./config/ ./out/config/
 EXPOSE 3000
 CMD ["node", "out/main.js"]
