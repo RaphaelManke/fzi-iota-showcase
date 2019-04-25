@@ -5,7 +5,7 @@ import {
   CheckInMessage,
   Reservation,
 } from 'fzi-iota-showcase-client';
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { Boarder } from './boarder';
 import { Path } from './pathFinder';
 
@@ -15,6 +15,7 @@ export interface TripState {
   welcomeMessage: StopWelcomeMessage;
   checkInMessage: CheckInMessage;
   reservations: Reservation[];
+  settlementAddress: Hash;
   nonce: Trytes;
   state: State;
   start: Trytes;
