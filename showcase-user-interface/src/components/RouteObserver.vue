@@ -90,16 +90,16 @@
     </b-col>
     </b-row>
     </div>
-    <b-row class="text-center mt-4">
+    <b-row class="text-center">
       <b-col>
-    <b-button block variant='primary' @click="refreshRoutes">Refresh routes</b-button>
+    <b-button block variant='primary' @click="refreshRoutes">Refresh</b-button>
     </b-col>
     <b-col>
-    <b-button block variant='warning' @click="changeRoute">Change route</b-button>
+    <b-button block variant='warning' @click="changeRoute">Change</b-button>
     </b-col>
     <b-col id="haltNextStopButton">
-    <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish route</b-button>
-    <b-button v-else block variant='danger' @click="haltAtNextStop">Halt at next Stop</b-button>
+    <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish</b-button>
+    <b-button v-else block variant='danger' @click="haltAtNextStop">Stop</b-button>
     <b-popover placement="top" target="haltNextStopButton" :show.sync="haltAtNextStopShow" title="Next Stop">{{currentStop.name}}</b-popover>
     </b-col>
         </b-row>
@@ -301,6 +301,12 @@ export default {
 <style scoped>
 img {
   height: 12px;
+}
+.card-body {
+  padding: 0.25rem 1.25rem;
+}
+.card-header {
+  padding: 0.25rem 1.25rem;
 }
 </style>
 
