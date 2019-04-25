@@ -13,6 +13,7 @@ import {
   log,
   PaymentChannelState,
   TransactionCreatedMessage,
+  Exception,
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
@@ -105,12 +106,18 @@ export class TripHandler {
         [this.digests, message.digests],
         [this.settlementAddress, message.settlement],
       );
-      const bundleHash = await this.depositor(
-        this.price!,
-        this.paymentChannel.rootAddress,
-      );
-      this.state = State.DEPOSIT_SENT;
-      this.sender.depositSent(bundleHash, this.price!);
+      try {
+        const bundleHash = await this.depositor(
+          this.price!,
+          this.paymentChannel.rootAddress,
+        );
+        this.state = State.DEPOSIT_SENT;
+        this.sender.depositSent(bundleHash, this.price!);
+      } catch (e) {
+        this.state = State.CLOSED;
+        log.error(new Exception('User failed sending deposit', e));
+        this.sender.cancelBoarding('Could not send deposit.');
+      }
     } else {
       this.state = State.CLOSED;
       this.sender.cancelBoarding(
@@ -125,21 +132,27 @@ export class TripHandler {
   public async onDepositSent(message: DepositSentMessage) {
     log.silly('Vehicle sent deposit %O', message);
     if (this.state === State.DEPOSIT_SENT) {
-      const txs = await this.txReader(message.depositTransaction);
-      const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
-      if (tx) {
-        if (tx.value === this.price) {
-          this.paymentChannel.updateDeposit([this.price, tx.value]);
-          this.state = State.READY_FOR_PAYMENT;
-          this.sendTransaction();
+      try {
+        const txs = await this.txReader(message.depositTransaction);
+        const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
+        if (tx) {
+          if (tx.value === this.price) {
+            this.paymentChannel.updateDeposit([this.price, tx.value]);
+            this.state = State.READY_FOR_PAYMENT;
+            this.sendTransaction();
+          } else {
+            this.state = State.CLOSED;
+            this.sender.cancelBoarding('Transaction has false amount');
+          }
         } else {
           this.state = State.CLOSED;
-          this.sender.cancelBoarding('Transaction has false amount');
+          log.debug('Vehicle sent bundle %O', txs);
+          this.sender.cancelBoarding('Transaction is not for multisig root');
         }
-      } else {
+      } catch (e) {
         this.state = State.CLOSED;
-        log.debug('Vehicle sent bundle %O', txs);
-        this.sender.cancelBoarding('Transaction is not for multisig root');
+        log.error(new Exception('User failed reading deposit tx', e));
+        this.sender.cancelBoarding('Could not read deposit.');
       }
     }
   }

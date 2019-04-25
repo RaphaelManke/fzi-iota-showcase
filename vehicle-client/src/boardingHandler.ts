@@ -9,6 +9,7 @@ import {
   CancelBoardingMessage,
   log,
   TransactionSignedMessage,
+  Exception,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -128,23 +129,35 @@ export class BoardingHandler {
   public async onDepositSent(message: DepositSentMessage) {
     log.silly('User sent depsoit %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
-      const txs = await this.txReader(message.depositTransaction);
-      const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
-      if (tx) {
-        if (tx.value === this.price) {
-          const bundleHash = await this.depositor(
-            this.price!,
-            this.paymentChannel.rootAddress,
-          );
-          this.paymentChannel.updateDeposit([this.price, tx.value]);
-          this.state = State.READY_FOR_PAYMENT;
-          this.sender.depositSent(bundleHash, this.price!);
-        } else {
-          this.state = State.CLOSED;
-          this.sender.cancelBoarding(
-            `Transaction should have amount ${this.price} but has ${tx.value}`,
-          );
+      try {
+        const txs = await this.txReader(message.depositTransaction);
+        const tx = txs.find((t) => t.address === this.paymentChannel.rootAddress);
+        if (tx) {
+          if (tx.value === this.price) {
+            try {
+              const bundleHash = await this.depositor(
+                this.price!,
+                this.paymentChannel.rootAddress,
+              );
+              this.paymentChannel.updateDeposit([this.price, tx.value]);
+              this.state = State.READY_FOR_PAYMENT;
+              this.sender.depositSent(bundleHash, this.price!);
+            } catch (e) {
+              this.state = State.CLOSED;
+              log.error(new Exception('Vehicle failed sending deposit', e));
+              this.sender.cancelBoarding('Could not send deposit.');
+            }
+          } else {
+            this.state = State.CLOSED;
+            this.sender.cancelBoarding(
+              `Transaction should have amount ${this.price} but has ${tx.value}`,
+            );
+          }
         }
+      } catch (e) {
+        this.state = State.CLOSED;
+        log.error(new Exception('Vehicle failed reading deposit tx', e));
+        this.sender.cancelBoarding('Could not read deposit.');
       }
     } else {
       const state = this.state;

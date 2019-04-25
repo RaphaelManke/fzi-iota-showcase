@@ -28,8 +28,8 @@ export interface Position {
 }
 
 export interface Trip {
-  user: Trytes;
-  vehicle: Trytes;
+  userId: Trytes;
+  vehicleId: Trytes;
   destination: Trytes;
 }
 
