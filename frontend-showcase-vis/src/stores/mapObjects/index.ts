@@ -18,7 +18,7 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
     SOCKET_PosUpdated(state: any, data: any) {
       const vehicle = state.env.vehicles.find((el: any) => el.id === data.id);
       vehicle.position = data.position;
-      if (!(vehicle.trips.length > 0)) {
+      if (vehicle.trips.length > 0) {
         vehicle.trips.forEach((trip: any) => {
           const user = state.env.users.find((el: any) => el.id === trip.userId);
           user.position = data.position;
@@ -38,9 +38,6 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
       state.env.users = newUsers;
       const newVehicles = [...state.env.vehicles];
       newVehicles.find((el: any) => el.id === data.vehicleId).trips.push(data);
-      newVehicles.find(
-        (el: any) => el.id === data.vehicleId
-      ).checkIn.stop = undefined;
       state.env.vehicles = newVehicles;
     },
     SOCKET_TripFinished(state: any, data: any) {
@@ -48,9 +45,10 @@ export const mapObjects: Module<MapObjectsState, RootState> = {
       newUsers.find((el: any) => el.id === data.userId).trip = undefined;
       state.env.users = newUsers;
       const newVehicles = [...state.env.vehicles];
-      newVehicles
-        .find((el: any) => el.id === data.vehicleId)
-        .trips.filter((el: any) => el.user !== data.userId);
+      const vehicle = newVehicles.find((el: any) => el.id === data.vehicleId);
+      vehicle.trips = vehicle.trips.filter(
+        (el: any) => el.userId !== data.userId
+      );
       state.env.vehicles = newVehicles;
     }
   },
