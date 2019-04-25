@@ -22,8 +22,8 @@
                                 <b-popover :show.sync="!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
         <b-button variant="primary" @click="resumeRoute">Resume</b-button>
       </b-popover>
-      <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Wait for vehicle to resume">
-        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="Waiting.."></b-spinner> Waiting for {{getVehicleById(section.vehicle.id).name}}
+      <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Waiting for next step">
+        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="RouteState"></b-spinner>{{routeState}}{{getVehicleById(section.vehicle.id).name}}
       </b-popover>
       <b-popover v-if="destination===section.to" :show.sync="!userInfo.trip&&currentStopId===destination" :target="section.to" placement="top" title="Route ended">
         <b-button variant="primary" @click="finishRoute">Finish route</b-button>
@@ -131,6 +131,9 @@ export default {
     this.locallySelectedRouteIndex = this.selectedRouteIndex;
   },
   computed: {
+    routeState() {
+      return this.$store.getters["routes/getRouteState"];
+    },
     userInfo() {
       return this.$store.getters["user/getUserInfo"];
     },

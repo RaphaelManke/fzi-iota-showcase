@@ -4,6 +4,7 @@ export interface RouteStore {
   routeSelected: any;
   trip: any;
   nextTrip: any;
+  routeState: string;
 }
 
 export interface RouteInfo {
