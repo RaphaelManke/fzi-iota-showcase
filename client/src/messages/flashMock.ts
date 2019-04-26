@@ -2,7 +2,7 @@ import { PaymentChannel, PaymentChannelState } from './boarding';
 import { Hash, Trytes } from '@iota/core/typings/types';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
-import { generateAddress } from '@iota/core/typings/core/src';
+import { generateAddress } from '@iota/core';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
@@ -10,7 +10,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   private seed?: Hash;
   private deposits?: number[];
   private settlementAddresses?: any[];
-  private spent = new Map<Hash, number>();
+  private userIndex?: number;
+  private settlementAddress?: Hash;
+  private balances = new Map<Hash, number>();
 
   private depth?: number;
 
@@ -23,11 +25,14 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     security: number,
   ) {
     this.depth = depth;
+    this.userIndex = userIndex;
+    this.settlementAddress = settlementAddress;
     this.state = PaymentChannelState.CREATED;
   }
 
   public updateDeposit(deposits: number[]) {
     this.state = PaymentChannelState.READY;
+    this.settlementAddresses!.forEach((address, index) => this.balances.set(address, deposits[index]));
   }
 
   public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
@@ -40,10 +45,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   public applyTransaction(signedBundles: any[]) {
     this.state = PaymentChannelState.READY;
     const tx = signedBundles[0][0];
-    if (!this.spent.has(tx.address)) {
-      this.spent.set(tx.address, 0);
-    }
-    this.spent.set(tx.address, this.spent.get(tx.address) + tx.value);
+    this.balances.set(tx.address, this.balances.get(tx.address) + tx.value);
+    const myAddress = this.settlementAddresses![this.userIndex!];
+    this.balances.set(myAddress, this.balances.get(myAddress)! - tx.value);
   }
 
   public async attachCurrentBundle(): Promise<Hash> {
