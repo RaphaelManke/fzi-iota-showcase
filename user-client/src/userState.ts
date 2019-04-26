@@ -63,12 +63,14 @@ export class UserState {
     );
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
+    const flash = new FlashMock();
     // use real or mocked payment functions
     let depositor: (value: number, address: Hash) => Promise<string>;
     let txReader: (bundleHash: Hash) => Promise<Bundle>;
     if (this.mockPayments) {
       depositor = async (value, address) => '';
-      txReader = async (bundleHash) => this.mockedBundle(maxPrice);
+      txReader = async (bundleHash) =>
+        this.mockedBundle(maxPrice, flash.rootAddress);
     } else {
       depositor = async (value, address) => {
         const txTrytes = await this.iota.prepareTransfers(this.seed, [
@@ -89,7 +91,7 @@ export class UserState {
       paymentAmount,
       depositor,
       txReader,
-      new FlashMock(),
+      flash,
       sender,
     );
   }
@@ -119,10 +121,10 @@ export class UserState {
     }
   }
 
-  private mockedBundle(price: number): Bundle {
+  private mockedBundle(price: number, address: Hash): Bundle {
     return [
       {
-        address: 'A'.repeat(81),
+        address,
         value: price,
         attachmentTimestamp: 0,
         attachmentTimestampLowerBound: 0,

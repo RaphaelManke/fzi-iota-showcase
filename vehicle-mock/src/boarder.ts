@@ -5,19 +5,9 @@ import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { Observer } from './observer';
 import { Vehicle } from './vehicle';
 import { Path, PathFinder, Connection } from './pathFinder';
+import { API } from '@iota/core';
 
 export class Boarder {
-  private h?: BoardingHandler;
-  private observer?: Partial<Observer>;
-
-  constructor(
-    private readonly vehicle: Vehicle,
-    public readonly userId: Trytes,
-    private readonly settlementAddress: Hash,
-    private path: Path,
-    private readonly pricePerMeter: number,
-    private readonly onTripFinished: (stop: Trytes) => void,
-  ) {}
 
   public get handler() {
     return this.h!;
@@ -30,6 +20,17 @@ export class Boarder {
   public get destination() {
     return this.path.connections[this.path.connections.length - 1].to;
   }
+  private h?: BoardingHandler;
+  private observer?: Partial<Observer>;
+
+  constructor(
+    private readonly vehicle: Vehicle,
+    public readonly userId: Trytes,
+    private readonly settlementAddress: Hash,
+    private path: Path,
+    private readonly pricePerMeter: number,
+    private readonly onTripFinished: (stop: Trytes) => void,
+  ) {}
 
   public onStartDriving() {
     const { price } = this.getPriceDistanceCalculator()(this.destination);
@@ -40,7 +41,8 @@ export class Boarder {
   public startBoarding(
     sendToUser: Sender,
     depositor: (value: number, address: Hash) => Promise<string>,
-    txReader: (bundleHash: Hash) => Promise<Bundle>,
+    mockPayments: boolean,
+    iota: API,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
   ): Promise<void> {
     return new Promise<void>((res, rej) => {
@@ -52,6 +54,16 @@ export class Boarder {
           res,
           rej,
         );
+        const flash = new FlashMock();
+        const { price } = this.getPriceDistanceCalculator()(this.destination);
+        // use real or mocked payment functions
+        let txReader: (bundleHash: Hash) => Promise<Bundle>;
+        if (mockPayments) {
+          txReader = async (bundleHash) =>
+            this.mockedBundle(price, flash.rootAddress);
+        } else {
+          txReader = async (bundleHash) => await iota.getBundle(bundleHash);
+        }
 
         this.h = new BoardingHandler(
           this.vehicle.trip!.nonce,
@@ -62,7 +74,7 @@ export class Boarder {
           this.getPriceDistanceCalculator(),
           depositor,
           txReader,
-          new FlashMock(),
+          flash,
           senderProxy,
         );
         setSentVehicleHandler(this.handler);
@@ -103,12 +115,36 @@ export class Boarder {
     }
   }
 
+  private mockedBundle(price: number, address: Hash): Bundle {
+    return [
+      {
+        address,
+        value: price,
+        attachmentTimestamp: 0,
+        attachmentTimestampLowerBound: 0,
+        attachmentTimestampUpperBound: 0,
+        branchTransaction: '',
+        bundle: '',
+        confirmed: true,
+        currentIndex: 0,
+        hash: '',
+        lastIndex: 0,
+        nonce: '',
+        obsoleteTag: '',
+        signatureMessageFragment: '',
+        tag: '',
+        timestamp: 0,
+        trunkTransaction: '',
+      },
+    ];
+  }
+
   private getPriceDistanceCalculator() {
-    const path = this.path;
+    const self = this;
     const type = this.vehicle.info.type;
     const pricePerMeter = this.pricePerMeter;
     return (dest: Trytes) => {
-      const route = getPath(path.connections, dest, type);
+      const route = getPath(self.path.connections, dest, type);
       const dis = getPathLength(
         route.waypoints.map((pos) => ({
           latitude: pos.lat,

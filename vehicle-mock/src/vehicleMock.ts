@@ -222,10 +222,8 @@ export class VehicleMock {
 
             // use real or mocked payment functions
             let depositor: (value: number, address: Hash) => Promise<string>;
-            let txReader: (bundleHash: Hash) => Promise<Bundle>;
             if (this.mockPayments) {
               depositor = async (value, address) => '';
-              txReader = async (bundleHash) => this.mockedBundle(price);
             } else {
               depositor = async (value, address) => {
                 const txTrytes = await this.iota.prepareTransfers(
@@ -239,8 +237,6 @@ export class VehicleMock {
                 );
                 return txs[0].bundle;
               };
-              txReader = async (bundleHash) =>
-                await this.iota.getBundle(bundleHash);
             }
 
             const boarder = new Boarder(
@@ -256,7 +252,8 @@ export class VehicleMock {
               .startBoarding(
                 sendToUser,
                 depositor,
-                txReader,
+                this.mockPayments,
+                this.iota,
                 setSentVehicleHandler,
               )
               .then(() => {
@@ -383,30 +380,6 @@ export class VehicleMock {
     } else {
       return Promise.reject(new Error('Trip was not set'));
     }
-  }
-
-  private mockedBundle(price: number): Bundle {
-    return [
-      {
-        address: 'A'.repeat(81),
-        value: price,
-        attachmentTimestamp: 0,
-        attachmentTimestampLowerBound: 0,
-        attachmentTimestampUpperBound: 0,
-        branchTransaction: '',
-        bundle: '',
-        confirmed: true,
-        currentIndex: 0,
-        hash: '',
-        lastIndex: 0,
-        nonce: '',
-        obsoleteTag: '',
-        signatureMessageFragment: '',
-        tag: '',
-        timestamp: 0,
-        trunkTransaction: '',
-      },
-    ];
   }
 
   private hash(value: Trytes) {

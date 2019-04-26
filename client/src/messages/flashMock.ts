@@ -1,9 +1,16 @@
 import { PaymentChannel, PaymentChannelState } from './boarding';
-import { Hash } from '@iota/core/typings/types';
+import { Hash, Trytes } from '@iota/core/typings/types';
+import { trits, trytes } from '@iota/converter';
+import Kerl from '@iota/kerl';
+import { generateAddress } from '@iota/core/typings/core/src';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
-  public rootAddress = 'A'.repeat(81);
+  public rootAddress: Hash = '';
+  private seed?: Hash;
+  private deposits?: number[];
+  private settlementAddresses?: any[];
+  private spent = new Map<Hash, number>();
 
   private depth?: number;
 
@@ -25,10 +32,18 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
     this.state = PaymentChannelState.WAIT_FOR_DEPOSIT;
+    this.settlementAddresses = settlementAddresses;
+    this.seed = hash(settlementAddresses.reduce((acc, v) => acc + v, ''));
+    this.rootAddress = generateAddress(this.seed, 0);
   }
 
   public applyTransaction(signedBundles: any[]) {
     this.state = PaymentChannelState.READY;
+    const tx = signedBundles[0][0];
+    if (!this.spent.has(tx.address)) {
+      this.spent.set(tx.address, 0);
+    }
+    this.spent.set(tx.address, this.spent.get(tx.address) + tx.value);
   }
 
   public async attachCurrentBundle(): Promise<Hash> {
@@ -75,4 +90,14 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     this.state = PaymentChannelState.GENERATED_DIGESTS;
     return new Array(amount).fill('');
   }
+}
+
+function hash(value: Trytes) {
+  const kerl = new Kerl();
+  kerl.initialize();
+  const input = trits(value);
+  kerl.absorb(input, 0, input.length);
+  const result = new Int8Array(Kerl.HASH_LENGTH);
+  kerl.squeeze(result, 0, input.length);
+  return trytes(result);
 }
