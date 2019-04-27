@@ -1,6 +1,6 @@
 # Requirements
 
-The showcase shoudl show which problems can (only) be solved with IOTA.
+The showcase should show which problems can (only) be solved with IOTA.
 
 Important aspects are:
 
@@ -31,4 +31,4 @@ For example, a participant can inform himself decentrally about available mobili
 
 Suppose person A wants to travel in Karlsruhe from the stop Rüppurer Tor to Karlstor. To do this, he asks for all the mobility options on the Tangle and can combine and book them as he wishes. Since selection and payment are fine-grained, the services used or booked can also be changed during the trip. On arrival at the desired destination, all 'formalities' and payments have already been made and you can simply leave the means of transport.\\The functionality of the protoypical implementation is illustrated in the screenshot.
 
-![select](./screenshos/select.png)
+![select](https://raw.githubusercontent.com/RaphaelManke/fzi-iota-showcase/raw/master/docs/screenshots/select.png)
