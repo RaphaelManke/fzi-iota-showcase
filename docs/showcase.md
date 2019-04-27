@@ -29,6 +29,9 @@ For example, a participant can inform himself decentrally about available mobili
 
 # User case
 
-Suppose person A wants to travel in Karlsruhe from the stop Rüppurer Tor to Karlstor. To do this, he asks for all the mobility options on the Tangle and can combine and book them as he wishes. Since selection and payment are fine-grained, the services used or booked can also be changed during the trip. On arrival at the desired destination, all 'formalities' and payments have already been made and you can simply leave the means of transport.\\The functionality of the protoypical implementation is illustrated in the screenshot.
+Suppose person A wants to travel in Karlsruhe from the stop Rüppurer Tor to Karlstor. To do this, he asks for all the mobility options on the Tangle and can combine and book them as he wishes. Since selection and payment are fine-grained, the services used or booked can also be changed during the trip. On arrival at the desired destination, all 'formalities' and payments have already been made and you can simply leave the means of transport.<br/>The functionality of the protoypical implementation is illustrated in the screenshot.
 
 ![select](https://github.com/RaphaelManke/fzi-iota-showcase/blob/master/docs/screenshots/select.png)
+![trip](https://github.com/RaphaelManke/fzi-iota-showcase/blob/master/docs/screenshots/trip.png)
+![resume](https://github.com/RaphaelManke/fzi-iota-showcase/blob/master/docs/screenshots/resume.png)
+![waiting](https://github.com/RaphaelManke/fzi-iota-showcase/blob/master/docs/screenshots/waiting.png)
