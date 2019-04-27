@@ -46,10 +46,19 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   public applyTransaction(signedBundles: any[]) {
     this.state = PaymentChannelState.READY;
-    const tx = signedBundles[0][0];
-    this.balances.set(tx.address, this.balances.get(tx.address) + tx.value);
-    const myAddress = this.settlementAddresses![this.userIndex!];
-    this.balances.set(myAddress, this.balances.get(myAddress)! - tx.value);
+    if (
+      signedBundles &&
+      Array.isArray(signedBundles) &&
+      signedBundles[0] &&
+      Array.isArray(signedBundles[0])
+    ) {
+      const tx = signedBundles[0][0];
+      if (tx && tx.address && tx.value) {
+        this.balances.set(tx.address, this.balances.get(tx.address) + tx.value);
+        const myAddress = this.settlementAddresses![this.userIndex!];
+        this.balances.set(myAddress, this.balances.get(myAddress)! - tx.value);
+      }
+    }
   }
 
   public async attachCurrentBundle(): Promise<Hash> {
