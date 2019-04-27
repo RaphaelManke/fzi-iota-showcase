@@ -38,7 +38,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
     this.state = PaymentChannelState.WAIT_FOR_DEPOSIT;
     this.settlementAddresses = settlementAddresses;
-    this.seed = hash(settlementAddresses.reduce((acc, v) => acc + v, ''));
+    this.seed = hash(settlementAddresses
+      .map((a) => a.length < 81 ? a + '9'.repeat(81 - a.length) : a)
+      .reduce((acc, v) => acc + v, ''));
     this.rootAddress = generateAddress(this.seed, 0);
   }
 
