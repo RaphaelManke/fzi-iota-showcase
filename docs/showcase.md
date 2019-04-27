@@ -27,7 +27,7 @@ The permissionless marketplaced run on the iota protokoll is desined by a number
 A first prototype was implemented for illustration purposes. This is based on a simulated environment in which different mobility participants interact with each other via the tangle.
 For example, a participant can inform himself decentrally about available mobility offers and book or pay for them directly.
 
-# User case
+# Use case
 
 Suppose person A wants to travel in Karlsruhe from the stop Rüppurer Tor to Karlstor. To do this, he asks for all the mobility options on the Tangle and can combine and book them as he wishes. Since selection and payment are fine-grained, the services used or booked can also be changed during the trip. On arrival at the desired destination, all 'formalities' and payments have already been made and you can simply leave the means of transport.<br/>The functionality of the protoypical implementation is illustrated in the screenshot.
 
