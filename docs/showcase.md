@@ -1,60 +1,34 @@
-# Ziel 
-Der Showcase soll zeigen, welche Probleme sich (nur) mit IOTA lösen lassen.
+# Requirements
 
-Wichtige Aspekte sind dabei:
-1. die Anschaulichkeit des Showcases
-2. die Relevanz, dass der Showcase dezentrale Technologien nutzt
-3. die Relevanz, dass der Showcase Mikrotransaktionen nutzt
+The showcase shoudl show which problems can (only) be solved with IOTA.
 
-# Szenario
-Menschen nutzen, um von einem Ort zum Anderen zu kommen, eine wachsende Anzahl verschiedener Verkehrsmittel, wie z.B. Fahrrad, Straßenbahn oder Auto. Dabei spielen verschiedene Faktoren wie Zeitaufwand, Preis oder CO<sub>2</sub>-Ausstoß eine Rolle. Immer häufiger werden die Verkehrsmittel nur für ebendiese Verbindungen geliehen und gehören nicht mehr den Fahrern selbst.
+Important aspects are:
 
-Allerdings ist dies zurzeit noch mit einem hohen Organisationsaufwand verbunden, da jedes Verkehrsmittel über ein anderes System gebucht werden muss. Desweiteren sind die Preismodelle wenig flexibel, sodass es sich z.B. nicht lohnt, nur eine sehr kurze Strecke zu fahren. Um das Nutzen verschiedener Verkehrsmittel attraktiv zu machen und den Vekehr effizienter zu machen, wird ein Leih- und Bezahlsystem (Ticketsystem) benötigt, das in der Lage ist, die Nutzung feingranular abzurechnen und Fahrten mit verschiedenen Verkehrsmitteln zu verwalten. Das System sollte möglichst vielen Teilnehmern offen stehen und für diese lukrativ sein, indem der Betreiber im besten Fall keine Gebühren verlangt.
+1. Comprehensibility why DLT is needed
+2. The relevance that the showcase uses micro transactions
+3. Educational understanding of the IOTA protocol
 
-## Technische Probleme
-Ein Ticketsystem, dass Fahrten mit verschiedenen Verkehrsmitteln realisiert, birgt das Problem, dass sich die verschiedenen Anbieter von Verkehrsmitteln nicht per se vertrauen, sowohl untereinander als auch dem System selbst. Desweiteren muss das System in der Lage sein, Daten über angebotene Verkehrsmittel und gebuchte Fahrten geschützt vor Veränderung zu speichern und allen Teilnehmern anzuzeigen. Außerdem muss es möglich sein, die Fahrten sicher zu zahlen, sodass jeder Anbieter eines Verkehrsmittels korrekt vergütet wird.
+# Scenario
 
-## Lösungsansatz
-Ein Ticketsystem, dass die genannten Probleme löst, kann mit IOTA realisiert werden. Die Verkehrsmittel könenn auf einem dezentralen Marktplatz angeboten werden, zu dem jeder Zugang hat. Sowohl angebotene Verkehrsmittel als auch gebuchte Fahrten werden im Tangle abgelegt, wo sie unveränderlich sind. Die Fahrten können feingranular, z.B. pro gefahrenenm Meter, als Mikrotransaktionen abgerechnet werden, da IOTA keine Transaktions-Gebühren verlangt.
+People use a growing number of different means of transport, such as bicycles, trams or cars, to get from one place to another. Various factors such as time, price or CO<sub>2</sub> emissions play a role. More and more often, the means of transport are only borrowed for these connections and no longer belong to the drivers themselves.
 
-# Showcase
-Um das beschriebene Szenario minituarisiert zu demonstrieren, wird ein Showcase realisiert, der Interessenten ohne Vorwissen die Funktionsweise und Vorteile von IOTA veranschaulicht.
+However, this is currently still associated with a high organisational effort, as each means of transport must be booked via a different system. Furthermore, the price models are not very flexible, so it is not worthwhile, for example, to travel only a very short distance. In order to make the use of different means of transport attractive and to make transport more efficient, a loan and payment system (ticket system) is needed that is able to invoice the use of different means of transport on a fine granular basis and to manage journeys with different means of transport. The system aims to represent a permissionless marketplace for mobility services which purely runs on a DLT and does not rely on any kind of intermediary.
 
-## Aufbau
-Der Showcase ist einem Tisch aufgebaut, auf dem sich eine kreisförmige Fahrbahn befindet. Auf dieser können mehrere Autos, die die verschiedenen Verkehrsmittel darstellen, fahren. Desweiteren werden Lego-Figuren an die Gäste verteilt, mit denen man mit dem Showcase interagieren kann. Der Zustand des Showcases sowie etwaige Transaktionen auf dem IOTA Tangle werden auf einem Bildschirm angezeigt.
+# Technical problems
 
-## Use Case
-Ein Nutzer interagiert mit dem Showcase als Fahrer, das heißt, er möchte von einem Ort zum Anderen kommen und nutzt dabei ein bestimmtes Verkehrsmittel. 
+A ticket system that realises journeys with different means of transport has the problem that the different providers of means of transport do not trust each other per se, both among themselves and the system itself. In addition, the system must be able to store data about offered means of transport and booked journeys protected from changes and to display them to all participants. It must also be possible to pay for journeys securely so that every provider of a means of transport is correctly remunerated.
 
-1. Er setzt seine Lego-Figur auf eines der Fahrzeuge. Das Fahrzeug erkennt den Fahrer, der die erste Mikrotransaktion ausführt, um die Fahrt zu bezahlen. Dies wird auf dem Bildschirm angezeigt. 
+# Proposed solution
 
-2. Ist die Transaktion eingegangen, setzt sich das Fahrzeug in Bewegung. Während das Fahrzeug fährt, werden in regelmäßigen Abständen Mikrotransaktionen ausgeführt. Außerdem werden Preis, Geschwindigkeit und CO<sub>2</sub>-Verbrauch auf dem Bildschrim angezeigt.
+The permissionless marketplaced run on the iota protokoll is desined by a number of linked MAM and RAAM messaging channels which can replicate all precedures neccessary. The specefication of these can be found in the docs. Both offered means of transport and booked journeys are deposited in the Tangle, where they are unchangeable. Since IOTA does not charge any transaction fees, he journeys can be payed fine-grained, e.g. per meter driven, as microtransactions.
 
-3. Ist das Auto wieder am Ausgangspunkt angekommen, hält es an. Auf dem Bildschrim werden die Kontostände für das Auto und den Fahrer angezeigt.
+# Setup
 
-Dies ist eine minimale Version eines möglichen Use Cases, der gegebenenfalls erweitert werden kann. 
+A first prototype was implemented for illustration purposes. This is based on a simulated environment in which different mobility participants interact with each other via the tangle.
+For example, a participant can inform himself decentrally about available mobility offers and book or pay for them directly.
 
-## Technische Anforderungen
-### Fahrbahn
-- in sich geschlossen (z.B. kreisförmig)
-- mehrspurig (Fahrzeuge müssen nebeneinander fahren können)
+# User case
 
-### mehrere Fahrzeuge
-- müssen der Fahrbahn folgen können
-- müssen anpassbare Geschwindigkeit haben
-- müssen RFID-Daten lesen können
-- müssen Schnittstelle zur automatisierten Steuerung (losfahren, anhalten, Geschwindigkeit anpassen) besitzen
-- müssen Daten an Kontroll-Server senden können
-- müssen Ablagestelle für Lego-Figur besitzen
+Suppose person A wants to travel in Karlsruhe from the stop Rüppurer Tor to Karlstor. To do this, he asks for all the mobility options on the Tangle and can combine and book them as he wishes. Since selection and payment are fine-grained, the services used or booked can also be changed during the trip. On arrival at the desired destination, all 'formalities' and payments have already been made and you can simply leave the means of transport.\\The functionality of the protoypical implementation is illustrated in the screenshot.
 
-### Lego-Figuren
-- müssen RFID-Chips mit von einander unterscheidbaren Daten besitzen
-
-### Kontroll-Server
-- muss Fahrzeuge steuern können
-- muss Lego-Figuren anhand von RFID-Daten Wallet zuordnen
-- muss Wallets der Lego-Figuren und Fahrzeuge verwalten
-- muss Eigenschaften der verschiedenen Fahrzeuge halten
-- muss IOTA Transaktionen ausführen und beobachten können
-- muss Zustand des Showcases (Preis, Geschwindigkeit der Fahrzeuge, ausgeführte Transaktionen) halten
-- muss Zustand auf Web-Oberfläche darstellen können
+![select](./screenshos/select.png)
