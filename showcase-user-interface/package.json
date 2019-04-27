@@ -1,7 +1,6 @@
 {
   "name": "fzi-iota-showcase-user-interface",
   "version": "0.0.1",
-  "private": false,
   "description": "",
   "scripts": {
     "serve": "vue-cli-service serve",
