@@ -23,6 +23,18 @@ export function enableLogging(
           entity: isUser(data.from) ? 'User' : 'Vehicle',
         };
         break;
+      case 'TransactionIssued':
+        format =
+          data.type === 'value'
+            ? {
+                skip: 'from',
+                entity: isUser(data.from) ? 'User' : 'Vehicle',
+              }
+            : {
+                skip: 'vehicle',
+                entity: 'Vehicle',
+              };
+        break;
       case 'PosUpdated':
         format = { skip: 'id', entity: 'Vehicle' };
         break;
@@ -100,6 +112,7 @@ bgs.set('Logout', colors.bgRed);
 bgs.set('PosUpdated', colors.bgWhite);
 bgs.set('ReservationIssued', colors.bgGreen);
 bgs.set('ReservationExpired', colors.bgYellow);
+bgs.set('TransactionIssued', colors.bgMagenta);
 
 function colorBg(s: Event[0]) {
   if (!bgs.has(s)) {

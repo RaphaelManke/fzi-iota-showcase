@@ -226,6 +226,9 @@ function getId(type: string[], data: any) {
     case 'Departed':
       prop = 'vehicleId';
       break;
+    case 'TransactionIssued':
+      prop = data.type === 'value' ? 'from' : 'vehicle';
+      break;
     default:
       prop = 'userId';
       break;

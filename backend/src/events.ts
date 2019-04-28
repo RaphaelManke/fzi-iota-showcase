@@ -56,7 +56,8 @@ export type Event =
   | ['TripFinished', TripFinished]
   | ['PosUpdated', PosUpdated]
   | ['Logout', Logout]
-  | ['PaymentIssued', PaymentIssued];
+  | ['PaymentIssued', PaymentIssued]
+  | ['TransactionIssued', TransactionIssued];
 
 export interface ReachedStop {
   stopId: Trytes;
@@ -74,6 +75,29 @@ export interface Departed {
   stop: Trytes;
   destination: Trytes;
 }
+
+export interface Transaction {
+  value: number;
+  address: Hash;
+  type: string;
+}
+
+export interface CheckIn {
+  vehicle: Trytes;
+  stop: string;
+}
+
+export interface Departed {
+  vehicle: Trytes;
+  stop: string;
+}
+
+export interface Value {
+  from: Trytes;
+  to: Trytes;
+}
+
+export type TransactionIssued<T = CheckIn | Departed | Value> = Transaction & T;
 
 export interface Login {
   id: Trytes;
