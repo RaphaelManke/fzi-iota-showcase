@@ -60,16 +60,24 @@ export class Users {
     });
   }
 
-  public async initUsers() {
-    await Promise.all(
-      Array.from(this.bySeed.entries()).map(([, { info, state }]) =>
-        (async () => {
-          log.info('Init user %s', info.id);
-          const result = await state.getAccountData();
-          info.balance = result.balance;
-        })(),
-      ),
-    );
+  public async initUsers(parallelInit = false) {
+    const promises = [];
+    for (const [seed, { info, state }] of this.bySeed) {
+      const p = (async () => {
+        log.info('Init user %s', info.id);
+        const result = await state.getAccountData();
+        info.balance = result.balance;
+      })().catch((e) => {
+        log.error('Init User %s failed. ' + (e.message || e), info.id);
+        this.bySeed.delete(seed);
+        this.byId.delete(info.id);
+      });
+      if (!parallelInit) {
+        await p;
+      }
+      promises.push(p);
+    }
+    await Promise.all(promises);
   }
 
   public getById(id: Trytes) {

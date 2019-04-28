@@ -2,7 +2,8 @@ import { PaymentChannel, PaymentChannelState } from './boarding';
 import { Hash, Trytes } from '@iota/core/typings/types';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
-import { generateAddress } from '@iota/core';
+import { generateAddress, API } from '@iota/core';
+import * as Bluebird from 'bluebird';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
@@ -15,6 +16,8 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   private balances = new Map<Hash, number>();
 
   private depth?: number;
+
+  constructor(private readonly iota?: API) {}
 
   public open(
     settlementAddress: Hash,
@@ -32,15 +35,19 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   public updateDeposit(deposits: number[]) {
     this.state = PaymentChannelState.READY;
-    this.settlementAddresses!.forEach((address, index) => this.balances.set(address, deposits[index]));
+    this.settlementAddresses!.forEach((address, index) =>
+      this.balances.set(address, deposits[index]),
+    );
   }
 
   public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
     this.state = PaymentChannelState.WAIT_FOR_DEPOSIT;
     this.settlementAddresses = settlementAddresses;
-    this.seed = hash(settlementAddresses
-      .map((a) => a.length < 81 ? a + '9'.repeat(81 - a.length) : a)
-      .reduce((acc, v) => acc + v, ''));
+    this.seed = hash(
+      settlementAddresses
+        .map((a) => (a.length < 81 ? a + '9'.repeat(81 - a.length) : a))
+        .reduce((acc, v) => acc + v, ''),
+    );
     this.rootAddress = generateAddress(this.seed, 0);
   }
 
@@ -52,17 +59,25 @@ export class FlashMock implements PaymentChannel<any, any, any> {
       signedBundles[0] &&
       Array.isArray(signedBundles[0])
     ) {
-      const tx = signedBundles[0][0];
-      if (tx && tx.address && tx.value) {
-        this.balances.set(tx.address, this.balances.get(tx.address) + tx.value);
-        const myAddress = this.settlementAddresses![this.userIndex!];
-        this.balances.set(myAddress, this.balances.get(myAddress)! - tx.value);
-      }
+      const txs = signedBundles[0];
+      txs.forEach(({ value, address }: { value: number; address: Hash }) => {
+        const old = this.balances.get(address) || 0;
+        this.balances.set(address, old + value);
+      });
     }
   }
 
   public async attachCurrentBundle(): Promise<Hash> {
-    return '';
+    if (this.iota) {
+      const transfers = Array.from(this.balances.entries()).map(
+        ([address, value]) => ({ address, value }),
+      );
+      const trytes = await this.iota.prepareTransfers(this.seed!, transfers);
+      const txs = await this.iota.sendTrytes(trytes, 3, 14);
+      return txs[0].bundle;
+    } else {
+      return '';
+    }
   }
 
   public async buildNewBranch(
@@ -78,7 +93,10 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     address: Hash,
     onCreateNewBranch: (multisig: any, generate: number) => void,
   ): Promise<{ bundles: any[]; signedBundles: any[] }> {
-    const txs = [{ value: amount, address }];
+    const txs = [
+      { value: amount, address },
+      { value: -amount, address: this.settlementAddress },
+    ];
     return { bundles: [txs], signedBundles: [txs] };
   }
 
@@ -95,10 +113,12 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     bundles: any[],
     fromIndex: number,
   ): Array<{ value: number; address: Hash }> {
-    return bundles.reduce((acc, v) => {
-      acc.push(...v);
-      return acc;
-    }, []);
+    return bundles
+      .reduce((acc, v) => {
+        acc.push(...v);
+        return acc;
+      }, [])
+      .filter(({ value }: { value: number; address: Hash }) => value > 0);
   }
 
   public createDigests(amount = this.depth! + 1): any[] {

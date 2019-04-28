@@ -246,29 +246,30 @@ export class Controller {
     vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
       undefined
 
-  private async initVehicles(parallelCheckIn = true, fundAmount = 1000) {
+  private async initVehicles(parallelInit = true, fundAmount = 1000000000) {
     log.info('Initializing all vehicles...');
     const promises = [];
     for (const { mock: vm, info } of this.vehicles.values()) {
       log.info('Init vehicle %s', info.id);
       const p = Promise.all([
-        vm.syncTangle().then(() => {
-          // TODO switch this to AUTO_CHECK_IN
-          if (info.info.driveStartingPolicy !== 'MANUAL') {
-            vm.checkInAtCurrentStop();
-          }
-        }),
+        vm.syncTangle(),
         vm
           .setupPayments()
           .then((ad: AccountData) => (info.balance = ad.balance)),
-      ]);
-      if (!parallelCheckIn) {
+      ]).then(() => {
+        // TODO switch this to AUTO_CHECK_IN
+        if (info.info.driveStartingPolicy !== 'MANUAL') {
+          vm.checkInAtCurrentStop();
+        }
+      });
+      if (!parallelInit) {
         await p;
       }
       promises.push(p);
     }
     await Promise.all(promises);
     if (this.masterSeed) {
+      log.info('Transfering funds to vehicles...');
       const transfers: Transfer[] = Array.from(this.vehicles.values())
         .filter(({ info }) => info.balance === 0) // only include empty accounts -> random generated seed
         .map(
@@ -280,6 +281,9 @@ export class Controller {
       await this.iota
         .prepareTransfers(this.masterSeed, transfers)
         .then((trytes) => this.iota.sendTrytes(trytes, 3, 14));
+      Array.from(this.vehicles.values())
+        .filter(({ info }) => info.balance === 0)
+        .forEach(({ info }) => (info.balance = fundAmount));
     }
 
     log.info('Starting schedules...');

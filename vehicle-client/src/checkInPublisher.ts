@@ -10,10 +10,9 @@ import {
   createAttachToTangle,
 } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
-import { Hash, Trytes } from '@iota/core/typings/types';
+import { Hash, Trytes, Tag } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
 import { MamWriter, MAM_MODE } from 'mam.ts';
-import { Tag } from '@iota/signing/typings/types';
 
 export async function publishCheckIn(
   provider: string,
