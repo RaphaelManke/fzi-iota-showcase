@@ -144,7 +144,7 @@ export class BoardingHandler {
               this.sender.depositSent(bundleHash, this.price!);
             } catch (e) {
               this.state = State.CLOSED;
-              log.error(new Exception('Vehicle failed sending deposit', e));
+              log.error('Vehicle failed sending deposit. %s', e);
               this.sender.cancelBoarding('Could not send deposit.');
             }
           } else {
@@ -156,7 +156,7 @@ export class BoardingHandler {
         }
       } catch (e) {
         this.state = State.CLOSED;
-        log.error(new Exception('Vehicle failed reading deposit tx', e));
+        log.error('Vehicle failed reading deposit tx. %s', e);
         this.sender.cancelBoarding('Could not read deposit.');
       }
     } else {

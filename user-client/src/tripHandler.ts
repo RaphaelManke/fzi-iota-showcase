@@ -115,7 +115,7 @@ export class TripHandler {
         this.sender.depositSent(bundleHash, this.price!);
       } catch (e) {
         this.state = State.CLOSED;
-        log.error(new Exception('User failed sending deposit', e));
+        log.error('User failed sending deposit. %s', e);
         this.sender.cancelBoarding('Could not send deposit.');
       }
     } else {
@@ -151,7 +151,7 @@ export class TripHandler {
         }
       } catch (e) {
         this.state = State.CLOSED;
-        log.error(new Exception('User failed reading deposit tx', e));
+        log.error('User failed reading deposit tx. %s', e);
         this.sender.cancelBoarding('Could not read deposit.');
       }
     }

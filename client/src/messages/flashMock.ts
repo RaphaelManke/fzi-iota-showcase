@@ -3,6 +3,7 @@ import { Hash, Trytes } from '@iota/core/typings/types';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
 import { generateAddress, API } from '@iota/core';
+import { log } from '../logger';
 import * as Bluebird from 'bluebird';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
@@ -69,12 +70,13 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   public async attachCurrentBundle(): Promise<Hash> {
     if (this.iota) {
+      log.debug('Attaching closing transaction...');
       const transfers = Array.from(this.balances.entries()).map(
         ([address, value]) => ({ address, value }),
       );
       const trytes = await this.iota.prepareTransfers(this.seed!, transfers);
       const txs = await this.iota.sendTrytes(trytes, 3, 14);
-      return txs[0].bundle;
+      return txs[0].hash;
     } else {
       return '';
     }

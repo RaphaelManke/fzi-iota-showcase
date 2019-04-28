@@ -65,10 +65,10 @@ export class Users {
     for (const [seed, { info, state }] of this.bySeed) {
       const p = (async () => {
         log.info('Init user %s', info.id);
-        const result = await state.getAccountData();
-        info.balance = result.balance;
+        const result = await state.getBalance();
+        info.balance = result;
       })().catch((e) => {
-        log.error('Init User %s failed. ' + (e.message || e), info.id);
+        log.error('Init User %s failed. %s', info.id, e.stack);
         this.bySeed.delete(seed);
         this.byId.delete(info.id);
       });

@@ -8,7 +8,6 @@ import { Path, PathFinder, Connection } from './pathFinder';
 import { API } from '@iota/core';
 
 export class Boarder {
-
   public get handler() {
     return this.h!;
   }
@@ -54,7 +53,7 @@ export class Boarder {
           res,
           rej,
         );
-        const flash = new FlashMock();
+        const flash = new FlashMock(mockPayments ? undefined : iota);
         const { price } = this.getPriceDistanceCalculator()(this.destination);
         // use real or mocked payment functions
         let txReader: (bundleHash: Hash) => Promise<Bundle>;
@@ -62,7 +61,8 @@ export class Boarder {
           txReader = async (bundleHash) =>
             this.mockedBundle(price, flash.rootAddress);
         } else {
-          txReader = async (bundleHash) => await iota.getBundle(bundleHash);
+          txReader = async (tailTransactionHash) =>
+            await iota.getBundle(tailTransactionHash);
         }
 
         this.h = new BoardingHandler(

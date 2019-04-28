@@ -3,9 +3,10 @@ import {
   createAttachToTangle,
   CheckInMessage,
   FlashMock,
+  Exception,
 } from 'fzi-iota-showcase-client';
-import { API, composeAPI, AccountData } from '@iota/core';
-import { Hash, Trytes, Bundle } from '@iota/core/typings/types';
+import { API, composeAPI, generateAddress } from '@iota/core';
+import { Hash, Trytes, Bundle, Transaction } from '@iota/core/typings/types';
 import { TripHandler, Sender } from './tripHandler';
 
 export class UserState {
@@ -16,6 +17,7 @@ export class UserState {
   private depth: number;
   private mwm: number;
   private mockPayments: boolean;
+  private addressIndex = 0;
 
   constructor(
     private seed: Hash,
@@ -63,7 +65,7 @@ export class UserState {
     );
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
-    const flash = new FlashMock();
+    const flash = new FlashMock(this.mockPayments ? undefined : this.iota);
     // use real or mocked payment functions
     let depositor: (value: number, address: Hash) => Promise<string>;
     let txReader: (bundleHash: Hash) => Promise<Bundle>;
@@ -77,12 +79,13 @@ export class UserState {
           { value, address },
         ]);
         const txs = await this.iota.sendTrytes(txTrytes, this.depth, this.mwm);
-        return txs[0].bundle;
+        return txs[0].hash;
       };
-      txReader = async (bundleHash) => await this.iota.getBundle(bundleHash);
+      txReader = async (tailTransactonHash) =>
+        await this.iota.getBundle(tailTransactonHash);
     }
 
-    return new TripHandler(
+    const result = new TripHandler(
       destination,
       checkInMessage,
       maxPrice,
@@ -94,31 +97,43 @@ export class UserState {
       flash,
       sender,
     );
+    this.advanceAddresses();
+    return result;
   }
 
-  public async getAccountData(): Promise<AccountData> {
+  public async getBalance(): Promise<number> {
+    let result = 0;
     if (!this.mockPayments) {
-      const seed = this.seed;
-      const result = await this.iota.getNewAddress(seed);
-      if (typeof result === 'string') {
-        this.currentAddress = result;
-      } else {
-        this.currentAddress = result[0];
-        this.nextAddress = result[1];
+      try {
+        let fetched = 0;
+        const unused = await this.iota.getNewAddress(this.seed);
+        do {
+          this.currentAddress = generateAddress(this.seed, this.addressIndex++);
+          this.nextAddress = generateAddress(this.seed, this.addressIndex);
+
+          const b = await this.iota.getBalances(
+            [this.currentAddress, this.nextAddress],
+            100,
+          );
+          fetched = b.balances.reduce((acc, v) => acc + v);
+          result += b.balances[0];
+        } while (this.currentAddress !== unused || fetched > 0);
+      } catch (e) {
+        return Promise.reject(
+          new Exception('Get account data of user failed.', e),
+        );
       }
-      return await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = 'A';
-      this.nextAddress = 'B';
-      return {
-        addresses: [''],
-        balance: 3000,
-        latestAddress: 'A',
-        transactions: [],
-        inputs: [],
-        transfers: [],
-      };
+      this.currentAddress = generateAddress(this.seed, this.addressIndex++);
+      this.nextAddress = generateAddress(this.seed, this.addressIndex);
     }
+    return result;
+  }
+
+  private async advanceAddresses() {
+    this.addressIndex++;
+    this.currentAddress = this.nextAddress;
+    this.nextAddress = generateAddress(this.seed, this.addressIndex);
   }
 
   private mockedBundle(price: number, address: Hash): Bundle {

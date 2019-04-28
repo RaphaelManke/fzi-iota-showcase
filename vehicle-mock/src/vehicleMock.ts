@@ -1,7 +1,7 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
 import { Path } from './pathFinder';
-import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData, generateAddress } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
@@ -235,7 +235,7 @@ export class VehicleMock {
                   this.depth,
                   this.mwm,
                 );
-                return txs[0].bundle;
+                return txs[0].hash;
               };
             }
 
