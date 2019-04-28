@@ -10,7 +10,7 @@ import {
   createAttachToTangle,
 } from 'fzi-iota-showcase-client';
 import { API } from '@iota/core';
-import { Hash, Trytes, Tag } from '@iota/core/typings/types';
+import { Hash, Trytes, Tag, Transaction } from '@iota/core/typings/types';
 import { RAAM } from 'raam.client.js';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 
@@ -29,7 +29,13 @@ export async function publishCheckIn(
     mwm: 14,
     date: new Date(),
   },
-) {
+): Promise<{
+  reservationChannel: MamWriter;
+  tripChannel: RAAM;
+  welcomeMessage: StopWelcomeMessage;
+  checkInTx: Transaction;
+  welcomeMsgBundle: Hash;
+}> {
   if (masterChannel.iota) {
     const reservationsSeed = getReservationSeed(
       seed,

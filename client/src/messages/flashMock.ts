@@ -4,7 +4,6 @@ import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
 import { generateAddress, API } from '@iota/core';
 import { log } from '../logger';
-import * as Bluebird from 'bluebird';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
@@ -18,7 +17,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   private depth?: number;
 
-  constructor(private readonly iota?: API) {}
+  constructor(private readonly iota: API | undefined) {}
 
   public open(
     settlementAddress: Hash,
