@@ -76,28 +76,44 @@ export interface Departed {
   destination: Trytes;
 }
 
-export interface Transaction {
-  value: number;
-  address: Hash;
-  type: string;
+export abstract class TransactionIssued {
+  constructor(
+    public value: number,
+    public address: Hash,
+    public type: string,
+  ) {}
 }
 
-export interface CheckIn {
-  vehicle: Trytes;
-  stop: string;
+export class CheckInTransaction extends TransactionIssued {
+  constructor(
+    public address: Hash,
+    public vehicle: Trytes,
+    public stop: string,
+  ) {
+    super(0, address, 'checkIn');
+  }
 }
 
-export interface Departed {
-  vehicle: Trytes;
-  stop: string;
+export class DepartedTransaction extends TransactionIssued {
+  constructor(
+    public address: Hash,
+    public vehicle: Trytes,
+    public stop: string,
+  ) {
+    super(0, address, 'departed');
+  }
 }
 
-export interface Value {
-  from: Trytes;
-  to: Trytes;
+export class ValueTransaction extends TransactionIssued {
+  constructor(
+    public address: Hash,
+    public value: number,
+    public from: Trytes,
+    public to: Trytes,
+  ) {
+    super(value, address, 'value');
+  }
 }
-
-export type TransactionIssued<T = CheckIn | Departed | Value> = Transaction & T;
 
 export interface Login {
   id: Trytes;

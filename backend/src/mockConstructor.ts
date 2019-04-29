@@ -1,4 +1,9 @@
-import { SafeEmitter } from './events';
+import {
+  SafeEmitter,
+  ValueTransaction,
+  CheckInTransaction,
+  DepartedTransaction,
+} from './events';
 import { Trytes } from '@iota/core/typings/types';
 import { Stop } from './envInfo';
 import { API } from '@iota/core';
@@ -10,7 +15,7 @@ import {
 } from 'fzi-iota-showcase-vehicle-mock';
 import { VehicleInfo } from './vehicleInfo';
 import { getNextId } from './idSupplier';
-import { log } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage } from 'fzi-iota-showcase-client';
 
 export class MockConstructor {
   constructor(
@@ -43,16 +48,25 @@ export class MockConstructor {
     };
 
     const events = this.events;
+    const stops = this.stops;
 
     const e: Observer = {
       checkedIn(stop, checkInMessage) {
         info.checkIns.push({ stop, message: checkInMessage });
         events.emit('CheckIn', { stopId: stop, vehicleId: info.id });
+        const t = new CheckInTransaction(
+          stop,
+          info.name,
+          stops.get(stop)!.name,
+        );
+        events.emit('TransactionIssued', t);
       },
 
       departed(stop, destination) {
         info.stop = undefined;
         events.emit('Departed', { vehicleId: info.id, stop, destination });
+        // const t = new DepartedTransaction(, info.name, stops.get(stop)!.name);
+        // events.emit('TransactionIssued', t);
       },
 
       posUpdated(pos) {
