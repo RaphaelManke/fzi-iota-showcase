@@ -304,11 +304,12 @@ export class VehicleMock {
           ? Promise.resolve('')
           : publishCheckOutMessage(this.vehicle.trip.tripChannel);
         checkOut
-          .then(() => {
+          .then((address) => {
             if (this.vehicle.trip && this.vehicle.trip.path) {
               this.notifyVehicleDeparted(
                 this.vehicle.trip.start,
                 this.vehicle.trip.destination!,
+                address,
               );
               return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
                 this.vehicle.stop = stop;
@@ -369,8 +370,9 @@ export class VehicleMock {
   private notifyVehicleDeparted(
     stop: Trytes,
     destination: Trytes,
+    address: Hash,
   ): Promise<void> {
-    this.vehicle.departed(stop, destination);
+    this.vehicle.departed(stop, destination, address);
     if (this.vehicle.trip) {
       this.vehicle.trip.state = State.DEPARTED;
       this.vehicle.trip.boarders

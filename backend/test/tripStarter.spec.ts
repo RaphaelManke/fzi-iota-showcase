@@ -13,9 +13,11 @@ import { enableLogging } from '../src/logger';
 import { log } from 'fzi-iota-showcase-client';
 
 describe('Trip Starter', () => {
-  const stops: Stop[] = JSON.parse(fs.readFileSync('./stops.json').toString());
+  const stops: Stop[] = JSON.parse(
+    fs.readFileSync('./config/stops.json').toString(),
+  );
   const connections: Connection[] = JSON.parse(
-    fs.readFileSync('./connections.json').toString(),
+    fs.readFileSync('./config/connections.json').toString(),
   );
 
   const getStop = (name: string) => stops.find((s) => s.name === name);
@@ -24,7 +26,7 @@ describe('Trip Starter', () => {
     this.timeout(180000);
 
     const events = new SafeEmitter();
-    enableLogging(events);
+    enableLogging(events, (id) => id === 'A');
 
     const stopMap = new Map<Trytes, Stop>();
     stops.forEach((s) => stopMap.set(s.id, s));
@@ -58,7 +60,7 @@ describe('Trip Starter', () => {
         .then((ad: AccountData) => (v.info.balance = ad.balance)),
     ]);
 
-    const users = Users.fromFile('./users.json', {
+    const users = Users.fromFile('./config/users.json', {
       mockPayments: true,
       iota: composeAPI(),
     });

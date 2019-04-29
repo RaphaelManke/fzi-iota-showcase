@@ -54,11 +54,7 @@ export class MockConstructor {
       checkedIn(stop, checkInMessage) {
         info.checkIns.push({ stop, message: checkInMessage });
         events.emit('CheckIn', { stopId: stop, vehicleId: info.id });
-        const t = new CheckInTransaction(
-          stop,
-          info.name,
-          stops.get(stop)!.name,
-        );
+        const t = new CheckInTransaction(info.id, stop);
         events.emit('TransactionIssued', t);
       },
 

@@ -1,5 +1,5 @@
 import { Position } from './position';
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { CheckInMessage } from 'fzi-iota-showcase-client';
 
 export interface Observer {
@@ -9,7 +9,7 @@ export interface Observer {
 
   reachedStop(stop: Trytes): void;
 
-  departed(stop: Trytes, destination: Trytes): void;
+  departed(stop: Trytes, destination: Trytes, address: Hash): void;
 
   tripStarted(
     userId: Trytes,

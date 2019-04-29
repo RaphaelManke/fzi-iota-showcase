@@ -1,4 +1,4 @@
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { Observer } from './observer';
 import { Position } from './position';
 import { TripState } from './tripState';
@@ -40,8 +40,10 @@ export class Vehicle {
     );
   }
 
-  public departed(stop: Trytes, destination: Trytes) {
-    Promise.resolve(this.observers.forEach((o) => o.departed(stop, destination)));
+  public departed(stop: Trytes, destination: Trytes, address: Hash) {
+    Promise.resolve(
+      this.observers.forEach((o) => o.departed(stop, destination, address)),
+    );
   }
 
   public tripStarted(userId: Trytes, destination: Trytes, price: number) {

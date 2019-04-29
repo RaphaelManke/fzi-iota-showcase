@@ -85,12 +85,8 @@ export abstract class TransactionIssued {
 }
 
 export class CheckInTransaction extends TransactionIssued {
-  constructor(
-    public address: Hash,
-    public vehicle: Trytes,
-    public stop: string,
-  ) {
-    super(0, address, 'checkIn');
+  constructor(public vehicle: Trytes, public stop: Trytes) {
+    super(0, stop, 'checkIn');
   }
 }
 
@@ -98,7 +94,7 @@ export class DepartedTransaction extends TransactionIssued {
   constructor(
     public address: Hash,
     public vehicle: Trytes,
-    public stop: string,
+    public stop: Trytes,
   ) {
     super(0, address, 'departed');
   }

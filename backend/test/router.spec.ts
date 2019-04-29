@@ -5,12 +5,13 @@ import 'mocha';
 import { Connection, Stop } from '../src/envInfo';
 import { VehicleInfo } from '../src/vehicleInfo';
 import * as fs from 'fs';
-import { Vehicle } from 'fzi-iota-showcase-client';
 
 describe('Router', () => {
-  const stops: Stop[] = JSON.parse(fs.readFileSync('./stops.json').toString());
+  const stops: Stop[] = JSON.parse(
+    fs.readFileSync('./config/stops.json').toString(),
+  );
   const connections: Connection[] = JSON.parse(
-    fs.readFileSync('./connections.json').toString(),
+    fs.readFileSync('./config/connections.json').toString(),
   );
 
   const getStop = (name: string) => stops.find((s) => s.name === name);
@@ -25,23 +26,27 @@ describe('Router', () => {
         speed: 100,
         co2emission: 0,
         maxReservations: 100,
+        driveStartingPolicy: type === 'tram' ? 'MANUAL' : 'AFTER_BOARDING',
       },
       position: {
         lat: 49.00954,
         lng: 8.403885,
       },
-      checkIn: {
-        stop: getStop(stopName)!.id,
-        message: {
-          price: 1000,
-          vehicleId: new Int8Array(0),
-          hashedNonce: '',
-          paymentAddress: '',
-          reservationRate: 20000,
-          reservationRoot: '',
-          tripChannelIndex: 1,
+      trips: [],
+      checkIns: [
+        {
+          stop: getStop(stopName)!.id,
+          message: {
+            price: 1000,
+            vehicleId: new Int8Array(0),
+            hashedNonce: '',
+            paymentAddress: '',
+            reservationRate: 20000,
+            reservationRoot: '',
+            tripChannelIndex: 1,
+          },
         },
-      },
+      ],
     };
   }
 
