@@ -27,6 +27,24 @@
     "coverage": "nyc mocha && node process-coverage-report.js ",
     "build": "tsc"
   },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "cobertura"
+    ],
+    "all": false
+  },
   "dependencies": {
     "eventemitter2": "^5.0.1",
     "express": "^4.16.4",
