@@ -235,8 +235,8 @@ export class BoardingHandler {
           this.state = State.CLOSED;
         }
       } else {
-        const bundleHash = await this.paymentChannel.attachCurrentBundle();
-        this.sender.closePaymentChannel(bundleHash);
+        const tailTransactionHash = await this.paymentChannel.attachCurrentBundle();
+        this.sender.closePaymentChannel(tailTransactionHash);
         this.state = State.CLOSED;
       }
     } else {
@@ -362,7 +362,7 @@ export interface Sender {
 
   creditsExausted(minimumAmount: number): void;
 
-  closePaymentChannel(bundleHash: Hash): void;
+  closePaymentChannel(tailTransactionHash: Hash): void;
 }
 
 export enum State {
