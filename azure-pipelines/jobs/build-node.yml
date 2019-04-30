@@ -16,5 +16,5 @@ jobs:
   - template: ../steps/npm.yml
     parameters:
       test:  ${{ parameters.test }} 
-  - template: ../steps/sonarqube.yml
+  #- template: ../steps/sonarqube.yml
   - template: ../steps/docker.yml
