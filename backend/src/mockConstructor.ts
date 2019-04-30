@@ -60,7 +60,7 @@ export class MockConstructor {
       departed(stop, destination, address) {
         info.stop = undefined;
         events.emit('Departed', { vehicleId: info.id, stop, destination });
-        const t = new DepartedTransaction(address, info.name, stop);
+        const t = new DepartedTransaction(address, info.id, stop);
         events.emit('TransactionIssued', t);
       },
 
