@@ -33,6 +33,7 @@ export class TripHandler {
   private paymentValue?: number;
   private remainingPayments?: number;
   private issuedPayment?: NodeJS.Timer;
+  private lastMillisLeft?: number;
 
   constructor(
     private destination: Trytes,
@@ -194,7 +195,12 @@ export class TripHandler {
 
   public onCreditsLeft(message: CreditsLeftMessage) {
     log.silly('Credits left updated %O', message);
-    if (this.state === State.READY_FOR_PAYMENT && !this.issuedPayment) {
+    if (
+      this.state === State.READY_FOR_PAYMENT &&
+      !this.issuedPayment &&
+      (!this.lastMillisLeft || message.millis <= this.lastMillisLeft)
+    ) {
+      this.lastMillisLeft = message.millis;
       if (message.millis < TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND) {
         this.sendTransaction();
       } else {

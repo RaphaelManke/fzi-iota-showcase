@@ -1,9 +1,4 @@
-import {
-  SafeEmitter,
-  ValueTransaction,
-  CheckInTransaction,
-  DepartedTransaction,
-} from './events';
+import { SafeEmitter, CheckInTransaction, DepartedTransaction } from './events';
 import { Trytes } from '@iota/core/typings/types';
 import { Stop } from './envInfo';
 import { API } from '@iota/core';
@@ -15,7 +10,7 @@ import {
 } from 'fzi-iota-showcase-vehicle-mock';
 import { VehicleInfo } from './vehicleInfo';
 import { getNextId } from './idSupplier';
-import { log, CheckInMessage } from 'fzi-iota-showcase-client';
+import { log } from 'fzi-iota-showcase-client';
 
 export class MockConstructor {
   constructor(

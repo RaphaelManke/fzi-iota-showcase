@@ -70,12 +70,12 @@ export function enableLogging(
       if (Object.keys(r).length > 0) {
         // const padding =
         //   prefix.length < 30 ? ' '.repeat(30 - prefix.length) : '';
-        log[getLevel(type[1])](`${prefix}:\n%o`, r);
+        log[getLevel(type[1], data)](`${prefix}:\n%o`, r);
       } else {
-        log[getLevel(type[1])](prefix);
+        log[getLevel(type[1], data)](prefix);
       }
     } else {
-      log[getLevel(type[1])](type.join('.'));
+      log[getLevel(type[1], data)](type.join('.'));
     }
   };
 
@@ -131,8 +131,10 @@ const bg = [
   colors.bgWhite,
 ];
 
-function getLevel(eventType: Event[0]) {
+function getLevel(eventType: Event[0], data: any) {
   switch (eventType) {
+    case 'TransactionIssued':
+      return data.type === 'value' ? 'debug' : 'silly';
     case 'PosUpdated':
       return 'silly';
     default:
