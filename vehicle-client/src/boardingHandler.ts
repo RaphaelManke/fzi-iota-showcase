@@ -278,8 +278,13 @@ export class BoardingHandler {
   public onBoardingCanceled(message: CancelBoardingMessage) {
     log.debug('User cancelled boarding %O', message);
     this.paymentChannel.state = PaymentChannelState.CLOSED;
-    this.state = State.CLOSED;
-    this.sender.cancelBoarding('Confirm cancel.');
+    if (this.state !== State.CLOSED) {
+      this.state = State.CLOSED;
+      const reason = message.reason
+        ? 'User ' + message.reason[0].toLowerCase + message.reason.substring(1)
+        : 'User cancelled boarding';
+      this.sender.cancelBoarding(reason);
+    }
   }
 
   private async createNewBranch(multisig: any, generate: number) {
