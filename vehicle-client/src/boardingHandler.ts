@@ -141,7 +141,11 @@ export class BoardingHandler {
               );
               this.paymentChannel.updateDeposit([this.price, tx.value]);
               this.state = State.READY_FOR_PAYMENT;
-              this.sender.depositSent(bundleHash, this.price!);
+              this.sender.depositSent(
+                bundleHash,
+                this.price!,
+                this.paymentChannel.rootAddress,
+              );
             } catch (e) {
               this.state = State.CLOSED;
               log.error('Vehicle failed sending deposit. %s', e);
@@ -346,7 +350,7 @@ export interface Sender {
     digest: any[],
   ): void;
 
-  depositSent(hash: Hash, amount: number): void;
+  depositSent(hash: Hash, amount: number, address: Hash): void;
 
   createdNewBranch(digest: any[], multisig: any): void;
 

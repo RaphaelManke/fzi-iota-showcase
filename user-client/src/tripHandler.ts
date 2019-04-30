@@ -112,7 +112,11 @@ export class TripHandler {
           this.paymentChannel.rootAddress,
         );
         this.state = State.DEPOSIT_SENT;
-        this.sender.depositSent(bundleHash, this.price!);
+        this.sender.depositSent(
+          bundleHash,
+          this.price!,
+          this.paymentChannel.rootAddress,
+        );
       } catch (e) {
         this.state = State.CLOSED;
         log.error('User failed sending deposit. %s', e);
@@ -362,7 +366,7 @@ export interface Sender {
     digest: any[],
   ): void;
 
-  depositSent(hash: Hash, amount: number): void;
+  depositSent(hash: Hash, amount: number, address: Hash): void;
 
   createdTransaction(bundles: any, signedBundles: any, close: boolean): void;
 
