@@ -1,0 +1,19 @@
+steps:
+  - task: Npm@1
+    continueOnError: true
+    displayName: NPM package
+    inputs:
+      command: 'custom' 
+      customCommand: pack
+      workingDir: $(app_path) 
+  
+  - script: |
+      mkdir publish
+      mv *.tgz ./publish/
+    workingDirectory: $(app_path)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Build Artifact
+    inputs:
+      ArtifactName: package
+      PathtoPublish: $(app_path)/publish

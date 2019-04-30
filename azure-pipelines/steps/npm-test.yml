@@ -1,0 +1,36 @@
+steps:
+  - script: |
+      cp ../azure-pipelines/scripts/process-coverage-report.js ./
+      rm package-lock.json
+    workingDirectory: $(app_path)
+    displayName: Copy code coverage script
+          
+  - task: Npm@1
+    continueOnError: true
+    displayName: NPM test
+    inputs:
+      command: 'custom' 
+      customCommand: run-script coverage
+      workingDir: $(app_path)   
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+      testResultsFiles: '**/test-results.xml' 
+      #searchFolder: $(app_path) # Optional
+      #mergeTestResults: false # Optional
+      #failTaskOnFailedTests: false # Optional
+      testRunTitle: $(app_path) Unit Tests # Optional
+      #buildPlatform: # Optional
+      #buildConfiguration: # Optional
+      #publishRunAttachments: true # Optional
+
+      # Publish Code Coverage Results
+  # Publish Cobertura or JaCoCo code coverage results from a build
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'Cobertura' # Options: cobertura, jaCoCo
+      summaryFileLocation: $(app_path)/coverage/cobertura-coverage.xml
+      reportDirectory: $(app_path)/coverage # Optional
+      #additionalCodeCoverageFiles: # Optional
+      #failIfCoverageEmpty: false # Optional

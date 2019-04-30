@@ -1,4 +1,4 @@
-# Welcome to the FZI Iota showcase
+# Welcome to the FZI Iota showcase - Open mobility marketplace
 
 ![Open Mobility Marketplace](images/open-mobility-marketplace.jpg)
 

@@ -3,6 +3,7 @@ parameters:
   appName: ''
   pool: ''
   npmFeed: 'FZI-IOTA-NPM'
+  test: ''
 
 jobs:
 - job: Build 
@@ -12,6 +13,8 @@ jobs:
     inputs:
       versionSpec: '10.x'
     displayName: 'Install Node.js'
- # - template: ../steps/npm.yml
-  
+  - template: ../steps/npm.yml
+    parameters:
+      test:  ${{ parameters.test }} 
+  - template: ../steps/sonarqube.yml
   - template: ../steps/docker.yml

@@ -25,6 +25,7 @@ jobs:
 - template: jobs/build-node.yml  # Template reference
   parameters:
     app_name: $(app_name)
+    test: true
     pool:
       vmImage: 'ubuntu-16.04'
  
