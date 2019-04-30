@@ -281,7 +281,9 @@ export class BoardingHandler {
     if (this.state !== State.CLOSED) {
       this.state = State.CLOSED;
       const reason = message.reason
-        ? 'User ' + message.reason[0].toLowerCase + message.reason.substring(1)
+        ? 'User ' +
+          message.reason[0].toLowerCase() +
+          message.reason.substring(1)
         : 'User cancelled boarding';
       this.sender.cancelBoarding(reason);
     }
