@@ -50,12 +50,11 @@
     "all": false
   },
   "dependencies": {
-    "@iota/core": "1.0.0-beta.11",
-    "@iota/validators": "1.0.0-beta.11",
     "@iota/bundle": "1.0.0-beta.11",
     "@iota/bundle-validator": "1.0.0-beta.11",
     "@iota/checksum": "1.0.0-beta.11",
     "@iota/converter": "1.0.0-beta.11",
+    "@iota/core": "1.0.0-beta.11",
     "@iota/curl": "1.0.0-beta.11",
     "@iota/http-client": "1.0.0-beta.11",
     "@iota/kerl": "1.0.0-beta.11",
@@ -63,6 +62,7 @@
     "@iota/signing": "1.0.0-beta.11",
     "@iota/transaction": "1.0.0-beta.11",
     "@iota/transaction-converter": "1.0.0-beta.11",
+    "@iota/validators": "1.0.0-beta.11",
     "extend": "^3.0.2",
     "flash.lib.js": "github:cr0ssing/flash.lib.js",
     "mam.ts": "^0.1.6",
