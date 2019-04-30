@@ -13,5 +13,5 @@ jobs:
       versionSpec: '10.x'
     displayName: 'Install Node.js'
  # - template: ../steps/npm.yml
-  
+  - template: ../steps/sonarqube.yml
   - template: ../steps/docker.yml
