@@ -193,6 +193,7 @@ export class VehicleMock {
     sendToUser: Sender,
     userId: Trytes,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
+    onClosingTransaction: (address: Hash, value: number) => void,
     onTripFinished: (stop: Trytes) => void,
   ): Promise<void> {
     if (this.vehicle.trip) {
@@ -255,6 +256,7 @@ export class VehicleMock {
                 this.mockPayments,
                 this.iota,
                 setSentVehicleHandler,
+                onClosingTransaction,
               )
               .then(() => {
                 if (
@@ -302,7 +304,7 @@ export class VehicleMock {
       if (this.vehicle.trip) {
         const checkOut: Promise<Array<{ address: Hash; value: number }>> = this
           .mockMessages
-          ? Promise.resolve([{ address: '', value: 0 }])
+          ? Promise.resolve([{ address: this.generateNonce(), value: 0 }])
           : publishCheckOutMessage(this.vehicle.trip.tripChannel);
         checkOut
           .then((bundle) => {

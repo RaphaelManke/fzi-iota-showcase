@@ -101,7 +101,7 @@ describe('Scheduler', () => {
   };
 
   const schedule: ScheduleDescription = {
-    defaultTransferTime: 1000,
+    defaultTransferTime: 4000,
     forVehicle: '',
     mode: 'TURNING',
     stops: ['A', 'B', 'C'],
@@ -138,11 +138,11 @@ describe('Scheduler', () => {
   };
 
   it('should move scheduled vehicle from one stop to the next', function(done) {
-    this.timeout(20000);
+    this.timeout(60000);
 
     const { v, scheduler } = getVehicle(1000000);
 
-    ScheduleHandler.START_DELAY = 5000;
+    ScheduleHandler.START_DELAY = 25000;
     v.addObserver({
       reachedStop(stop) {
         if (stop === 'C') {
@@ -156,10 +156,10 @@ describe('Scheduler', () => {
   });
 
   it('should calculate validFrom/to times correctly', function(done) {
-    this.timeout(20000);
+    this.timeout(60000);
 
     const { v, mock, scheduler } = getVehicle(500000);
-    ScheduleHandler.START_DELAY = 5000;
+    ScheduleHandler.START_DELAY = 25000;
     scheduler.startSchedule();
 
     v.addObserver({

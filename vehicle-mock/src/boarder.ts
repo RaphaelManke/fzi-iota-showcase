@@ -43,23 +43,29 @@ export class Boarder {
     mockPayments: boolean,
     iota: API,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
+    onClosingTransaction: (address: Hash, value: number) => void,
   ): Promise<void> {
     return new Promise<void>((res, rej) => {
       try {
+        const flash = new FlashMock(mockPayments ? undefined : iota);
         // observe sender
         const senderProxy = this.createSenderProxy(
           sendToUser,
           this.userId,
+          () =>
+            onClosingTransaction(
+              this.settlementAddress,
+              flash.balances.get(this.settlementAddress!) || 0,
+            ),
           res,
           rej,
         );
-        const flash = new FlashMock(mockPayments ? undefined : iota);
+
         const { price } = this.getPriceDistanceCalculator()(this.destination);
         // use real or mocked payment functions
         let txReader: (bundleHash: Hash) => Promise<Bundle>;
         if (mockPayments) {
-          txReader = async (bundleHash) =>
-            this.mockedBundle(price, flash.rootAddress);
+          txReader = async () => this.mockedBundle(price, flash.rootAddress);
         } else {
           txReader = async (tailTransactionHash) =>
             await iota.getBundle(tailTransactionHash);
@@ -158,6 +164,7 @@ export class Boarder {
   private createSenderProxy(
     sendToUser: Sender,
     userId: Trytes,
+    onClosingTransaction: (tailTransactionHash: Hash) => void,
     res: () => void,
     rej: (reason: any) => void,
   ): Sender {
@@ -176,8 +183,8 @@ export class Boarder {
       openPaymentChannel(...args) {
         sendToUser.openPaymentChannel(...args);
       },
-      depositSent(hash, amount) {
-        sendToUser.depositSent(hash, amount);
+      depositSent(hash, amount, address) {
+        sendToUser.depositSent(hash, amount, address);
       },
       signedTransaction(signedBundles, value, close) {
         if (!close) {
@@ -204,8 +211,9 @@ export class Boarder {
         // TODO stop vehicle
         sendToUser.creditsExausted(minimumAmount);
       },
-      closePaymentChannel(bundleHash) {
-        sendToUser.closePaymentChannel(bundleHash);
+      closePaymentChannel(tailTransactionHash) {
+        onClosingTransaction(tailTransactionHash);
+        sendToUser.closePaymentChannel(tailTransactionHash);
       },
       cancelBoarding(reason) {
         sendToUser.cancelBoarding(reason);
