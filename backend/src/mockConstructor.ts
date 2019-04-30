@@ -48,7 +48,6 @@ export class MockConstructor {
     };
 
     const events = this.events;
-    const stops = this.stops;
 
     const e: Observer = {
       checkedIn(stop, checkInMessage) {
@@ -58,11 +57,11 @@ export class MockConstructor {
         events.emit('TransactionIssued', t);
       },
 
-      departed(stop, destination) {
+      departed(stop, destination, address) {
         info.stop = undefined;
         events.emit('Departed', { vehicleId: info.id, stop, destination });
-        // const t = new DepartedTransaction(, info.name, stops.get(stop)!.name);
-        // events.emit('TransactionIssued', t);
+        const t = new DepartedTransaction(address, info.name, stop);
+        events.emit('TransactionIssued', t);
       },
 
       posUpdated(pos) {

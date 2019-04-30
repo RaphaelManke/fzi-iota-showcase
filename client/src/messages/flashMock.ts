@@ -70,8 +70,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   public async attachCurrentBundle(): Promise<Hash> {
     if (this.iota) {
       log.debug('Attaching closing transaction...');
-      const transfers = Array.from(this.balances.entries()).map(
-        ([address, value]) => ({ address, value }),
+      const transfers = Array.from(this.balances.entries())
+        .filter(([, value]) => value > 0)
+        .map(([address, value]) => ({ address, value }),
       );
       const trytes = await this.iota.prepareTransfers(this.seed!, transfers);
       const txs = await this.iota.sendTrytes(trytes, 3, 14);
