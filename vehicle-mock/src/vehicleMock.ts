@@ -300,16 +300,17 @@ export class VehicleMock {
   public startDriving(onStop?: (stop: Trytes) => void) {
     return new Promise<Trytes>((res, rej) => {
       if (this.vehicle.trip) {
-        const checkOut = this.mockMessages
-          ? Promise.resolve('')
+        const checkOut: Promise<Array<{ address: Hash; value: number }>> = this
+          .mockMessages
+          ? Promise.resolve([{ address: '', value: 0 }])
           : publishCheckOutMessage(this.vehicle.trip.tripChannel);
         checkOut
-          .then((address) => {
+          .then((bundle) => {
             if (this.vehicle.trip && this.vehicle.trip.path) {
               this.notifyVehicleDeparted(
                 this.vehicle.trip.start,
                 this.vehicle.trip.destination!,
-                address,
+                bundle[0].address,
               );
               return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
                 this.vehicle.stop = stop;
