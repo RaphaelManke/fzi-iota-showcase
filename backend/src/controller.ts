@@ -120,13 +120,16 @@ export class Controller {
       ) {
         if (v.info.stop === start) {
           if (u.info.stop === start) {
-            return this.tripStarter.startTrip(
-              v,
-              u,
-              start,
-              destination,
-              intermediateStops,
-            );
+            return this.tripStarter
+              .startTrip(v, u, start, destination, intermediateStops)
+              .catch((reason) => {
+                this.events.emit('BoardingCancelled', {
+                  userId: u.info.id,
+                  vehicleId: v.info.id,
+                  reason: reason.message || reason,
+                });
+                return Promise.reject(reason);
+              });
           } else {
             return Promise.reject(new Error('User isn\'t at start stop.'));
           }

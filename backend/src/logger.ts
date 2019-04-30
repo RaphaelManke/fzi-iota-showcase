@@ -105,6 +105,7 @@ bgs.set('ReachedStop', colors.bgYellow);
 bgs.set('Departed', colors.bgCyan);
 bgs.set('CheckIn', colors.bgWhite);
 bgs.set('BoardingStarted', colors.bgBlue);
+bgs.set('BoardingCancelled', colors.bgRed);
 bgs.set('PaymentIssued', colors.bgCyan);
 bgs.set('TripStarted', colors.bgGreen);
 bgs.set('TripFinished', colors.bgRed);
