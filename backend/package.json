@@ -24,6 +24,7 @@
     "localTest": "mocha --reporter spec --inspect",
     "dev": "nodemon",
     "mocked": "nodemon  --mockPayments true --mockMessages true",
+    "coverage": "nyc mocha && node process-coverage-report.js ",
     "build": "tsc"
   },
   "dependencies": {
@@ -48,9 +49,12 @@
     "chai": "^4.2.0",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.18.0",
     "nodemon": "^1.18.10",
+    "nyc": "^14.0.0",
     "ts-node": "^8.0.2",
     "tslint": "^5.13.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "vsts-coverage-styles": "^1.0.7"
   }
 }
