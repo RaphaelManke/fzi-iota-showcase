@@ -169,9 +169,10 @@ export class Boarder {
     rej: (reason: any) => void,
   ): Sender {
     let boardingFinished = false;
-    const vehicle = this.vehicle;
-    const path = this.path;
-    const destination = this.destination;
+    const self = this;
+    // const vehicle = this.vehicle;
+    // const path = this.path;
+    // const destination = this.destination;
 
     return {
       authenticate(nonce, sendAuth) {
@@ -188,7 +189,7 @@ export class Boarder {
       },
       signedTransaction(signedBundles, value, close) {
         if (!close) {
-          vehicle.transactionReceived(userId, value);
+          self.vehicle.transactionReceived(userId, value);
         }
         sendToUser.signedTransaction(signedBundles, value, close);
       },
@@ -196,10 +197,10 @@ export class Boarder {
         if (!boardingFinished && amount > 0) {
           // ready to start driving
           boardingFinished = true;
-          if (!vehicle.trip!.destination) {
+          if (!self.vehicle.trip!.destination) {
             // only if vehicle did not set path itself
-            vehicle.trip!.destination = destination;
-            vehicle.trip!.path = path;
+            self.vehicle.trip!.destination = self.destination;
+            self.vehicle.trip!.path = self.path;
           }
           res();
         } else {
@@ -217,6 +218,9 @@ export class Boarder {
       },
       cancelBoarding(reason) {
         sendToUser.cancelBoarding(reason);
+        if (self.observer) {
+          self.vehicle.removeObserver(self.observer);
+        }
         rej(new Error('Boarding cancelled. ' + reason));
       },
       createdNewBranch(digests, multisig) {

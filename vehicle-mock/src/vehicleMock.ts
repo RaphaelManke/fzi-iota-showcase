@@ -264,6 +264,10 @@ export class VehicleMock {
                 ) {
                   this.startDriving();
                 }
+              })
+              .catch((reason) => {
+                this.removeBoarder(userId);
+                return Promise.reject(reason);
               });
           } else {
             return Promise.reject(
@@ -282,6 +286,15 @@ export class VehicleMock {
       }
     } else {
       return Promise.reject(new Error('Vehicle is not checked in.'));
+    }
+  }
+
+  public removeBoarder(userId: Trytes) {
+    const index = this.vehicle.trip.boarders.findIndex(
+      (b) => b.userId === userId,
+    );
+    if (index > -1) {
+      this.vehicle.trip.boarders.splice(index, 1);
     }
   }
 
