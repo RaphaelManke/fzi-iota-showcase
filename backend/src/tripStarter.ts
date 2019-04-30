@@ -1,5 +1,5 @@
 import { Connection, User } from './envInfo';
-import { Trytes } from '@iota/core/typings/types';
+import { Trytes, Hash } from '@iota/core/typings/types';
 import { VehicleInfo } from './vehicleInfo';
 import { Exception, CheckInMessage } from 'fzi-iota-showcase-client';
 import {
@@ -12,7 +12,7 @@ import {
   BoardingHandler,
 } from 'fzi-iota-showcase-vehicle-client';
 import { VehicleMock, PathFinder } from 'fzi-iota-showcase-vehicle-mock';
-import { SafeEmitter } from './events';
+import { SafeEmitter, ValueTransaction } from './events';
 import { getPathLength } from 'geolib';
 
 export class TripStarter {
@@ -34,7 +34,11 @@ export class TripStarter {
     const r = new PathFinder(connections);
     const [route] = r.getPaths(start, destination, [v.info.info.type]);
 
-    const { sender, setter } = this.createUserSender(v.mock, user.id);
+    const { sender, setter } = this.createUserSender(
+      v.info.id,
+      v.mock,
+      user.id,
+    );
     const distance = getPathLength(
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
     );
@@ -58,21 +62,39 @@ export class TripStarter {
       sender,
     );
 
-    const vehicleSender = this.createVehicleSender(tripHandler);
+    const vehicleSender = this.createVehicleSender(
+      tripHandler,
+      v.info.id,
+      user.id,
+    );
 
     this.events.emit('BoardingStarted', {
       userId: user.id,
       vehicleId: v.info.id,
       destination,
     });
+
+    const onClosingTransaction = (address: Hash, value: number) =>
+      this.events.emit(
+        'TransactionIssued',
+        new ValueTransaction(address, value, user.id, v.info.id),
+      );
+
     return v.mock
-      .startBoarding(route, vehicleSender, user.id, setter, (stop: Trytes) => {
-        this.events.emit('TripFinished', {
-          vehicleId: v.info.id,
-          userId: user.id,
-          destination: stop,
-        });
-      })
+      .startBoarding(
+        route,
+        vehicleSender,
+        user.id,
+        setter,
+        onClosingTransaction,
+        (stop: Trytes) => {
+          this.events.emit('TripFinished', {
+            vehicleId: v.info.id,
+            userId: user.id,
+            destination: stop,
+          });
+        },
+      )
       .catch((e: any) =>
         Promise.reject(
           new Exception('Starting trip failed. ' + (e.message || e), e),
@@ -113,6 +135,7 @@ export class TripStarter {
   }
 
   private createUserSender(
+    vehicleId: Trytes,
     mock: VehicleMock,
     userId: Trytes,
   ): {
@@ -120,6 +143,7 @@ export class TripStarter {
     setter: (handler: BoardingHandler) => void;
   } {
     let boardingHandler: BoardingHandler;
+    const events = this.events;
     const sender: UserSender = {
       openPaymentChannel(userIndex, settlement, depth, security, digests) {
         boardingHandler.onPaymentChannelOpened({
@@ -133,7 +157,9 @@ export class TripStarter {
       sendDestination(destStop, nonce) {
         boardingHandler.onDestination({ destStop, nonce });
       },
-      depositSent(hash, amount) {
+      depositSent(hash, amount, address) {
+        const t = new ValueTransaction(address, amount, userId, vehicleId);
+        events.emit('TransactionIssued', t);
         boardingHandler.onDepositSent({ depositTransaction: hash, amount });
       },
       createdTransaction(bundles, signedBundles, close) {
@@ -162,7 +188,12 @@ export class TripStarter {
     };
   }
 
-  private createVehicleSender(tripHandler: TripHandler): VehicleSender {
+  private createVehicleSender(
+    tripHandler: TripHandler,
+    vehicleId: Trytes,
+    userId: Trytes,
+  ): VehicleSender {
+    const events = this.events;
     return {
       authenticate(nonce, sendAuth) {
         tripHandler.onVehicleAuthentication({ nonce, sendAuth });
@@ -179,7 +210,9 @@ export class TripStarter {
       creditsLeft(amount, distance, millis) {
         tripHandler.onCreditsLeft({ amount, distance, millis });
       },
-      depositSent(hash, amount) {
+      depositSent(hash, amount, address) {
+        const t = new ValueTransaction(address, amount, vehicleId, userId);
+        events.emit('TransactionIssued', t);
         tripHandler.onDepositSent({ amount, depositTransaction: hash });
       },
       openPaymentChannel(userIndex, settlement, depth, security, digests) {
