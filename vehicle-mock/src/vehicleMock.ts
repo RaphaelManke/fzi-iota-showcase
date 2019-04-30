@@ -293,7 +293,9 @@ export class VehicleMock {
     const index = this.vehicle.trip.boarders.findIndex(
       (b) => b.userId === userId,
     );
+
     if (index > -1) {
+      this.vehicle.trip.boarders[index].onBoardingCancelled();
       this.vehicle.trip.boarders.splice(index, 1);
     }
   }

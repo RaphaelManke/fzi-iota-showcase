@@ -8,17 +8,6 @@ import { Path, PathFinder, Connection } from './pathFinder';
 import { API } from '@iota/core';
 
 export class Boarder {
-  public get handler() {
-    return this.h!;
-  }
-
-  public get start() {
-    return this.path.connections[0].from;
-  }
-
-  public get destination() {
-    return this.path.connections[this.path.connections.length - 1].to;
-  }
   private h?: BoardingHandler;
   private observer?: Partial<Observer>;
 
@@ -30,6 +19,18 @@ export class Boarder {
     private readonly pricePerMeter: number,
     private readonly onTripFinished: (stop: Trytes) => void,
   ) {}
+
+  public get handler() {
+    return this.h!;
+  }
+
+  public get start() {
+    return this.path.connections[0].from;
+  }
+
+  public get destination() {
+    return this.path.connections[this.path.connections.length - 1].to;
+  }
 
   public onStartDriving() {
     const { price } = this.getPriceDistanceCalculator()(this.destination);
@@ -104,6 +105,7 @@ export class Boarder {
         this.handler.onTripRequested();
       } catch (e) {
         log.error('Boarding failed ', e);
+        this.onBoardingCancelled();
         rej(new Exception('Boarding failed', e));
       }
     });
@@ -116,6 +118,12 @@ export class Boarder {
 
   public tripFinished(stop: Trytes) {
     this.onTripFinished(stop);
+    if (this.observer) {
+      this.vehicle.removeObserver(this.observer);
+    }
+  }
+
+  public onBoardingCancelled() {
     if (this.observer) {
       this.vehicle.removeObserver(this.observer);
     }
@@ -170,9 +178,6 @@ export class Boarder {
   ): Sender {
     let boardingFinished = false;
     const self = this;
-    // const vehicle = this.vehicle;
-    // const path = this.path;
-    // const destination = this.destination;
 
     return {
       authenticate(nonce, sendAuth) {
@@ -218,9 +223,7 @@ export class Boarder {
       },
       cancelBoarding(reason) {
         sendToUser.cancelBoarding(reason);
-        if (self.observer) {
-          self.vehicle.removeObserver(self.observer);
-        }
+        self.onBoardingCancelled();
         rej(new Error('Boarding cancelled. ' + reason));
       },
       createdNewBranch(digests, multisig) {
