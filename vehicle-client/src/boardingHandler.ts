@@ -9,7 +9,7 @@ import {
   CancelBoardingMessage,
   log,
   TransactionSignedMessage,
-  Exception,
+  PaymentChannelState,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -25,7 +25,6 @@ export class BoardingHandler {
   private creditsLeft = 0;
   private distanceLeft?: number;
   private branchWaiter?: (digests: any[]) => void;
-  private issuedPayment = false;
   private userAddress?: Hash;
 
   constructor(
@@ -176,7 +175,11 @@ export class BoardingHandler {
     this.creditsLeft -= this.pricePerMeter * add;
     const distancePaidLeft = this.creditsLeft / this.pricePerMeter;
     this.distanceLeft! -= add; // distance left to drive
-    if (this.distanceLeft && this.distanceLeft > 0) {
+    if (
+      this.state !== State.CLOSED &&
+      this.distanceLeft &&
+      this.distanceLeft > 0
+    ) {
       const minimumCredits =
         this.pricePerMeter * BoardingHandler.MINIMUM_METERS_PAID;
       if (
@@ -249,7 +252,6 @@ export class BoardingHandler {
     log.silly('User signed transaction %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
-      this.issuedPayment = false;
       this.state = State.READY_FOR_PAYMENT;
     }
   }
@@ -275,6 +277,7 @@ export class BoardingHandler {
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
     log.debug('User cancelled boarding %O', message);
+    this.paymentChannel.state = PaymentChannelState.CLOSED;
     this.state = State.CLOSED;
   }
 
@@ -293,7 +296,6 @@ export class BoardingHandler {
 
   private async sendTransaction(amount: number) {
     if (this.state === State.READY_FOR_PAYMENT) {
-      this.issuedPayment = true;
       const {
         bundles,
         signedBundles,

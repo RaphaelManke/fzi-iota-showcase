@@ -129,7 +129,7 @@ export class TripHandler {
         'Payment channel can\'t be opened. Wrong state.',
       );
       throw new Error(
-        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${this.state}'`,
+        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${State[this.state]}'`,
       );
     }
   }
@@ -179,7 +179,9 @@ export class TripHandler {
         );
       }
     } else {
-      log.warn(`Client must have state 'AWAIT_BRANCH' but is ${this.state}`); // TODO send close
+      log.warn(
+        `Client must have state 'AWAIT_BRANCH' but is ${State[this.state]}`,
+      ); // TODO send close
       this.state = State.CLOSED;
     }
   }
@@ -258,7 +260,7 @@ export class TripHandler {
         log.warn('Vehicle should not close payment channel');
       }
     } else {
-      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${this.state}`);
+      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${State[this.state]}`);
       this.state = State.CLOSED;
     }
   }
@@ -308,8 +310,8 @@ export class TripHandler {
         this.sendCloseTransaction();
       }
     } else {
-      if (this.remainingToPay! > 0 && this.state === State.CLOSED) {
-        log.warn('Payment remain but payment channel was closed');
+      if (this.remainingToPay! > 0 && this.state !== State.CLOSED) {
+        log.warn(`Payments remain but state is ${State[this.state]}`);
       }
     }
   }

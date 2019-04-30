@@ -38,6 +38,7 @@ export class TripStarter {
       v.info.id,
       v.mock,
       user.id,
+      () => v.mock.removeBoarder(user.id),
     );
     const distance = getPathLength(
       route.waypoints.map((pos) => ({ latitude: pos.lat, longitude: pos.lng })),
@@ -138,6 +139,7 @@ export class TripStarter {
     vehicleId: Trytes,
     mock: VehicleMock,
     userId: Trytes,
+    onCancel: () => void,
   ): {
     sender: UserSender;
     setter: (handler: BoardingHandler) => void;
@@ -180,6 +182,7 @@ export class TripStarter {
       },
       cancelBoarding(reason) {
         boardingHandler.onBoardingCanceled({ reason });
+        onCancel();
       },
     };
     return {

@@ -52,7 +52,7 @@
     "fzi-iota-showcase-tram-mock": "alpha",
     "fzi-iota-showcase-user-client": "alpha",
     "fzi-iota-showcase-vehicle-client": "alpha",
-    "fzi-iota-showcase-vehicle-mock": "alpha",
+    "fzi-iota-showcase-vehicle-mock": "0.0.1-alpha.370",
     "minimist": "^1.2.0",
     "socket.io": "^2.2.0"
   },
