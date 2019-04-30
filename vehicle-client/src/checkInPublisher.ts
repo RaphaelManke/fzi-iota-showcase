@@ -34,7 +34,7 @@ export async function publishCheckIn(
   tripChannel: RAAM;
   welcomeMessage: StopWelcomeMessage;
   checkInTx: Transaction;
-  welcomeMsgBundle: Hash;
+  welcomeMsgBundle: Transaction[];
 }> {
   if (masterChannel.iota) {
     const reservationsSeed = getReservationSeed(
