@@ -262,6 +262,7 @@ export class VehicleMock {
               path,
               this.pricePerMeter,
               onTripFinished,
+              this.mover,
             );
             this.vehicle.trip.boarders.push(boarder);
             return boarder

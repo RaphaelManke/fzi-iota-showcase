@@ -11,6 +11,7 @@ export class Mover {
   private interval?: NodeJS.Timer;
   private nextStop?: Trytes;
   private continue = true;
+  private worker?: () => void;
 
   constructor(private vehicle: Vehicle) {}
 
@@ -29,7 +30,7 @@ export class Mover {
       let con = path.connections[conIndex];
       this.nextStop = con.to;
       this.continue = true;
-      const worker = () => {
+      this.worker = () => {
         driven += (this.vehicle.info.speed * Mover.UPDATE_INTERVAL) / 1000;
         const pos = interpolate(current, next, driven);
         this.vehicle.position = pos;
@@ -65,11 +66,12 @@ export class Mover {
             // arrived
             clearInterval(this.interval!);
             this.interval = undefined;
+            this.worker = undefined;
             resolve(con.to);
           }
         }
       };
-      this.interval = setInterval(worker, Mover.UPDATE_INTERVAL);
+      this.interval = setInterval(this.worker, Mover.UPDATE_INTERVAL);
     });
   }
 
@@ -80,6 +82,13 @@ export class Mover {
   public stopImmediatly() {
     if (this.interval) {
       clearInterval(this.interval);
+      this.interval = undefined;
+    }
+  }
+
+  public resumeDriving() {
+    if (!this.interval && this.worker) {
+      this.interval = setInterval(this.worker, Mover.UPDATE_INTERVAL);
     }
   }
 

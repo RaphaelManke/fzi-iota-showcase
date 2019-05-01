@@ -6,6 +6,7 @@ import { Observer } from './observer';
 import { Vehicle } from './vehicle';
 import { Path, PathFinder, Connection } from './pathFinder';
 import { API } from '@iota/core';
+import { Mover } from './mover';
 
 export class Boarder {
   private h?: BoardingHandler;
@@ -18,6 +19,7 @@ export class Boarder {
     private path: Path,
     private readonly pricePerMeter: number,
     private readonly onTripFinished: (stop: Trytes) => void,
+    private readonly mover: Mover,
   ) {}
 
   public get handler() {
@@ -209,12 +211,15 @@ export class Boarder {
           }
           res();
         } else {
-          // TODO resume driving if stopped
+          // resuming depends on all boarders not just this
+          self.mover.resumeDriving();
         }
         sendToUser.creditsLeft(amount, distanceLeft, millis);
       },
       creditsExausted(minimumAmount) {
-        // TODO stop vehicle
+        if (self.vehicle.info.driveStartingPolicy !== 'MANUAL') {
+          self.mover.stopImmediatly();
+        }
         sendToUser.creditsExausted(minimumAmount);
       },
       closePaymentChannel(tailTransactionHash) {
