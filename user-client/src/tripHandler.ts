@@ -33,6 +33,7 @@ export class TripHandler {
   private paymentValue?: number;
   private remainingPayments?: number;
   private issuedPayment?: NodeJS.Timer;
+  private lastMillisLeft?: number;
 
   constructor(
     private destination: Trytes,
@@ -112,7 +113,11 @@ export class TripHandler {
           this.paymentChannel.rootAddress,
         );
         this.state = State.DEPOSIT_SENT;
-        this.sender.depositSent(bundleHash, this.price!);
+        this.sender.depositSent(
+          bundleHash,
+          this.price!,
+          this.paymentChannel.rootAddress,
+        );
       } catch (e) {
         this.state = State.CLOSED;
         log.error('User failed sending deposit. %s', e);
@@ -124,7 +129,7 @@ export class TripHandler {
         'Payment channel can\'t be opened. Wrong state.',
       );
       throw new Error(
-        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${this.state}'`,
+        `State must be 'PAYMENT_CHANNEL_OPENED' but is '${State[this.state]}'`,
       );
     }
   }
@@ -174,7 +179,9 @@ export class TripHandler {
         );
       }
     } else {
-      log.warn(`Client must have state 'AWAIT_BRANCH' but is ${this.state}`); // TODO send close
+      log.warn(
+        `Client must have state 'AWAIT_BRANCH' but is ${State[this.state]}`,
+      ); // TODO send close
       this.state = State.CLOSED;
     }
   }
@@ -190,7 +197,12 @@ export class TripHandler {
 
   public onCreditsLeft(message: CreditsLeftMessage) {
     log.silly('Credits left updated %O', message);
-    if (this.state === State.READY_FOR_PAYMENT && !this.issuedPayment) {
+    if (
+      this.state === State.READY_FOR_PAYMENT &&
+      !this.issuedPayment &&
+      (!this.lastMillisLeft || message.millis <= this.lastMillisLeft)
+    ) {
+      this.lastMillisLeft = message.millis;
       if (message.millis < TripHandler.CREDITS_LEFT_FOR_MILLIS_LOWER_BOUND) {
         this.sendTransaction();
       } else {
@@ -248,7 +260,7 @@ export class TripHandler {
         log.warn('Vehicle should not close payment channel');
       }
     } else {
-      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${this.state}`);
+      log.warn(`State must be 'READY_FOR_PAYMENT' but is ${State[this.state]}`);
       this.state = State.CLOSED;
     }
   }
@@ -298,8 +310,8 @@ export class TripHandler {
         this.sendCloseTransaction();
       }
     } else {
-      if (this.remainingToPay! > 0 && this.state === State.CLOSED) {
-        log.warn('Payment remain but payment channel was closed');
+      if (this.remainingToPay! > 0 && this.state !== State.CLOSED) {
+        log.warn(`Payments remain but state is ${State[this.state]}`);
       }
     }
   }
@@ -362,7 +374,7 @@ export interface Sender {
     digest: any[],
   ): void;
 
-  depositSent(hash: Hash, amount: number): void;
+  depositSent(hash: Hash, amount: number, address: Hash): void;
 
   createdTransaction(bundles: any, signedBundles: any, close: boolean): void;
 

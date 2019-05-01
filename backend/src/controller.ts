@@ -53,7 +53,7 @@ export class Controller {
       provider,
       attachToTangle: createAttachToTangle(provider),
     }),
-    mockPayments = false,
+    private mockPayments = false,
     mockMessages = false,
     private masterSeed?: Hash,
   ) {
@@ -120,13 +120,20 @@ export class Controller {
       ) {
         if (v.info.stop === start) {
           if (u.info.stop === start) {
-            return this.tripStarter.startTrip(
-              v,
-              u,
-              start,
-              destination,
-              intermediateStops,
-            );
+            return this.tripStarter
+              .startTrip(v, u, start, destination, intermediateStops)
+              .catch((reason) => {
+                const prefix = 'Starting trip failed. Boarding cancelled. ';
+                const reasonMessage: string = reason.message || reason;
+                this.events.emit('BoardingCancelled', {
+                  userId: u.info.id,
+                  vehicleId: v.info.id,
+                  reason: reasonMessage.substring(
+                    reasonMessage.indexOf(prefix) + prefix.length,
+                  ),
+                });
+                return Promise.reject(reason);
+              });
           } else {
             return Promise.reject(new Error('User isn\'t at start stop.'));
           }
@@ -268,7 +275,7 @@ export class Controller {
       promises.push(p);
     }
     await Promise.all(promises);
-    if (this.masterSeed) {
+    if (!this.mockPayments && this.masterSeed) {
       log.info('Transfering funds to vehicles...');
       const transfers: Transfer[] = Array.from(this.vehicles.values())
         .filter(({ info }) => info.balance === 0) // only include empty accounts -> random generated seed

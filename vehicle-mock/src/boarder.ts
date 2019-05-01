@@ -8,17 +8,6 @@ import { Path, PathFinder, Connection } from './pathFinder';
 import { API } from '@iota/core';
 
 export class Boarder {
-  public get handler() {
-    return this.h!;
-  }
-
-  public get start() {
-    return this.path.connections[0].from;
-  }
-
-  public get destination() {
-    return this.path.connections[this.path.connections.length - 1].to;
-  }
   private h?: BoardingHandler;
   private observer?: Partial<Observer>;
 
@@ -30,6 +19,18 @@ export class Boarder {
     private readonly pricePerMeter: number,
     private readonly onTripFinished: (stop: Trytes) => void,
   ) {}
+
+  public get handler() {
+    return this.h!;
+  }
+
+  public get start() {
+    return this.path.connections[0].from;
+  }
+
+  public get destination() {
+    return this.path.connections[this.path.connections.length - 1].to;
+  }
 
   public onStartDriving() {
     const { price } = this.getPriceDistanceCalculator()(this.destination);
@@ -43,23 +44,29 @@ export class Boarder {
     mockPayments: boolean,
     iota: API,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
+    onClosingTransaction: (address: Hash, value: number) => void,
   ): Promise<void> {
     return new Promise<void>((res, rej) => {
       try {
+        const flash = new FlashMock(mockPayments ? undefined : iota);
         // observe sender
         const senderProxy = this.createSenderProxy(
           sendToUser,
           this.userId,
+          () =>
+            onClosingTransaction(
+              this.settlementAddress,
+              flash.balances.get(this.settlementAddress!) || 0,
+            ),
           res,
           rej,
         );
-        const flash = new FlashMock(mockPayments ? undefined : iota);
+
         const { price } = this.getPriceDistanceCalculator()(this.destination);
         // use real or mocked payment functions
         let txReader: (bundleHash: Hash) => Promise<Bundle>;
         if (mockPayments) {
-          txReader = async (bundleHash) =>
-            this.mockedBundle(price, flash.rootAddress);
+          txReader = async () => this.mockedBundle(price, flash.rootAddress);
         } else {
           txReader = async (tailTransactionHash) =>
             await iota.getBundle(tailTransactionHash);
@@ -98,6 +105,7 @@ export class Boarder {
         this.handler.onTripRequested();
       } catch (e) {
         log.error('Boarding failed ', e);
+        this.onBoardingCancelled();
         rej(new Exception('Boarding failed', e));
       }
     });
@@ -110,6 +118,12 @@ export class Boarder {
 
   public tripFinished(stop: Trytes) {
     this.onTripFinished(stop);
+    if (this.observer) {
+      this.vehicle.removeObserver(this.observer);
+    }
+  }
+
+  public onBoardingCancelled() {
     if (this.observer) {
       this.vehicle.removeObserver(this.observer);
     }
@@ -158,13 +172,12 @@ export class Boarder {
   private createSenderProxy(
     sendToUser: Sender,
     userId: Trytes,
+    onClosingTransaction: (tailTransactionHash: Hash) => void,
     res: () => void,
     rej: (reason: any) => void,
   ): Sender {
     let boardingFinished = false;
-    const vehicle = this.vehicle;
-    const path = this.path;
-    const destination = this.destination;
+    const self = this;
 
     return {
       authenticate(nonce, sendAuth) {
@@ -176,12 +189,12 @@ export class Boarder {
       openPaymentChannel(...args) {
         sendToUser.openPaymentChannel(...args);
       },
-      depositSent(hash, amount) {
-        sendToUser.depositSent(hash, amount);
+      depositSent(hash, amount, address) {
+        sendToUser.depositSent(hash, amount, address);
       },
       signedTransaction(signedBundles, value, close) {
         if (!close) {
-          vehicle.transactionReceived(userId, value);
+          self.vehicle.transactionReceived(userId, value);
         }
         sendToUser.signedTransaction(signedBundles, value, close);
       },
@@ -189,10 +202,10 @@ export class Boarder {
         if (!boardingFinished && amount > 0) {
           // ready to start driving
           boardingFinished = true;
-          if (!vehicle.trip!.destination) {
+          if (!self.vehicle.trip!.destination) {
             // only if vehicle did not set path itself
-            vehicle.trip!.destination = destination;
-            vehicle.trip!.path = path;
+            self.vehicle.trip!.destination = self.destination;
+            self.vehicle.trip!.path = self.path;
           }
           res();
         } else {
@@ -204,11 +217,13 @@ export class Boarder {
         // TODO stop vehicle
         sendToUser.creditsExausted(minimumAmount);
       },
-      closePaymentChannel(bundleHash) {
-        sendToUser.closePaymentChannel(bundleHash);
+      closePaymentChannel(tailTransactionHash) {
+        onClosingTransaction(tailTransactionHash);
+        sendToUser.closePaymentChannel(tailTransactionHash);
       },
       cancelBoarding(reason) {
         sendToUser.cancelBoarding(reason);
+        self.onBoardingCancelled();
         rej(new Error('Boarding cancelled. ' + reason));
       },
       createdNewBranch(digests, multisig) {

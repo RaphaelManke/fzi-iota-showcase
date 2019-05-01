@@ -9,7 +9,7 @@ import {
   CancelBoardingMessage,
   log,
   TransactionSignedMessage,
-  Exception,
+  PaymentChannelState,
 } from 'fzi-iota-showcase-client';
 import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import Kerl from '@iota/kerl';
@@ -25,7 +25,6 @@ export class BoardingHandler {
   private creditsLeft = 0;
   private distanceLeft?: number;
   private branchWaiter?: (digests: any[]) => void;
-  private issuedPayment = false;
   private userAddress?: Hash;
 
   constructor(
@@ -141,7 +140,11 @@ export class BoardingHandler {
               );
               this.paymentChannel.updateDeposit([this.price, tx.value]);
               this.state = State.READY_FOR_PAYMENT;
-              this.sender.depositSent(bundleHash, this.price!);
+              this.sender.depositSent(
+                bundleHash,
+                this.price!,
+                this.paymentChannel.rootAddress,
+              );
             } catch (e) {
               this.state = State.CLOSED;
               log.error('Vehicle failed sending deposit. %s', e);
@@ -172,7 +175,11 @@ export class BoardingHandler {
     this.creditsLeft -= this.pricePerMeter * add;
     const distancePaidLeft = this.creditsLeft / this.pricePerMeter;
     this.distanceLeft! -= add; // distance left to drive
-    if (this.distanceLeft && this.distanceLeft > 0) {
+    if (
+      this.state !== State.CLOSED &&
+      this.distanceLeft &&
+      this.distanceLeft > 0
+    ) {
       const minimumCredits =
         this.pricePerMeter * BoardingHandler.MINIMUM_METERS_PAID;
       if (
@@ -231,8 +238,8 @@ export class BoardingHandler {
           this.state = State.CLOSED;
         }
       } else {
-        const bundleHash = await this.paymentChannel.attachCurrentBundle();
-        this.sender.closePaymentChannel(bundleHash);
+        const tailTransactionHash = await this.paymentChannel.attachCurrentBundle();
+        this.sender.closePaymentChannel(tailTransactionHash);
         this.state = State.CLOSED;
       }
     } else {
@@ -245,7 +252,6 @@ export class BoardingHandler {
     log.silly('User signed transaction %O', message);
     if (this.state === State.AWAIT_SIGNING) {
       this.paymentChannel.applyTransaction(message.signedBundles);
-      this.issuedPayment = false;
       this.state = State.READY_FOR_PAYMENT;
     }
   }
@@ -271,7 +277,16 @@ export class BoardingHandler {
 
   public onBoardingCanceled(message: CancelBoardingMessage) {
     log.debug('User cancelled boarding %O', message);
-    this.state = State.CLOSED;
+    this.paymentChannel.state = PaymentChannelState.CLOSED;
+    if (this.state !== State.CLOSED) {
+      this.state = State.CLOSED;
+      const reason = message.reason
+        ? 'User ' +
+          message.reason[0].toLowerCase() +
+          message.reason.substring(1)
+        : 'User cancelled boarding';
+      this.sender.cancelBoarding(reason);
+    }
   }
 
   private async createNewBranch(multisig: any, generate: number) {
@@ -289,7 +304,6 @@ export class BoardingHandler {
 
   private async sendTransaction(amount: number) {
     if (this.state === State.READY_FOR_PAYMENT) {
-      this.issuedPayment = true;
       const {
         bundles,
         signedBundles,
@@ -346,7 +360,7 @@ export interface Sender {
     digest: any[],
   ): void;
 
-  depositSent(hash: Hash, amount: number): void;
+  depositSent(hash: Hash, amount: number, address: Hash): void;
 
   createdNewBranch(digest: any[], multisig: any): void;
 
@@ -358,7 +372,7 @@ export interface Sender {
 
   creditsExausted(minimumAmount: number): void;
 
-  closePaymentChannel(bundleHash: Hash): void;
+  closePaymentChannel(tailTransactionHash: Hash): void;
 }
 
 export enum State {

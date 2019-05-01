@@ -24,5 +24,6 @@
 
   "vetur.validation.style": true,
   // Validate vue-html in <template> using eslint-plugin-vue
-  "vetur.validation.template": true
+  "vetur.validation.template": true,
+  "prettier.tslintIntegration": true
 }

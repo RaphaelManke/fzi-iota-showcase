@@ -32,7 +32,7 @@ import { Boarder } from './boarder';
 export class VehicleMock {
   private mover: Mover;
   private masterChannel?: RAAM;
-  private currentAddress?: Hash;
+  private settlementAddress?: Hash;
   private nextAddress?: Hash;
   private addressIndex = 0;
 
@@ -55,7 +55,7 @@ export class VehicleMock {
   }
 
   public get address() {
-    return this.currentAddress;
+    return this.nextAddress;
   }
 
   public async setupPayments(): Promise<AccountData> {
@@ -65,13 +65,13 @@ export class VehicleMock {
       log.debug('Payment seed: %s', seed);
       const address = await this.iota.getNewAddress(seed);
       if (typeof address === 'string') {
-        this.currentAddress = address;
+        this.settlementAddress = address;
       } else {
-        this.currentAddress = address[0];
+        this.settlementAddress = address[0];
       }
       result = await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = generateAddress(seed, this.addressIndex);
+      this.settlementAddress = generateAddress(seed, this.addressIndex);
       result = {
         addresses: [''],
         balance: 3000,
@@ -84,7 +84,7 @@ export class VehicleMock {
     let addr;
     do {
       addr = generateAddress(seed, this.addressIndex++);
-    } while (addr !== this.currentAddress);
+    } while (addr !== this.settlementAddress);
     this.nextAddress = generateAddress(seed, this.addressIndex);
     return result;
   }
@@ -125,7 +125,7 @@ export class VehicleMock {
     if (!this.masterChannel) {
       await this.syncTangle();
     }
-    if (!this.currentAddress) {
+    if (!this.settlementAddress) {
       await this.setupPayments();
     }
 
@@ -143,7 +143,7 @@ export class VehicleMock {
       tripChannelIndex: index,
       reservationRate: this.reservationsRate,
       price: this.pricePerMeter,
-      paymentAddress: this.currentAddress!,
+      paymentAddress: this.nextAddress!,
     };
     if (validFrom) {
       checkInMessage.validFrom = validFrom;
@@ -179,10 +179,10 @@ export class VehicleMock {
       nonce,
       state: State.CHECKED_IN,
       checkInMessage,
-      settlementAddress: this.nextAddress!,
       start: stop,
       reservations: [],
       boarders: [],
+      addressIndex: this.addressIndex,
     });
     this.advanceAddresses();
     return checkInMessage;
@@ -193,6 +193,7 @@ export class VehicleMock {
     sendToUser: Sender,
     userId: Trytes,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
+    onClosingTransaction: (address: Hash, value: number) => void,
     onTripFinished: (stop: Trytes) => void,
   ): Promise<void> {
     if (this.vehicle.trip) {
@@ -226,9 +227,24 @@ export class VehicleMock {
               depositor = async (value, address) => '';
             } else {
               depositor = async (value, address) => {
+                const balance = (await this.iota.getBalances(
+                  [this.vehicle.trip.checkInMessage.paymentAddress],
+                  100,
+                )).balances[0];
                 const txTrytes = await this.iota.prepareTransfers(
                   getPaymentSeed(this.vehicle.seed),
                   [{ value, address }],
+                  {
+                    inputs: [
+                      {
+                        address: this.vehicle.trip.checkInMessage
+                          .paymentAddress,
+                        balance,
+                        security: 2,
+                        keyIndex: this.vehicle.trip.addressIndex,
+                      },
+                    ],
+                  },
                 );
                 const txs = await this.iota.sendTrytes(
                   txTrytes,
@@ -242,7 +258,7 @@ export class VehicleMock {
             const boarder = new Boarder(
               this.vehicle,
               userId,
-              this.vehicle.trip.settlementAddress,
+              this.settlementAddress!,
               path,
               this.pricePerMeter,
               onTripFinished,
@@ -255,6 +271,7 @@ export class VehicleMock {
                 this.mockPayments,
                 this.iota,
                 setSentVehicleHandler,
+                onClosingTransaction,
               )
               .then(() => {
                 if (
@@ -262,6 +279,10 @@ export class VehicleMock {
                 ) {
                   this.startDriving();
                 }
+              })
+              .catch((reason) => {
+                this.removeBoarder(userId);
+                return Promise.reject(reason);
               });
           } else {
             return Promise.reject(
@@ -283,6 +304,17 @@ export class VehicleMock {
     }
   }
 
+  public removeBoarder(userId: Trytes) {
+    const index = this.vehicle.trip.boarders.findIndex(
+      (b) => b.userId === userId,
+    );
+
+    if (index > -1) {
+      this.vehicle.trip.boarders[index].onBoardingCancelled();
+      this.vehicle.trip.boarders.splice(index, 1);
+    }
+  }
+
   public stopTripAtNextStop(userId: Trytes) {
     const stop = this.mover.stopDrivingAtNextStop();
     if (stop && this.vehicle.trip) {
@@ -300,16 +332,17 @@ export class VehicleMock {
   public startDriving(onStop?: (stop: Trytes) => void) {
     return new Promise<Trytes>((res, rej) => {
       if (this.vehicle.trip) {
-        const checkOut = this.mockMessages
-          ? Promise.resolve('')
+        const checkOut: Promise<Array<{ address: Hash; value: number }>> = this
+          .mockMessages
+          ? Promise.resolve([{ address: this.generateNonce(), value: 0 }])
           : publishCheckOutMessage(this.vehicle.trip.tripChannel);
         checkOut
-          .then((address) => {
+          .then((bundle) => {
             if (this.vehicle.trip && this.vehicle.trip.path) {
               this.notifyVehicleDeparted(
                 this.vehicle.trip.start,
                 this.vehicle.trip.destination!,
-                address,
+                bundle[0].address,
               );
               return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
                 this.vehicle.stop = stop;
@@ -350,7 +383,6 @@ export class VehicleMock {
 
   private advanceAddresses() {
     this.addressIndex++;
-    this.currentAddress = this.nextAddress;
     this.nextAddress = generateAddress(
       trytes(getPaymentSeed(this.vehicle.seed)),
       this.addressIndex,

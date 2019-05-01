@@ -8,12 +8,12 @@ import { log } from '../logger';
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
   public rootAddress: Hash = '';
+  public balances = new Map<Hash, number>();
   private seed?: Hash;
   private deposits?: number[];
   private settlementAddresses?: any[];
   private userIndex?: number;
   private settlementAddress?: Hash;
-  private balances = new Map<Hash, number>();
 
   private depth?: number;
 
@@ -70,9 +70,9 @@ export class FlashMock implements PaymentChannel<any, any, any> {
   public async attachCurrentBundle(): Promise<Hash> {
     if (this.iota) {
       log.debug('Attaching closing transaction...');
-      const transfers = Array.from(this.balances.entries()).map(
-        ([address, value]) => ({ address, value }),
-      );
+      const transfers = Array.from(this.balances.entries())
+        .filter(([, value]) => value > 0)
+        .map(([address, value]) => ({ address, value }));
       const trytes = await this.iota.prepareTransfers(this.seed!, transfers);
       const txs = await this.iota.sendTrytes(trytes, 3, 14);
       return txs[0].hash;

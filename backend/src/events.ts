@@ -40,10 +40,6 @@ export class SafeEmitter {
   }
 }
 
-// new SafeEmitter(new EventEmitter2()).on('Login', (data: Login) => {
-//   console.log(data.id);
-// });
-
 export type Event =
   | ['CheckIn', CheckIn]
   | ['Departed', Departed]
@@ -52,6 +48,7 @@ export type Event =
   | ['ReservationIssued', ReservationIssued]
   | ['ReservationExpired', ReservationExpired]
   | ['BoardingStarted', BoardingStarted]
+  | ['BoardingCancelled', BoardingCancelled]
   | ['TripStarted', TripStarted]
   | ['TripFinished', TripFinished]
   | ['PosUpdated', PosUpdated]
@@ -133,6 +130,12 @@ export interface BoardingStarted {
   userId: Trytes;
   vehicleId: Trytes;
   destination: Trytes;
+}
+
+export interface BoardingCancelled {
+  userId: Trytes;
+  vehicleId: Trytes;
+  reason: string;
 }
 
 export interface TripStarted {

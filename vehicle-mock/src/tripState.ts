@@ -15,8 +15,8 @@ export interface TripState {
   welcomeMessage: StopWelcomeMessage;
   checkInMessage: CheckInMessage;
   reservations: Reservation[];
-  settlementAddress: Hash;
   nonce: Trytes;
+  addressIndex: number;
   state: State;
   start: Trytes;
   destination?: Trytes;

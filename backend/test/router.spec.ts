@@ -1,4 +1,4 @@
-import { log } from '../../client/src/logger';
+import { log } from 'fzi-iota-showcase-client';
 import { expect } from 'chai';
 import { Router } from '../src/router';
 import 'mocha';

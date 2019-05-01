@@ -34,7 +34,7 @@ export async function publishVehicle(
   masterChannel: RAAM;
   metaInfoChannelRoot: Hash;
   metaInfoChannel: MamWriter;
-  metaInfoRootBundle: Hash;
+  metaInfoRootBundle: Transaction[];
   metaInfoBundle: Hash;
   iota: API;
 }> {
@@ -77,7 +77,7 @@ export async function createMasterChannel(
 export async function publishMetaInfoRoot(
   masterChannel: RAAM,
   root: string,
-): Promise<{ metaInfoRootBundle: Hash; masterChannel: RAAM }> {
+): Promise<{ metaInfoRootBundle: Transaction[]; masterChannel: RAAM }> {
   const metaInfoRootBundle = await masterChannel.publish(root);
   log.debug('Published metaInfo root.');
   log.silly('Bundle: \'%s\'', metaInfoRootBundle);
