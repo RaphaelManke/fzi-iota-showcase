@@ -6,7 +6,7 @@
       FZI IOTA SHOWCASE
     </b-navbar-brand>
     <b-navbar-nav class="ml-auto">
-      <b-nav-text v-if="isLoggedIn" class="mr-sm-2"><b>User:</b> {{userInfo.name}} <b>Balance:</b> {{userInfo.balance}}</b-nav-text>
+      <b-nav-text v-if="isLoggedIn" class="mr-sm-2"><b>User:</b> {{userInfo.name}} <b>Balance:</b> {{formatIota(userInfo.balance)}}</b-nav-text>
       <b-button v-if="isLoggedIn" variant="secondary" @click="logout">Logout</b-button>
     </b-navbar-nav>
   </b-navbar>
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { formatIota } from "./utils";
 export default {
   sockets: {
     connect() {
@@ -40,6 +41,9 @@ export default {
     }
   },
   methods: {
+    formatIota(iotas) {
+      return formatIota(iotas);
+    },
     logout() {
       this.$http
         .post(this.$hostname + "/logout", this.seed)
