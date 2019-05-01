@@ -1,4 +1,4 @@
-import { composeAPI, generateAddress } from '@iota/core';
+import { composeAPI } from '@iota/core';
 import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
 
 (async () => {
@@ -8,6 +8,7 @@ import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
       provider,
       attachToTangle: createAttachToTangle(provider),
     });
+    console.log(await iota.getNodeInfo());
     const masterSeed = '';
     const result = await iota.getNewAddress(masterSeed);
     const address = Array.isArray(result) ? result[0] : result;

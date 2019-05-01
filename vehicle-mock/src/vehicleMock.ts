@@ -32,7 +32,7 @@ import { Boarder } from './boarder';
 export class VehicleMock {
   private mover: Mover;
   private masterChannel?: RAAM;
-  private currentAddress?: Hash;
+  private settlementAddress?: Hash;
   private nextAddress?: Hash;
   private addressIndex = 0;
 
@@ -55,7 +55,7 @@ export class VehicleMock {
   }
 
   public get address() {
-    return this.currentAddress;
+    return this.nextAddress;
   }
 
   public async setupPayments(): Promise<AccountData> {
@@ -65,13 +65,13 @@ export class VehicleMock {
       log.debug('Payment seed: %s', seed);
       const address = await this.iota.getNewAddress(seed);
       if (typeof address === 'string') {
-        this.currentAddress = address;
+        this.settlementAddress = address;
       } else {
-        this.currentAddress = address[0];
+        this.settlementAddress = address[0];
       }
       result = await this.iota.getAccountData(seed);
     } else {
-      this.currentAddress = generateAddress(seed, this.addressIndex);
+      this.settlementAddress = generateAddress(seed, this.addressIndex);
       result = {
         addresses: [''],
         balance: 3000,
@@ -84,7 +84,7 @@ export class VehicleMock {
     let addr;
     do {
       addr = generateAddress(seed, this.addressIndex++);
-    } while (addr !== this.currentAddress);
+    } while (addr !== this.settlementAddress);
     this.nextAddress = generateAddress(seed, this.addressIndex);
     return result;
   }
@@ -125,7 +125,7 @@ export class VehicleMock {
     if (!this.masterChannel) {
       await this.syncTangle();
     }
-    if (!this.currentAddress) {
+    if (!this.settlementAddress) {
       await this.setupPayments();
     }
 
@@ -143,7 +143,7 @@ export class VehicleMock {
       tripChannelIndex: index,
       reservationRate: this.reservationsRate,
       price: this.pricePerMeter,
-      paymentAddress: this.currentAddress!,
+      paymentAddress: this.nextAddress!,
     };
     if (validFrom) {
       checkInMessage.validFrom = validFrom;
@@ -179,10 +179,10 @@ export class VehicleMock {
       nonce,
       state: State.CHECKED_IN,
       checkInMessage,
-      settlementAddress: this.nextAddress!,
       start: stop,
       reservations: [],
       boarders: [],
+      addressIndex: this.addressIndex,
     });
     this.advanceAddresses();
     return checkInMessage;
@@ -227,9 +227,24 @@ export class VehicleMock {
               depositor = async (value, address) => '';
             } else {
               depositor = async (value, address) => {
+                const balance = (await this.iota.getBalances(
+                  [this.vehicle.trip.checkInMessage.paymentAddress],
+                  100,
+                )).balances[0];
                 const txTrytes = await this.iota.prepareTransfers(
                   getPaymentSeed(this.vehicle.seed),
                   [{ value, address }],
+                  {
+                    inputs: [
+                      {
+                        address: this.vehicle.trip.checkInMessage
+                          .paymentAddress,
+                        balance,
+                        security: 2,
+                        keyIndex: this.vehicle.trip.addressIndex,
+                      },
+                    ],
+                  },
                 );
                 const txs = await this.iota.sendTrytes(
                   txTrytes,
@@ -243,7 +258,7 @@ export class VehicleMock {
             const boarder = new Boarder(
               this.vehicle,
               userId,
-              this.vehicle.trip.settlementAddress,
+              this.settlementAddress!,
               path,
               this.pricePerMeter,
               onTripFinished,
@@ -368,7 +383,6 @@ export class VehicleMock {
 
   private advanceAddresses() {
     this.addressIndex++;
-    this.currentAddress = this.nextAddress;
     this.nextAddress = generateAddress(
       trytes(getPaymentSeed(this.vehicle.seed)),
       this.addressIndex,
