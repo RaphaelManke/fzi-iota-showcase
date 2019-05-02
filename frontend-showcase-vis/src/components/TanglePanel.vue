@@ -8,11 +8,13 @@
             <b-col cols="3"><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
           </b-row>
           <b-row>
-          <b-col>From: <b-badge>{{getUserById(transaction.from).name}}</b-badge></b-col>
-           <b-col>To: <b-badge>{{getVehicleById(transaction.to).name}}</b-badge></b-col>
+          <b-col style="padding: 0">Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
+           <b-col style="padding: 0">Type: <b-badge>{{transaction.type}}</b-badge></b-col>
           </b-row>
           <b-row>
-          <b-col>Amount: <b-badge :variant="getAmoutVariant(transaction.amount)">{{formatIota(transaction.amount)}}<img src="assets/images/iota.png"/></b-badge></b-col>
+          <b-col style="padding: 0">Amount: <b-badge :variant="getAmoutVariant(transaction.value)">{{formatIota(transaction.value)}}<img src="assets/images/iota.png"/></b-badge></b-col>
+          <b-col v-if="transaction.type === 'checkIn' | transaction.type === 'departed'">Stop: <b-badge>{{getStopById(transaction.stop).name}}</b-badge></b-col>
+          <b-col v-if="transaction.type === 'value'"><b-badge>{{getUserById(transaction.from).name}}</b-badge>-><b-badge>{{getVehicleById(transaction.to).name}}</b-badge></b-col>
           </b-row>
 
             </b-card>
@@ -30,11 +32,17 @@ export default {
     }
   },
   methods: {
+    formatAddress(address) {
+      return address.slice(0, 7) + "..";
+    },
     getVehicleById(id) {
       return this.$store.getters["mapObjects/getVehicleById"](id);
     },
     getUserById(id) {
       return this.$store.getters["mapObjects/getUserById"](id);
+    },
+    getStopById(id) {
+      return this.$store.getters["mapObjects/getStopById"](id);
     },
     formatIota(iotas) {
       if (iotas > 1000000000) return (iotas / 1000000000).toFixed(2) + " Gi";
