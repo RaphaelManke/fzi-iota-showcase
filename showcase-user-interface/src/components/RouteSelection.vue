@@ -72,7 +72,8 @@
     </div>
     <b-row class="text-center">
       <b-col>
-    <b-button block variant='primary' @click='submitRoute'>GO!</b-button>
+    <b-button id="go_button" block variant='primary' @click='submitRoute'>GO!</b-button>
+    <b-popover target="go_button" placement="top" title="Submitting..."><b-spinner style="height: 18px; width: 18px;" variant="primary" label="Waiting.."></b-spinner></b-popover>
        </b-col>
         </b-row>
         </div>
