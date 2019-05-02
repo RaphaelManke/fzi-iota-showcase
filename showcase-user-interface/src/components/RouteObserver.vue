@@ -20,7 +20,7 @@
                                 {{getStop(section.to).name}}
                                 </b-col>
                                 <b-popover :show.sync="!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
-        <b-button variant="primary" @click="resumeRoute">Resume</b-button>
+        <div style="text-align: center;"><b-button variant="primary" @click="resumeRoute">Resume</b-button></div>
       </b-popover>
       <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Waiting for next step">
         <b-spinner style="height: 18px; width: 18px;" variant="primary" label="RouteState"></b-spinner>{{routeState}}{{getVehicleById(section.vehicle.id).name}}
