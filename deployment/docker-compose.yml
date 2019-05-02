@@ -6,15 +6,53 @@ services:
     restart: always
     ports:
       - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - ./config:/out/config
+    #entrypoint: ["ls", "-la", "config"]
+    entrypoint: ["node", "main.js", "--provider", "https://nodes.thetangle.org"]
 
   showcase-user-interface:
     container_name: showcase-user-interface
     image: ${REGISTRY}/showcase-user-interface:${SHOWCASE_USER_INTERFACE_TAG}
-    ports:
-      - "${SHOWCASE_USER_INTERFACE_PORT:-8080}:80"
+    networks:
+      - web
+    labels:
+      - "traefik.backend=showcase-user-interface"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.rule=Host:localhost,${HOSTNAME};PathPrefixStrip:/app"
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.default.protocol=http"
+
+    #ports:
+    #  - "${SHOWCASE_USER_INTERFACE_PORT:-8080}:80"
 
   frontend-showcase-vis:
     container_name: frontend-showcase-vis
     image: ${REGISTRY}/frontend-showcase-vis:${FRONTEND_SHOWCASE_VIS_TAG}
     ports:
       - "${FRONTEND_SHOWCASE_VIS_PORT:-8081}:80"
+  map-server:
+    container_name: map-server
+    image: klokantech/openmaptiles-server
+    ports:
+      - "8084:80"
+    volumes:
+      - "./map-data:/data"
+  traefik:
+    image: traefik:latest
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.toml:/traefik.toml
+      - ./traefik/certs/:/certs/
+    container_name: traefik
+
+networks:
+  web:
+    external: true
