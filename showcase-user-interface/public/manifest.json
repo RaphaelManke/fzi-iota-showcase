@@ -1,6 +1,6 @@
 {
   "short_name": "FZI IOTA",
-  "name": "FZI IOTA Mobility Clients",
+  "name": "FZI IOTA Mobility Client",
   "icons": [
     {
       "src": "/favicon.ico",
@@ -11,6 +11,7 @@
   "start_url": "/#",
   "background_color": "#3367D6",
   "display": "fullscreen",
+  "orientation": "landscape",
   "scope": "/",
   "theme_color": "#3367D6"
 }

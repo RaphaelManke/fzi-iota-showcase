@@ -124,13 +124,18 @@ export class Controller {
               .startTrip(v, u, start, destination, intermediateStops)
               .catch((reason) => {
                 const prefix = 'Starting trip failed. Boarding cancelled. ';
-                const reasonMessage: string = reason.message || reason;
+                let reasonMessage: string = reason.message || reason;
+                const index = reasonMessage.indexOf(prefix);
+                if (index !== -1) {
+                  reasonMessage = reasonMessage.substring(
+                    index + prefix.length,
+                  );
+                }
+
                 this.events.emit('BoardingCancelled', {
                   userId: u.info.id,
                   vehicleId: v.info.id,
-                  reason: reasonMessage.substring(
-                    reasonMessage.indexOf(prefix) + prefix.length,
-                  ),
+                  reason: reasonMessage,
                 });
                 return Promise.reject(reason);
               });
