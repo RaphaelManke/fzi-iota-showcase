@@ -1,0 +1,29 @@
+{
+  "name": "tangle-visu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@iota/bundle": "1.0.0-beta.11",
+    "@iota/bundle-validator": "1.0.0-beta.11",
+    "@iota/checksum": "1.0.0-beta.11",
+    "@iota/converter": "1.0.0-beta.11",
+    "@iota/core": "1.0.0-beta.11",
+    "@iota/curl": "1.0.0-beta.11",
+    "@iota/http-client": "1.0.0-beta.11",
+    "@iota/kerl": "1.0.0-beta.11",
+    "@iota/pad": "1.0.0-beta.11",
+    "@iota/signing": "1.0.0-beta.11",
+    "@iota/transaction": "1.0.0-beta.11",
+    "@iota/transaction-converter": "1.0.0-beta.11",
+    "@iota/validators": "1.0.0-beta.11",
+    "bluebird": "^3.5.4",
+    "socket.io": "^2.2.0",
+    "zeromq": "^5.1.0"
+  }
+}
