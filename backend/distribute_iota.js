@@ -1,8 +1,10 @@
-const iota = require("@iota/core");
-const fs = require("fs");
+const iota = require('@iota/core');
+const fs = require('fs');
+const { createAttachToTangle } = require('fzi-iota-showcase-client');
 
 const NUMBER_OF_SEEDS = 50;
-const GENESIS_SEED = "GENSESISSEED";
+const GENESIS_SEED =
+  'SEED99999999999999999999999999999999999999999999999999999999999999999999999999999';
 
 // Depth or how far to go for tip selection entry point.
 const depth = 3;
@@ -12,17 +14,18 @@ const depth = 3;
 const minWeightMagnitude = 9;
 
 function generateSeed(length = 81) {
-  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ9";
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
   const retVal = [];
   for (let i = 0, n = charset.length; i < length; ++i) {
     retVal[i] = charset.charAt(Math.floor(Math.random() * n));
   }
-  const result = retVal.join("");
+  const result = retVal.join('');
   return result;
 }
-
+const provider = 'http://localhost:14265';
 var api = iota.composeAPI({
-  provider: "http://secret.private.tangle"
+  provider,
+  attachToTangle: createAttachToTangle(provider),
 });
 
 api
@@ -42,7 +45,7 @@ var seeds = [];
   fs.writeFile("./seeds.json", JSON.stringify(seeds, null, 2), "utf-8");
 }*/
 
-seeds = JSON.parse(fs.readFileSync("./seeds.json", "utf8"));
+seeds = JSON.parse(fs.readFileSync('./seeds.json', 'utf8'));
 
 Promise.all(seeds.map(seed => api.getNewAddress(seed))).then(addresses => {
   const transfers = addresses.map(a => ({ address: a, value: 1000000000 }));
@@ -51,7 +54,7 @@ Promise.all(seeds.map(seed => api.getNewAddress(seed))).then(addresses => {
     .then(trytes => api.sendTrytes(trytes, depth, minWeightMagnitude))
     .then(bundle => {
       console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
-      console.log(`Bundle: ${bundle}`);
+      console.log('Bundle:', bundle);
     })
     .catch(err => {
       console.error(err);

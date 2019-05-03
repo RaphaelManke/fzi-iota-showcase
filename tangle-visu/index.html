@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live tangle visualization</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="./vivagraph.min.js"></script>
+    <script type="text/javascript" src="./socket.io.js"></script>
+    <script type="text/javascript">
+        function main () {
+            var graph = Viva.Graph.graph();
+
+            var graphicsOptions = {
+                clearColor: true, // we want to avoid rendering artifacts
+                clearColorValue: { // use black color to erase background
+                r: 255,
+                g: 255,
+                b: 255,
+                a: 1
+                }
+            };
+            var graphics = Viva.Graph.View.webglGraphics(graphicsOptions);
+
+            var renderer = Viva.Graph.View.renderer(graph, {
+                graphics : graphics,
+                // layout   : layout,
+            });
+            renderer.run();
+
+            var socket = io('http://localhost:3001');
+            socket.on('connect', function(){
+                console.log('Connected');
+            });
+            socket.on('tx', function(data){
+                graph.addNode(data.hash, {hash: data.hash, milestone: data.milestone})
+                var nodeUI = graphics.getNodeUI(data.hash);
+                nodeUI.color = data.milestone ? 0xFF0000FF : 0x0000FFFF;
+                graph.addLink(data.hash, data.trunk);
+                graph.addLink(data.hash, data.branch);
+            });           
+        }
+    </script>
+
+<style type='text/css'>
+    body {
+      height: 95%;
+      width: 95%;
+      position: absolute;
+      margin: 0px;
+    }
+  </style>
+</head>
+<body onload='main()' style="background-color: white;">
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+debug = false
+
+logLevel = "DEBUG"
+defaultEntryPoints = ["https","http", "backend"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+    [[entryPoints.https.tls.certificates]]
+      certFile = "/certs/ssl.crt"
+      keyFile = "/certs/ssl.key"
+  [entryPoints.eightzero]
+  address = ":8080"
+  
+  [entryPoints.backend]
+  address = ":3000"
+  [entryPoints.backend.tls]
+    [[entryPoints.backend.tls.certificates]]
+      certFile = "/certs/ssl.crt"
+      keyFile = "/certs/ssl.key"
+  
+
+
+
+
+[api]
+entrypoint = "eightzero"
+
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "docker.localhost"
+watch = true
+exposedbydefault = false
