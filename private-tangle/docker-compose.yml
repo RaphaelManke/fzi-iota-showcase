@@ -39,5 +39,6 @@ services:
       --snapshot /snapshot.txt
       --max-depth 1000
       --zmq-enabled true
+      --remote-limit-api removeNeighbors,addNeighbors,getNeighbors,setApiRateLimit
 volumes:
   iri-db:
