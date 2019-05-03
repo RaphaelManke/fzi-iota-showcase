@@ -54,7 +54,7 @@ Promise.all(seeds.map(seed => api.getNewAddress(seed))).then(addresses => {
     .then(trytes => api.sendTrytes(trytes, depth, minWeightMagnitude))
     .then(bundle => {
       console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
-      console.log(`Bundle: ${bundle}`);
+      console.log('Bundle:', bundle);
     })
     .catch(err => {
       console.error(err);

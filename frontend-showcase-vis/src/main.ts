@@ -13,6 +13,9 @@ Vue.config.productionTip = false;
 
 Vue.prototype.$hostname = `${window.location.protocol}//${window.location.hostname}:${process.env.VUE_APP_BACKEND_PORT}`;
 
+const osmHost = process.env.VUE_APP_OSM_HOST === "window.location" ? window.location.hostname : process.env.VUE_APP_OSM_HOST;
+Vue.prototype.$osm = `${process.env.VUE_APP_OSM_PROTOCOL}://${osmHost}:${process.env.VUE_APP_OSM_PORT}${process.env.VUE_APP_OSM_PATH}`
+
 // enable http requests
 Vue.use(VueResource);
 
