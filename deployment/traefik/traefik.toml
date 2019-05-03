@@ -1,7 +1,7 @@
 debug = false
 
 logLevel = "DEBUG"
-defaultEntryPoints = ["https","http"]
+defaultEntryPoints = ["https","http", "backend"]
 
 [entryPoints]
   [entryPoints.http]
@@ -16,6 +16,17 @@ defaultEntryPoints = ["https","http"]
       keyFile = "/certs/ssl.key"
   [entryPoints.eightzero]
   address = ":8080"
+  
+  [entryPoints.backend]
+  address = ":3000"
+  [entryPoints.backend.tls]
+    [[entryPoints.backend.tls.certificates]]
+      certFile = "/certs/ssl.crt"
+      keyFile = "/certs/ssl.key"
+  
+
+
+
 
 [api]
 entrypoint = "eightzero"
