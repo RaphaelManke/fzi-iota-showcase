@@ -21,6 +21,7 @@ export interface TripState {
   start: Trytes;
   destination?: Trytes;
   path?: Path;
+  boarding: Array<Promise<any>>;
   boarders: Boarder[];
 }
 

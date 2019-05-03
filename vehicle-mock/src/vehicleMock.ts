@@ -55,7 +55,7 @@ export class VehicleMock {
   }
 
   public get address() {
-    return this.nextAddress;
+    return this.settlementAddress;
   }
 
   public async setupPayments(): Promise<AccountData> {
@@ -103,8 +103,12 @@ export class VehicleMock {
           this.provider,
           this.vehicle.seed,
           this.vehicle.info,
+          { depth: this.depth, mwm: this.mwm },
         );
-        await publishMetaInfoRoot(this.masterChannel, root);
+        await publishMetaInfoRoot(this.masterChannel, root, {
+          depth: this.depth,
+          mwm: this.mwm,
+        });
       }
     }
   }
@@ -163,6 +167,7 @@ export class VehicleMock {
         this.masterChannel!,
         stop,
         checkInMessage,
+        { depth: this.depth, mwm: this.mwm },
       );
     } else {
       result = {
@@ -182,6 +187,7 @@ export class VehicleMock {
       start: stop,
       reservations: [],
       boarders: [],
+      boarding: [],
       addressIndex: this.addressIndex,
     });
     this.advanceAddresses();
@@ -234,17 +240,17 @@ export class VehicleMock {
                 const txTrytes = await this.iota.prepareTransfers(
                   getPaymentSeed(this.vehicle.seed),
                   [{ value, address }],
-                  {
-                    inputs: [
-                      {
-                        address: this.vehicle.trip.checkInMessage
-                          .paymentAddress,
-                        balance,
-                        security: 2,
-                        keyIndex: this.vehicle.trip.addressIndex,
-                      },
-                    ],
-                  },
+                  // {
+                  //   inputs: [
+                  //     {
+                  //       address: this.vehicle.trip.checkInMessage
+                  //         .paymentAddress,
+                  //       balance,
+                  //       security: 2,
+                  //       keyIndex: this.vehicle.trip.addressIndex,
+                  //     },
+                  //   ],
+                  // },
                 );
                 const txs = await this.iota.sendTrytes(
                   txTrytes,
@@ -264,17 +270,19 @@ export class VehicleMock {
               onTripFinished,
               this.mover,
             );
-            this.vehicle.trip.boarders.push(boarder);
-            return boarder
-              .startBoarding(
-                sendToUser,
-                depositor,
-                this.mockPayments,
-                this.iota,
-                setSentVehicleHandler,
-                onClosingTransaction,
-              )
+
+            const promise = boarder.startBoarding(
+              sendToUser,
+              depositor,
+              this.mockPayments,
+              this.iota,
+              setSentVehicleHandler,
+              onClosingTransaction,
+            );
+            this.vehicle.trip.boarding.push(promise);
+            return promise
               .then(() => {
+                this.vehicle.trip.boarders.push(boarder);
                 if (
                   this.vehicle.info.driveStartingPolicy === 'AFTER_BOARDING'
                 ) {
@@ -313,6 +321,7 @@ export class VehicleMock {
     if (index > -1) {
       this.vehicle.trip.boarders[index].onBoardingCancelled();
       this.vehicle.trip.boarders.splice(index, 1);
+      log.debug('Removed boarder %s', userId);
     }
   }
 
@@ -331,55 +340,65 @@ export class VehicleMock {
   }
 
   public startDriving(onStop?: (stop: Trytes) => void) {
-    return new Promise<Trytes>((res, rej) => {
-      if (this.vehicle.trip) {
-        const checkOut: Promise<Array<{ address: Hash; value: number }>> = this
-          .mockMessages
-          ? Promise.resolve([{ address: this.generateNonce(), value: 0 }])
-          : publishCheckOutMessage(this.vehicle.trip.tripChannel);
-        checkOut
-          .then((bundle) => {
-            if (this.vehicle.trip && this.vehicle.trip.path) {
-              this.notifyVehicleDeparted(
-                this.vehicle.trip.start,
-                this.vehicle.trip.destination!,
-                bundle[0].address,
-              );
-              return this.mover.startDriving(this.vehicle.trip.path, (stop) => {
-                this.vehicle.stop = stop;
-                if (onStop) {
-                  onStop(stop);
+    return Promise.all(this.vehicle.trip.boarding).then(
+      () =>
+        new Promise<Trytes>((res, rej) => {
+          if (this.vehicle.trip) {
+            const checkOut: Promise<
+              Array<{ address: Hash; value: number }>
+            > = this.mockMessages
+              ? Promise.resolve([{ address: this.generateNonce(), value: 0 }])
+              : publishCheckOutMessage(this.vehicle.trip.tripChannel, {
+                  depth: this.depth,
+                  mwm: this.mwm,
+                });
+            checkOut
+              .then((bundle) => {
+                if (this.vehicle.trip && this.vehicle.trip.path) {
+                  this.notifyVehicleDeparted(
+                    this.vehicle.trip.start,
+                    this.vehicle.trip.destination!,
+                    bundle[0].address,
+                  );
+                  return this.mover.startDriving(
+                    this.vehicle.trip.path,
+                    (stop) => {
+                      this.vehicle.stop = stop;
+                      if (onStop) {
+                        onStop(stop);
+                      }
+                    },
+                  );
+                } else {
+                  return Promise.reject(new Error('Destination was not set.'));
                 }
+              })
+              .then((stop) => {
+                this.vehicle.trip!.state = State.FINISHED;
+                const toOverBoard: Boarder[] = [];
+                this.vehicle.trip!.boarders.forEach((b) => {
+                  if (b.destination === stop) {
+                    b.tripFinished(stop);
+                  } else {
+                    toOverBoard.push(b);
+                  }
+                });
+                this.vehicle.advanceTrip(toOverBoard);
+                res(stop);
+                // TODO switch this to AUTO_CHECK_IN
+                if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
+                  this.checkInAtCurrentStop();
+                }
+              })
+              .catch((e: any) => {
+                this.mover.stopImmediatly();
+                rej(new Exception('Start driving failed', e));
               });
-            } else {
-              return Promise.reject(new Error('Destination was not set.'));
-            }
-          })
-          .then((stop) => {
-            this.vehicle.trip!.state = State.FINISHED;
-            const toOverBoard: Boarder[] = [];
-            this.vehicle.trip!.boarders.forEach((b) => {
-              if (b.destination === stop) {
-                b.tripFinished(stop);
-              } else {
-                toOverBoard.push(b);
-              }
-            });
-            this.vehicle.advanceTrip(toOverBoard);
-            res(stop);
-            // TODO switch this to AUTO_CHECK_IN
-            if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
-              this.checkInAtCurrentStop();
-            }
-          })
-          .catch((e: any) => {
-            this.mover.stopImmediatly();
-            rej(new Exception('Start driving failed', e));
-          });
-      } else {
-        rej(new Error('Destination was not set.'));
-      }
-    });
+          } else {
+            rej(new Error('Destination was not set.'));
+          }
+        }),
+    );
   }
 
   private advanceAddresses() {

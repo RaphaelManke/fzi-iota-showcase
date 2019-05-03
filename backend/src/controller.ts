@@ -53,6 +53,7 @@ export class Controller {
       provider,
       attachToTangle: createAttachToTangle(provider),
     }),
+    private mwm: number,
     private mockPayments = false,
     mockMessages = false,
     private masterSeed?: Hash,
@@ -63,6 +64,7 @@ export class Controller {
       this.stops,
       provider,
       iota,
+      mwm,
       getNextId,
       mockPayments,
       mockMessages,
@@ -292,7 +294,7 @@ export class Controller {
         );
       await this.iota
         .prepareTransfers(this.masterSeed, transfers)
-        .then((trytes) => this.iota.sendTrytes(trytes, 3, 14));
+        .then((trytes) => this.iota.sendTrytes(trytes, 3, this.mwm));
       Array.from(this.vehicles.values())
         .filter(({ info }) => info.balance === 0)
         .forEach(({ info }) => (info.balance = fundAmount));

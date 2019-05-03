@@ -18,6 +18,7 @@ export class MockConstructor {
     private stops: Map<Trytes, Stop>,
     private provider: string,
     private iota: API,
+    private mwm: number,
     private idSupplier: () => Trytes = getNextId,
     private mockPayments = false,
     private mockMessages = false,
@@ -113,7 +114,7 @@ export class MockConstructor {
       this.provider,
       this.iota,
       3,
-      14,
+      this.mwm,
       this.mockPayments,
       this.mockMessages,
     );

@@ -13,7 +13,6 @@ import {
   log,
   PaymentChannelState,
   TransactionCreatedMessage,
-  Exception,
 } from 'fzi-iota-showcase-client';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';

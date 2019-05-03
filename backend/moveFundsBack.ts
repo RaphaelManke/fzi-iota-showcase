@@ -10,10 +10,11 @@ import { createAttachToTangle, log } from 'fzi-iota-showcase-client';
     });
     console.log(await iota.getNodeInfo());
     const masterSeed =
-      'SEED99999999999999999999999999999999999999999999999999999999999999999999999999999';
-    const result = await iota.getNewAddress(masterSeed);
-    const address = Array.isArray(result) ? result[0] : result;
-    console.log(await iota.getBalances([address], 100));
+      'AXYKAGJZLNLHYUANVNRBXECASFDJJDZNO9PQVQAFLBEHXGCSXSDPKPHWSR9YVU9LZRTSUAJEOPM9GYDXW';
+    console.log(await iota.getAccountData(masterSeed));
+    // const result = await iota.getNewAddress(masterSeed);
+    // const address = Array.isArray(result) ? result[0] : result;
+    // console.log(await iota.getBalances([address], 100));
     // log.info('Making transactions...');
     // await Promise.all(
     //   [

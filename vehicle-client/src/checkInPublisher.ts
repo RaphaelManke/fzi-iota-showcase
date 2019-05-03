@@ -158,6 +158,6 @@ async function publishWelcomeMessage(
     messagePassword: password,
   });
   log.debug('Published WelcomeMessage.');
-  log.silly('Bundle: \'%s\'', result);
+  log.silly('Bundle: \'%s\'', result[0].bundle);
   return result;
 }

@@ -13,7 +13,7 @@ services:
       -layers /layers
       -sigMode CURLP27
       -powMode CURLP81
-      -mwm 9
+      -mwm 5
       -security 1
       -seed MYSEEDHEREPLEASEREPLACEMEIMMEDIATELYWITHSOMETHINGSECURE99999999999999999999999999
       -tick 30000
@@ -33,7 +33,7 @@ services:
       --testnet-coordinator ZRMNUUBQHVRFRFBOQZYGAUBSTJSHDVIPXHUDA9VAXFTDSGGRILPVMYLVOLVCIEHLFMQKUOHUIUWILCXGD
       --testnet-coordinator-security-level 1
       --testnet-coordinator-signature-mode CURLP27
-      --mwm 9 
+      --mwm 5
       --milestone-start 0
       --milestone-keys 20
       --snapshot /snapshot.txt
