@@ -1,13 +1,12 @@
-import { User } from "./types";
-import { Module } from "vuex";
-import { RootState } from "../types";
+import { User } from './types';
+import { Module } from 'vuex';
+import { RootState } from '../types';
 export const user: Module<User, RootState> = {
   namespaced: true,
   state: {
-    seed:
-      "EWRTZJHGSDGTRHNGVDISUGHIFVDJFERHUFBGRZEUFSDHFEGBRVHISDJIFUBUHVFDSHFUERIBUJHDRGBCG",
-    destination: "",
-    info: { loggedIn: false, balance: 0, name: "-" }
+    seed: 'YOURSEEDHERE',
+    destination: '',
+    info: { loggedIn: false, balance: 0, name: '-' },
   },
   mutations: {
     updateSeed(state: any, seed: string) {
@@ -23,12 +22,12 @@ export const user: Module<User, RootState> = {
       state.info.stop = stop;
     },
     userLogout(state: any) {
-      state.seed = "";
-      state.destination = "";
-      state.info = { loggedIn: false, balance: 0, name: "-" };
+      state.seed = '';
+      state.destination = '';
+      state.info = { loggedIn: false, balance: 0, name: '-' };
     },
     routeFinished(state: any) {
-      state.destination = "";
+      state.destination = '';
     },
     SOCKET_PosUpdated(state: any, data: any) {
       if (
@@ -54,7 +53,7 @@ export const user: Module<User, RootState> = {
       if (payment.from === state.info.id) {
         state.info.balance -= payment.amount;
       }
-    }
+    },
   },
   getters: {
     getSeed: (state: any) => {
@@ -71,6 +70,6 @@ export const user: Module<User, RootState> = {
     },
     getCurrentStopId: (state: any) => {
       return state.info.stop;
-    }
-  }
+    },
+  },
 };
