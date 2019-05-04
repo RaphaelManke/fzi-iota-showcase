@@ -9,7 +9,7 @@
           </b-row>
           <b-row>
           <b-col style="padding: 0">Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
-           <b-col style="padding: 0">Type: <b-badge>{{transaction.type}}</b-badge></b-col>
+           <b-col style="padding: 0">Type: <b-badge :variant="getTypeVariant(transaction.type)">{{transaction.type}}</b-badge></b-col>
           </b-row>
           <b-row>
           <b-col style="padding: 0">Amount: <b-badge :variant="getAmoutVariant(transaction.value)">{{formatIota(transaction.value)}}<img src="assets/images/iota.png"/></b-badge></b-col>
@@ -53,6 +53,18 @@ export default {
     getAmoutVariant(amount) {
       if (amount > 0) return "success";
       else return "primary";
+    },
+    getTypeVariant(type) {
+      switch (type) {
+        case "checkIn":
+          return "dark";
+        case "value":
+          return "success";
+        case "departed":
+          return "warning";
+        default:
+          return "light";
+      }
     }
   }
 };
