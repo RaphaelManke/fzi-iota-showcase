@@ -5,23 +5,22 @@
     :icon="vehicleIcon"
     :z-index-offset="prioityZIndex"
   >
-    <l-tooltip
+    <!--<l-tooltip
       :options="{ permanent: true, direction: 'bottom', offset: [0, 15] }"
       :z-index-offset="prioityZIndex"
       class="iota_style"
     >
       {{ vehicleData.name }}
-    </l-tooltip>
+    </l-tooltip>-->
   </l-marker>
 </template>
 
 <script>
-import { LMarker, LPopup, LIcon, LTooltip } from "vue2-leaflet";
+import { LMarker, LPopup, LIcon } from "vue2-leaflet";
 export default {
   name: "VehicleObject",
   components: {
-    LMarker,
-    LTooltip
+    LMarker
   },
   props: {
     id: {
