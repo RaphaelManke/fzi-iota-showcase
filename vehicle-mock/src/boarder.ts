@@ -11,6 +11,7 @@ import { Mover } from './mover';
 export class Boarder {
   private h?: BoardingHandler;
   private observer?: Partial<Observer>;
+  private connections: Connection[];
 
   constructor(
     private readonly vehicle: Vehicle,
@@ -20,7 +21,9 @@ export class Boarder {
     private readonly pricePerMeter: number,
     private readonly onTripFinished: (stop: Trytes) => void,
     private readonly mover: Mover,
-  ) {}
+  ) {
+    this.connections = path.connections;
+  }
 
   public get handler() {
     return this.h!;
@@ -161,7 +164,7 @@ export class Boarder {
     const type = this.vehicle.info.type;
     const pricePerMeter = this.pricePerMeter;
     return (dest: Trytes) => {
-      const route = getPath(self.path.connections, dest, type);
+      const route = getPath(self.connections, dest, type);
       const dis = getPathLength(
         route.waypoints.map((pos) => ({
           latitude: pos.lat,
@@ -247,7 +250,7 @@ function getPath(connections: Connection[], dest: Trytes, type: string) {
   const cons = [];
   do {
     cons.push(connections[i++]);
-  } while (cons[cons.length - 1].to !== dest);
+  } while (i < connections.length && cons[cons.length - 1].to !== dest);
   const p = new PathFinder(cons);
   const [route] = p.getPaths(connections[0].from, dest, [type]);
   return route;

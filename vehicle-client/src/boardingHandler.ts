@@ -70,7 +70,7 @@ export class BoardingHandler {
     }
   }
 
-  public updateDestination(destination: Trytes) {
+  public async updateDestination(destination: Trytes) {
     const { price, distance } = this.getPriceAndDistance(destination);
     this.price = price;
 
@@ -87,10 +87,10 @@ export class BoardingHandler {
         this.price,
       );
 
-      this.sender.priced(this.price);
       if (this.paid > this.price) {
-        this.sendTransaction(this.paid - this.price);
+        await this.sendTransaction(this.paid - this.price);
       }
+      this.sender.priced(this.price);
     } else {
       this.destination = destination;
       this.distanceLeft = distance;
