@@ -126,6 +126,11 @@ export class VehicleMock {
     validUntil?: Date,
     allowedDestinations?: Trytes[],
   ) {
+    if (index >= this.capacity) {
+      throw new Error(
+        'Vehicle has exceeded its channel capacity. Check in not possible.',
+      );
+    }
     if (!this.masterChannel) {
       await this.syncTangle();
     }
@@ -388,7 +393,9 @@ export class VehicleMock {
                 res(stop);
                 // TODO switch this to AUTO_CHECK_IN
                 if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
-                  this.checkInAtCurrentStop();
+                  this.checkInAtCurrentStop().catch((reason) => {
+                    log.error('Check in failed. ' + (reason.message || reason));
+                  });
                 }
               })
               .catch((e: any) => {

@@ -19,6 +19,7 @@ export class ScheduleHandler {
   private readonly pathFinder: PathFinder;
 
   private started = false;
+  private doCheckIn = true;
   private current = 0;
   private last = { index: 0, forward: true };
   private forward = true;
@@ -96,19 +97,29 @@ export class ScheduleHandler {
             self.lastValidFrom.getTime() + schedule.defaultTransferTime,
           );
 
-          const checkIn = self.queue.add(() =>
-            self.mock.checkIn(
-              stop,
-              self.tripIndex!++,
-              self.lastValidFrom,
+          if (self.doCheckIn) {
+            const checkIn = self.queue.add(() =>
+              self.mock
+                .checkIn(
+                  stop,
+                  self.tripIndex!++,
+                  self.lastValidFrom,
+                  departure,
+                  getDests(self.last.index, self.last.forward, schedule),
+                )
+                .catch((reason) => {
+                  log.error(
+                    'Check in for \'%s\' failed. ' + (reason.message || reason),
+                    schedule.forVehicle,
+                  );
+                  self.doCheckIn = false;
+                }),
+            );
+            self.startedCheckIns.push({
+              promise: checkIn,
               departure,
-              getDests(self.last.index, self.last.forward, schedule),
-            ),
-          );
-          self.startedCheckIns.push({
-            promise: checkIn,
-            departure,
-          });
+            });
+          }
           const nextStop = self.schedule.stops[self.current];
           const [path] = self.pathFinder.getPaths(
             self.vehicle.stop!,
@@ -156,10 +167,20 @@ export class ScheduleHandler {
         );
         const thisArrival = arrival;
         const dests = getDests(i, forward, schedule);
-        const checkIn = self.queue.add(() =>
-          self.mock.checkIn(stop, tripIndex, thisArrival, departure, dests),
-        );
-        self.startedCheckIns.push({ promise: checkIn, departure });
+        if (self.doCheckIn) {
+          const checkIn = self.queue.add(() =>
+            self.mock
+              .checkIn(stop, tripIndex, thisArrival, departure, dests)
+              .catch((reason) => {
+                log.error(
+                  'Check in for \'%s\' failed. ' + (reason.message || reason),
+                  schedule.forVehicle,
+                );
+                self.doCheckIn = false;
+              }),
+          );
+          self.startedCheckIns.push({ promise: checkIn, departure });
+        }
         ({ current: i, forward } = getNextIndex(i, schedule, forward));
         const [p] = self.pathFinder.getPaths(stop, schedule.stops[i], [
           self.vehicle.info.type,
@@ -197,6 +218,7 @@ export class ScheduleHandler {
         log.error(
           'Scheduled vehicle is not checkIn at current stop in schedule.',
         );
+        self.started = false;
       }
     };
   }
