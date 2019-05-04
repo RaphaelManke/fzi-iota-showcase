@@ -74,8 +74,7 @@ export default {
         })
         .catch(function(response) {
           if (response.status === 406) {
-            this.$store.commit("user/updateUserInfo", response.body);
-            this.$router.push("route-selection");
+            alert("User already logged in!");
           } else {
             window.console.error(response);
             alert("Server error. Look console!");
