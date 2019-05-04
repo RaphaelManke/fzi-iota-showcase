@@ -1,5 +1,5 @@
 <template>
-  <b-card header="FZI IOTA showcase">
+  <b-card header="FZI IOTA showcase" style="height: 100%">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height:60vh">
       <l-tile-layer :url="url" :attribution="attribution" />
 

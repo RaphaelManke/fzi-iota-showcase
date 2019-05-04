@@ -1,5 +1,5 @@
 <template>
-  <b-card header="Routes">
+  <b-card header="Routes" style="height:100%">
     <div style="height: 60vh; overflow-y: scroll; overflow-x: hidden;">
             <b-row>
               <b-col>
