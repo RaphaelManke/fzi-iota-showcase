@@ -76,7 +76,6 @@ dist/
 **/test-results.xml
 
 /deployment/map-data
-/deployment/config/*
 *.cert
 *.crt
 *.key

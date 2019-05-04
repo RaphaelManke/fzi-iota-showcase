@@ -7,53 +7,53 @@ services:
     networks:
       - web
 
-    #ports:
-    #  - "${BACKEND_PORT:-3000}:3000"
-    labels:
-      - "traefik.backend=backend"
-      - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:localhost,${HOSTNAME}:${BACKEND_PORT}"
-      - "traefik.enable=true"
-      - "traefik.port=3000"
-      - "traefik.default.protocol=http"
-      - "traefik.frontend.Headers.AccessControlAllowMethods=GET,OPTIONS,POST"
-      - "traefik.frontend.Headers.AccessControlAllowOrigin=*"
-      - "traefik.frontend.Headers.AccessControlMaxAge=100"
-      - "traefik.frontend.Headers.AddVaryHeader=true"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    # labels:
+    #   - "traefik.backend=backend"
+    #   - "traefik.docker.network=web"
+    #   - "traefik.frontend.rule=Host:localhost,${HOSTNAME}:${BACKEND_PORT}"
+    #   - "traefik.enable=true"
+    #   - "traefik.port=3000"
+    #   - "traefik.default.protocol=http"
+    #   - "traefik.frontend.Headers.AccessControlAllowMethods=GET,OPTIONS,POST"
+    #   - "traefik.frontend.Headers.AccessControlAllowOrigin=*"
+    #   - "traefik.frontend.Headers.AccessControlMaxAge=100"
+    #   - "traefik.frontend.Headers.AddVaryHeader=true"
 
     volumes:
       - ./config:/out/config
     #entrypoint: ["ls", "-la", "config"]
-    entrypoint: ["node", "main.js", "--provider", "https://nodes.thetangle.org"]
+    entrypoint: ["node", "main.js", "--provider", "${TANGLE_NODE}"]
 
   showcase-user-interface:
     container_name: showcase-user-interface
     image: ${REGISTRY}/showcase-user-interface:${SHOWCASE_USER_INTERFACE_TAG}
     networks:
       - web
-    labels:
-      - "traefik.backend=showcase-user-interface"
-      - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:localhost,${HOSTNAME};PathPrefixStrip:/app"
-      - "traefik.enable=true"
-      - "traefik.port=80"
-      - "traefik.default.protocol=http"
+    # labels:
+    #   - "traefik.backend=showcase-user-interface"
+    #   - "traefik.docker.network=web"
+    #   - "traefik.frontend.rule=Host:localhost,${HOSTNAME};PathPrefixStrip:/app"
+    #   - "traefik.enable=true"
+    #   - "traefik.port=80"
+    #   - "traefik.default.protocol=http"
 
-    #ports:
-    #  - "${SHOWCASE_USER_INTERFACE_PORT:-8080}:80"
+    ports:
+      - "${SHOWCASE_USER_INTERFACE_PORT:-8080}:80"
 
   frontend-showcase-vis:
     container_name: frontend-showcase-vis
     image: ${REGISTRY}/frontend-showcase-vis:${FRONTEND_SHOWCASE_VIS_TAG}
-    #    ports:
-    #      - "${FRONTEND_SHOWCASE_VIS_PORT:-8081}:80"
-    labels:
-      - "traefik.backend=showcase-user-interface"
-      - "traefik.docker.network=web"
-      - "traefik.frontend.rule=Host:localhost,${HOSTNAME};PathPrefixStrip:/vis"
-      - "traefik.enable=true"
-      - "traefik.port=80"
-      - "traefik.default.protocol=http"
+    ports:
+      - "${FRONTEND_SHOWCASE_VIS_PORT:-8081}:80"
+    # labels:
+    #   - "traefik.backend=showcase-user-interface"
+    #   - "traefik.docker.network=web"
+    #   - "traefik.frontend.rule=Host:localhost,${HOSTNAME};PathPrefixStrip:/vis"
+    #   - "traefik.enable=true"
+    #   - "traefik.port=80"
+    #   - "traefik.default.protocol=http"
 
   map-server:
     container_name: map-server
@@ -62,20 +62,20 @@ services:
       - "8084:80"
     volumes:
       - "./map-data:/data"
-  traefik:
-    image: traefik:latest
-    ports:
-      - 80:80
-      - 443:443
-      - 8080:8080
-      - 3000:3000
-    networks:
-      - web
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik/traefik.toml:/traefik.toml
-      - ./traefik/certs/:/certs/
-    container_name: traefik
+  # traefik:
+  #   image: traefik:latest
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #     - 8080:8080
+  #     - 3000:3000
+  #   networks:
+  #     - web
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./traefik/traefik.toml:/traefik.toml
+  #     - ./traefik/certs/:/certs/
+  #   container_name: traefik
 
 networks:
   web:
