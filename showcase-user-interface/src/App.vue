@@ -49,10 +49,14 @@ export default {
         .post(this.$hostname + "/logout", this.seed)
         .then(function(response) {
           this.$store.commit("user/userLogout");
+          this.$store.commit("routes/routeFinished");
+          this.$store.commit("events/routeFinished");
           this.$router.push("/");
         })
         .catch(function(response) {
           this.$store.commit("user/userLogout");
+          this.$store.commit("routes/routeFinished");
+          this.$store.commit("events/routeFinished");
           this.$router.push("/");
         });
     }
