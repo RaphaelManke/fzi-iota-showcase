@@ -1,5 +1,10 @@
 <template>
   <b-container fluid>
+    <b-modal ref="login_modal" hide-footer>
+    <div class="d-block text-center">
+      <h3>User already logged in!</h3>
+    </div>
+  </b-modal>
     <b-jumbotron class="text-center">
       <template slot="header"
         >Welcome</template
@@ -74,7 +79,7 @@ export default {
         })
         .catch(function(response) {
           if (response.status === 406) {
-            alert("User already logged in!");
+            this.$refs["login_modal"].show();
           } else {
             window.console.error(response);
             alert("Server error. Look console!");
