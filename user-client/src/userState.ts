@@ -65,7 +65,10 @@ export class UserState {
     );
     const nonce = generateNonce(); // TODO when reserving nonce must be generated before trip
 
-    const flash = new FlashMock(this.mockPayments ? undefined : this.iota);
+    const flash = new FlashMock(
+      this.mockPayments ? undefined : this.iota,
+      this.mwm,
+    );
     // use real or mocked payment functions
     let depositor: (value: number, address: Hash) => Promise<string>;
     let txReader: (bundleHash: Hash) => Promise<Bundle>;

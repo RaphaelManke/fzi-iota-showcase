@@ -99,7 +99,7 @@ export class BoardingHandler {
     }
   }
 
-  public onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
+  public async onPaymentChannelOpened(message: OpenPaymentChannelMessage) {
     log.silly('User opened payment channel %O', message);
     this.paymentChannel.open(
       this.settlementAddress,
@@ -111,7 +111,7 @@ export class BoardingHandler {
     );
     this.userAddress = message.settlement;
     const digests = this.paymentChannel.createDigests();
-    this.paymentChannel.prepareChannel(
+    await this.paymentChannel.prepareChannel(
       [message.digests, digests],
       [message.settlement, this.settlementAddress],
     );
@@ -238,7 +238,12 @@ export class BoardingHandler {
           this.state = State.CLOSED;
         }
       } else {
-        const tailTransactionHash = await this.paymentChannel.attachCurrentBundle();
+        let tailTransactionHash = '';
+        try {
+          tailTransactionHash = await this.paymentChannel.attachCurrentBundle();
+        } catch (e) {
+          log.error('Vehicle failed attaching closing tx. ' + (e.message || e));
+        }
         this.sender.closePaymentChannel(tailTransactionHash);
         this.state = State.CLOSED;
       }
