@@ -13,6 +13,7 @@ export class Users {
       idSupplier = getNextId,
       mockPayments = false,
       provider,
+      mwm,
       iota = composeAPI({
         provider,
         attachToTangle: createAttachToTangle(provider),
@@ -21,6 +22,7 @@ export class Users {
       idSupplier?: () => Trytes;
       provider?: string;
       iota?: API;
+      mwm: number;
       mockPayments?: boolean;
     },
   ): Users {
@@ -31,15 +33,15 @@ export class Users {
     descs.forEach((d) =>
       users.set(d.seed, { loggedIn: false, id: idSupplier(), ...d, balance: 0 }),
     );
-    return new Users(users, provider, iota, mockPayments);
+    return new Users(users, mwm, provider, iota, mockPayments);
   }
 
   private byId = new Map<Trytes, { info: User; state: UserState }>();
   private bySeed = new Map<Hash, { info: User; state: UserState }>();
-  private iota: API;
 
   constructor(
     users: Map<Hash, User>,
+    mwm: number,
     provider?: string,
     iota: API | undefined = provider
       ? composeAPI({
@@ -52,9 +54,8 @@ export class Users {
     if (!iota) {
       throw new Error('IOTA client must be set');
     }
-    this.iota = iota;
     Array.from(users.entries()).forEach(([seed, user]) => {
-      const state = new UserState(seed, user.id, { iota, mockPayments });
+      const state = new UserState(seed, user.id, { iota, mwm, mockPayments });
       this.byId.set(user.id, { info: user, state });
       this.bySeed.set(seed, { info: user, state });
     });

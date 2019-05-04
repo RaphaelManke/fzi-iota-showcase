@@ -10,5 +10,6 @@ export async function publishCheckOutMessage(
 ) {
   const bundle = await tripChannel.publish('', { index: 0, depth, mwm });
   log.debug('Published CheckOutMessage');
+  log.silly('Bundle: \'%s\'', bundle[0].bundle);
   return bundle;
 }

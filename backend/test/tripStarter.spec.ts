@@ -35,6 +35,7 @@ describe('Trip Starter', () => {
       stopMap,
       '',
       composeAPI(),
+      9,
       getNextId,
       true,
       true,
@@ -62,6 +63,7 @@ describe('Trip Starter', () => {
 
     const users = Users.fromFile('./config/users.json', {
       mockPayments: true,
+      mwm: 5,
       iota: composeAPI(),
     });
     users.initUsers();

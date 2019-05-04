@@ -22,6 +22,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
         users: './config/users.json',
         schedules: './config/schedules.json',
         provider: 'https://nodes.devnet.iota.org',
+        mwm: 9,
         mockPayments: false,
         mockMessages: false,
         logLevel: 'debug',
@@ -37,7 +38,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       fs.readFileSync(args.connections).toString(),
     );
     const vehicles: VehicleDescription[] = readVehicles(args.vehicles);
-    // TODO
+
     vehicles
       .filter((v) => v.seed.length === 0)
       .forEach((v) => (v.seed = generateSeed()));
@@ -50,6 +51,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
     const users = Users.fromFile(args.users, {
       iota,
       mockPayments: args.mockPayments,
+      mwm: args.mwm,
     });
     await users.initUsers();
 
@@ -68,6 +70,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       users,
       args.provider,
       iota,
+      args.mwm,
       args.mockPayments,
       args.mockMessages,
       args.masterSeed,
