@@ -102,7 +102,7 @@ export class TripHandler {
     log.silly('Vehicle opened payment channel %O', message);
     if (this.state === State.PAYMENT_CHANNEL_OPENED) {
       this.vehicleAddress = message.settlement;
-      this.paymentChannel.prepareChannel(
+      await this.paymentChannel.prepareChannel(
         [this.digests, message.digests],
         [this.settlementAddress, message.settlement],
       );

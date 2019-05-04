@@ -17,7 +17,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
 
   private depth?: number;
 
-  constructor(private readonly iota: API | undefined) {}
+  constructor(private readonly iota: API | undefined, private mwm = 9) {}
 
   public open(
     settlementAddress: Hash,
@@ -40,7 +40,7 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     );
   }
 
-  public prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
+  public async prepareChannel(allDigests: any[], settlementAddresses: Hash[]) {
     this.state = PaymentChannelState.WAIT_FOR_DEPOSIT;
     this.settlementAddresses = settlementAddresses;
     this.seed = hash(
@@ -48,7 +48,16 @@ export class FlashMock implements PaymentChannel<any, any, any> {
         .map((a) => (a.length < 81 ? a + '9'.repeat(81 - a.length) : a))
         .reduce((acc, v) => acc + v, ''),
     );
-    this.rootAddress = generateAddress(this.seed, 0);
+    if (!this.iota) {
+      this.rootAddress = generateAddress(this.seed, 0);
+    } else {
+      const result = await this.iota.getNewAddress(this.seed);
+      if (typeof result === 'string') {
+        this.rootAddress = result;
+      } else {
+        this.rootAddress = result[0];
+      }
+    }
   }
 
   public applyTransaction(signedBundles: any[]) {
@@ -73,9 +82,18 @@ export class FlashMock implements PaymentChannel<any, any, any> {
       const transfers = Array.from(this.balances.entries())
         .filter(([, value]) => value > 0)
         .map(([address, value]) => ({ address, value }));
-      const trytes = await this.iota.prepareTransfers(this.seed!, transfers);
-      const txs = await this.iota.sendTrytes(trytes, 3, 14);
-      return txs[0].hash;
+      try {
+        const txTrytes = await this.iota.prepareTransfers(
+          this.seed!,
+          transfers,
+        );
+        const txs = await this.iota.sendTrytes(txTrytes, 3, this.mwm);
+        return txs[0].hash;
+      } catch (e) {
+        log.debug('Seed of payment channel: %s', this.seed);
+        log.debug('Balances on payment channel: %O', this.balances);
+        throw e;
+      }
     } else {
       return '';
     }

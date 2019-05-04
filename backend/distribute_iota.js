@@ -11,7 +11,7 @@ const depth = 3;
 
 // Difficulty of Proof-of-Work required to attach transaction to tangle.
 // Minimum value on mainnet is `14`, `7` on spamnet and `9` on devnet and other testnets.
-const minWeightMagnitude = 9;
+const minWeightMagnitude = 5;
 
 function generateSeed(length = 81) {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
