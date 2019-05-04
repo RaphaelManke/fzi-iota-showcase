@@ -39,4 +39,7 @@ export default {
 </script>
 
 <style>
+html {
+  font-size: 1rem;
+}
 </style>
