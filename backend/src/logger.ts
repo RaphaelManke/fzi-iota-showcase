@@ -1,7 +1,6 @@
-import { log } from 'fzi-iota-showcase-client';
+import { log, trytesToInt } from 'fzi-iota-showcase-client';
 import { SafeEmitter, Event } from './events';
 import { Trytes } from '@iota/core/typings/types';
-import { trits, value } from '@iota/converter';
 import * as colors from 'colors';
 
 const skipAlways = ['allowedDestinations'];
@@ -83,8 +82,13 @@ export function enableLogging(
 }
 
 function colorText(s: string) {
-  const trit = trits(s.split(' ')[1]);
-  return text[value(trit) % text.length](s);
+  const id = s.split(' ')[1];
+  const i = trytesToInt(id) % text.length;
+  try {
+    return text[i](s);
+  } catch (e) {
+    return s;
+  }
 }
 
 const text = [
@@ -96,7 +100,6 @@ const text = [
   colors.cyan,
   colors.white,
   colors.gray,
-  colors.grey,
 ];
 
 const bgs = new Map<Event[0], colors.Color>();
@@ -119,7 +122,11 @@ function colorBg(s: Event[0]) {
   if (!bgs.has(s)) {
     bgs.set(s, bg[bgs.size % bg.length]);
   }
-  return bgs.get(s)!(s.black);
+  try {
+    return bgs.get(s)!(s.black);
+  } catch (e) {
+    return s;
+  }
 }
 
 const bg = [
