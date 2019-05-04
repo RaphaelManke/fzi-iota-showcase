@@ -45,12 +45,13 @@ export class Boarder {
     depositor: (value: number, address: Hash) => Promise<string>,
     mockPayments: boolean,
     iota: API,
+    mwm: number,
     setSentVehicleHandler: (handler: BoardingHandler) => void,
     onClosingTransaction: (address: Hash, value: number) => void,
   ): Promise<void> {
     return new Promise<void>((res, rej) => {
       try {
-        const flash = new FlashMock(mockPayments ? undefined : iota);
+        const flash = new FlashMock(mockPayments ? undefined : iota, mwm);
         // observe sender
         const senderProxy = this.createSenderProxy(
           sendToUser,

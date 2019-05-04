@@ -276,6 +276,7 @@ export class VehicleMock {
               depositor,
               this.mockPayments,
               this.iota,
+              this.mwm,
               setSentVehicleHandler,
               onClosingTransaction,
             );
