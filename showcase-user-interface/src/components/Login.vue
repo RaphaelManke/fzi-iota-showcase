@@ -46,6 +46,11 @@ export default {
       scanning: false
     };
   },
+  mounted() {
+    if (this.$store.getters["user/isLoggedIn"]) {
+      this.login();
+    }
+  },
   computed: {
     // check if seed is valid
     state() {

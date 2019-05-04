@@ -1,7 +1,7 @@
-import { RouteStore } from "./types";
-import { Module } from "vuex";
-import { RootState } from "../types";
-import Vue from "vue";
+import { RouteStore } from './types';
+import { Module } from 'vuex';
+import { RootState } from '../types';
+import Vue from 'vue';
 export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
@@ -10,7 +10,7 @@ export const routes: Module<RouteStore, RootState> = {
     routeSelected: undefined,
     trip: undefined,
     nextTrip: undefined,
-    routeState: ""
+    routeState: '',
   },
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
@@ -19,11 +19,11 @@ export const routes: Module<RouteStore, RootState> = {
     updateRouteSelected(state: any, selected: string) {
       state.routeSelectedIndex = selected;
       state.routeSelected = JSON.parse(
-        JSON.stringify(state.routesAvailable[state.routeSelectedIndex])
+        JSON.stringify(state.routesAvailable[state.routeSelectedIndex]),
       );
       state.routeSelected.sections.forEach((el: any) => {
         el.duration = Math.round(
-          (Date.parse(el.arrival) - Date.parse(el.departure)) / 500 - 1
+          (Date.parse(el.arrival) - Date.parse(el.departure)) / 500 - 1,
         );
         el.passed_count = 0;
       });
@@ -38,7 +38,7 @@ export const routes: Module<RouteStore, RootState> = {
         state.routeSelected.sections.find(
           (sec: any) =>
             sec.vehicle.id === state.trip.vehicleId &&
-            data.id === state.trip.vehicleId
+            data.id === state.trip.vehicleId,
         ).passed_count++;
         state.routeSelected = JSON.parse(JSON.stringify(state.routeSelected));
       }
@@ -50,13 +50,12 @@ export const routes: Module<RouteStore, RootState> = {
         data.vehicleId === state.nextTrip.vehicle &&
         data.allowedDestinations.includes(state.nextTrip.destination)
       ) {
-        window.console.log(data);
         // make the post request
         // @ts-ignore
         Vue.http
-          .post(Vue.prototype.$hostname + "/trip", state.nextTrip)
+          .post(Vue.prototype.$hostname + '/trip', state.nextTrip)
           .then(function(response: any) {
-            state.routeState = " Boarding ";
+            state.routeState = ' Boarding ';
           })
           .catch(function(response: any) {
             window.console.log(response);
@@ -72,20 +71,20 @@ export const routes: Module<RouteStore, RootState> = {
     },
     setNextTrip(state: any, nextTrip: any) {
       state.nextTrip = nextTrip;
-      state.routeState = " Await arrival of ";
-    }
+      state.routeState = ' Await arrival of ';
+    },
   },
   actions: {
     SOCKET_TripStarted({ state, commit, rootGetters }, trip: any) {
-      if (trip.userId === rootGetters["user/getUserInfo"].id) {
-        commit("TripStarted", trip);
+      if (trip.userId === rootGetters['user/getUserInfo'].id) {
+        commit('TripStarted', trip);
       }
     },
     SOCKET_TripFinished({ state, commit, rootGetters }, trip: any) {
-      if (trip.userId === rootGetters["user/getUserInfo"].id) {
-        commit("TripFinished");
+      if (trip.userId === rootGetters['user/getUserInfo'].id) {
+        commit('TripFinished');
       }
-    }
+    },
   },
   getters: {
     getRoutesAvailable: (state: any) => {
@@ -105,6 +104,6 @@ export const routes: Module<RouteStore, RootState> = {
     },
     getRouteState(state: any) {
       return state.routeState;
-    }
-  }
+    },
+  },
 };
