@@ -354,12 +354,16 @@ export class VehicleMock {
           if (this.vehicle.trip) {
             const checkOut: Promise<
               Array<{ address: Hash; value: number }>
-            > = this.mockMessages
-              ? Promise.resolve([{ address: this.generateNonce(), value: 0 }])
-              : publishCheckOutMessage(this.vehicle.trip.tripChannel, {
-                  depth: this.depth,
-                  mwm: this.mwm,
-                });
+            > = Promise.resolve(
+              this.mockMessages
+                ? [{ address: this.generateNonce(), value: 0 }]
+                : retry((r: Array<{ address: Hash; value: number }>) =>
+                    publishCheckOutMessage(this.vehicle.trip.tripChannel, {
+                      depth: this.depth,
+                      mwm: this.mwm,
+                    }),
+                  ),
+            );
             checkOut
               .then((bundle) => {
                 if (this.vehicle.trip && this.vehicle.trip.path) {
