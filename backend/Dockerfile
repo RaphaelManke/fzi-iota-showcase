@@ -13,7 +13,8 @@ COPY package*.json .npmrc ./tsconfig.json ./
 COPY ./src ./src
 
 RUN npm install && \
-    npm run build
+    npm run build && \
+    npm prune --production
 
 
 # production stage

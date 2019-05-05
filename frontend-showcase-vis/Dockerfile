@@ -1,10 +1,8 @@
-# syntax = docker/dockerfile:1.0-experimental
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /app
-
-#COPY package*.json ./
-#RUN npm install
+COPY package*.json ./
+RUN npm install
 COPY . .
 RUN npm run build
 
