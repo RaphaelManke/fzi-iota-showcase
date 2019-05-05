@@ -7,6 +7,7 @@ import { Vehicle } from './vehicle';
 import { Path, PathFinder, Connection } from './pathFinder';
 import { API } from '@iota/core';
 import { Mover } from './mover';
+import * as retry from 'bluebird-retry';
 
 export class Boarder {
   private h?: BoardingHandler;
@@ -75,7 +76,7 @@ export class Boarder {
           txReader = async () => this.mockedBundle(price, flash.rootAddress);
         } else {
           txReader = async (tailTransactionHash) =>
-            await iota.getBundle(tailTransactionHash);
+            await retry((b: Bundle) => iota.getBundle(tailTransactionHash));
         }
 
         this.h = new BoardingHandler(

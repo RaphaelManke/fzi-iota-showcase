@@ -5,6 +5,7 @@ import { getNextId } from './idSupplier';
 import { log, createAttachToTangle } from 'fzi-iota-showcase-client';
 import { UserState } from 'fzi-iota-showcase-user-client';
 import { API, composeAPI } from '@iota/core';
+import * as retry from 'bluebird-retry';
 
 export class Users {
   public static fromFile(
@@ -66,10 +67,15 @@ export class Users {
     for (const [seed, { info, state }] of this.bySeed) {
       const p = (async () => {
         log.info('Init user %s', info.id);
-        const result = await state.getBalance();
-        info.balance = result;
+        await retry(() =>
+          state.getBalance().then((balance) => (info.balance = balance)),
+        );
       })().catch((e) => {
-        log.error('Init User %s failed. %s', info.id, e.stack);
+        log.error(
+          'Init User %s failed. User will be removed. %s',
+          info.id,
+          e.stack,
+        );
         this.bySeed.delete(seed);
         this.byId.delete(info.id);
       });

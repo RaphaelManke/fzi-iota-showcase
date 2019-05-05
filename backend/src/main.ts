@@ -26,6 +26,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
         mockPayments: false,
         mockMessages: false,
         logLevel: 'debug',
+        parallelInit: true,
       },
     });
     log.level = args.logLevel;
@@ -53,7 +54,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       mockPayments: args.mockPayments,
       mwm: args.mwm,
     });
-    await users.initUsers();
+    await users.initUsers(args.parallelInit);
 
     const schedules: ScheduleDescription[] = JSON.parse(
       fs.readFileSync(args.schedules).toString(),
@@ -75,7 +76,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       args.mockMessages,
       args.masterSeed,
     );
-    await c.setup();
+    c.setup().initVehicles(args.parallelInit);
 
     new Server(c).listen();
   } catch (e) {

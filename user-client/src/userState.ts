@@ -8,6 +8,7 @@ import {
 import { API, composeAPI, generateAddress } from '@iota/core';
 import { Hash, Trytes, Bundle, Transaction } from '@iota/core/typings/types';
 import { TripHandler, Sender } from './tripHandler';
+import * as retry from 'bluebird-retry';
 
 export class UserState {
   public static PAYMENT_EACH_MILLIS = 5000;
@@ -78,14 +79,17 @@ export class UserState {
         this.mockedBundle(maxPrice, flash.rootAddress);
     } else {
       depositor = async (value, address) => {
-        const txTrytes = await this.iota.prepareTransfers(this.seed, [
-          { value, address },
-        ]);
-        const txs = await this.iota.sendTrytes(txTrytes, this.depth, this.mwm);
+        const txs = await retry((b: Bundle) =>
+          this.iota
+            .prepareTransfers(this.seed, [{ value, address }])
+            .then((txTrytes) =>
+              this.iota.sendTrytes(txTrytes, this.depth, this.mwm),
+            ),
+        );
         return txs[0].hash;
       };
       txReader = async (tailTransactonHash) =>
-        await this.iota.getBundle(tailTransactonHash);
+        await retry((b: Bundle) => this.iota.getBundle(tailTransactonHash));
     }
 
     const result = new TripHandler(

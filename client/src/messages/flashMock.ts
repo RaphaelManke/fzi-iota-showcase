@@ -1,9 +1,10 @@
 import { PaymentChannel, PaymentChannelState } from './boarding';
-import { Hash, Trytes } from '@iota/core/typings/types';
+import { Hash, Trytes, Bundle } from '@iota/core/typings/types';
 import { trits, trytes } from '@iota/converter';
 import Kerl from '@iota/kerl';
 import { generateAddress, API } from '@iota/core';
 import { log } from '../logger';
+import * as retry from 'bluebird-retry';
 
 export class FlashMock implements PaymentChannel<any, any, any> {
   public state = PaymentChannelState.UNINITIALIZED;
@@ -51,12 +52,15 @@ export class FlashMock implements PaymentChannel<any, any, any> {
     if (!this.iota) {
       this.rootAddress = generateAddress(this.seed, 0);
     } else {
-      const result = await this.iota.getNewAddress(this.seed);
-      if (typeof result === 'string') {
-        this.rootAddress = result;
-      } else {
-        this.rootAddress = result[0];
-      }
+      await retry(() =>
+        this.iota!.getNewAddress(this.seed!).then((result) => {
+          if (typeof result === 'string') {
+            this.rootAddress = result;
+          } else {
+            this.rootAddress = result[0];
+          }
+        }),
+      );
     }
   }
 
@@ -83,11 +87,11 @@ export class FlashMock implements PaymentChannel<any, any, any> {
         .filter(([, value]) => value > 0)
         .map(([address, value]) => ({ address, value }));
       try {
-        const txTrytes = await this.iota.prepareTransfers(
-          this.seed!,
-          transfers,
+        const txs = await retry((b: Bundle) =>
+          this.iota!.prepareTransfers(this.seed!, transfers).then((txTrytes) =>
+            this.iota!.sendTrytes(txTrytes, 3, this.mwm),
+          ),
         );
-        const txs = await this.iota.sendTrytes(txTrytes, 3, this.mwm);
         return txs[0].hash;
       } catch (e) {
         log.debug('Seed of payment channel: %s', this.seed);

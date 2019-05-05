@@ -6,10 +6,11 @@ import {
   Connection,
   Path,
 } from 'fzi-iota-showcase-vehicle-mock';
-import { log } from 'fzi-iota-showcase-client';
+import { log, CheckInMessage } from 'fzi-iota-showcase-client';
 import { getPathLength } from 'geolib';
 import { scheduleJob, Job } from 'node-schedule';
 import * as Queue from 'promise-queue';
+import * as retry from 'bluebird-retry';
 
 export class ScheduleHandler {
   public static START_DELAY = 40000;
@@ -98,23 +99,28 @@ export class ScheduleHandler {
           );
 
           if (self.doCheckIn) {
-            const checkIn = self.queue.add(() =>
-              self.mock
-                .checkIn(
-                  stop,
-                  self.tripIndex!++,
-                  self.lastValidFrom,
-                  departure,
-                  getDests(self.last.index, self.last.forward, schedule),
-                )
-                .catch((reason) => {
-                  log.error(
-                    'Check in for \'%s\' failed. ' + (reason.message || reason),
-                    schedule.forVehicle,
-                  );
-                  self.doCheckIn = false;
-                }),
-            );
+            const retriedCheckIn = () =>
+              Promise.resolve(
+                retry((c: CheckInMessage) =>
+                  self.mock
+                    .checkIn(
+                      stop,
+                      self.tripIndex!++,
+                      self.lastValidFrom,
+                      departure,
+                      getDests(self.last.index, self.last.forward, schedule),
+                    )
+                    .catch((reason) => {
+                      log.error(
+                        'Check in for \'%s\' failed. ' +
+                          (reason.message || reason),
+                        schedule.forVehicle,
+                      );
+                      self.doCheckIn = false;
+                    }),
+                ),
+              );
+            const checkIn = self.queue.add(retriedCheckIn);
             self.startedCheckIns.push({
               promise: checkIn,
               departure,
@@ -169,15 +175,19 @@ export class ScheduleHandler {
         const dests = getDests(i, forward, schedule);
         if (self.doCheckIn) {
           const checkIn = self.queue.add(() =>
-            self.mock
-              .checkIn(stop, tripIndex, thisArrival, departure, dests)
-              .catch((reason) => {
-                log.error(
-                  'Check in for \'%s\' failed. ' + (reason.message || reason),
-                  schedule.forVehicle,
-                );
-                self.doCheckIn = false;
-              }),
+            Promise.resolve(
+              retry((c: CheckInMessage) =>
+                self.mock
+                  .checkIn(stop, tripIndex, thisArrival, departure, dests)
+                  .catch((reason) => {
+                    log.error(
+                      'Check in for \'%s\' failed. ' + (reason.message || reason),
+                      schedule.forVehicle,
+                    );
+                    self.doCheckIn = false;
+                  }),
+              ),
+            ),
           );
           self.startedCheckIns.push({ promise: checkIn, departure });
         }

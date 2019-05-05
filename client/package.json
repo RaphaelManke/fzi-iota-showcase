@@ -63,6 +63,7 @@
     "@iota/transaction": "1.0.0-beta.11",
     "@iota/transaction-converter": "1.0.0-beta.11",
     "@iota/validators": "1.0.0-beta.11",
+    "bluebird-retry": "^0.11.0",
     "extend": "^3.0.2",
     "flash.lib.js": "github:cr0ssing/flash.lib.js",
     "mam.ts": "^0.1.6",
@@ -71,6 +72,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/bluebird-retry": "^0.11.3",
     "@types/chai": "^4.1.7",
     "@types/extend": "^3.0.1",
     "@types/mocha": "^5.2.6",

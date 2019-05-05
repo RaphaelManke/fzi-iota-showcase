@@ -1,7 +1,7 @@
 import { Vehicle } from './vehicle';
 import { Mover } from './mover';
 import { Path } from './pathFinder';
-import { Trytes, Hash } from '@iota/core/typings/types';
+import { Trytes, Hash, Bundle } from '@iota/core/typings/types';
 import { API, composeAPI, AccountData, generateAddress } from '@iota/core';
 import { trits, trytes } from '@iota/converter';
 import {
@@ -28,6 +28,7 @@ import { State } from './tripState';
 import { getPathLength } from 'geolib';
 import { MamWriter, MAM_MODE } from 'mam.ts';
 import { Boarder } from './boarder';
+import * as retry from 'bluebird-retry';
 
 export class VehicleMock {
   private mover: Mover;
@@ -73,9 +74,9 @@ export class VehicleMock {
     } else {
       this.settlementAddress = generateAddress(seed, this.addressIndex);
       result = {
-        addresses: [''],
-        balance: 3000,
-        latestAddress: 'A',
+        addresses: [this.settlementAddress],
+        balance: 1000000000,
+        latestAddress: this.settlementAddress,
         transactions: [],
         inputs: [],
         transfers: [],
@@ -238,29 +239,30 @@ export class VehicleMock {
               depositor = async (value, address) => '';
             } else {
               depositor = async (value, address) => {
-                const balance = (await this.iota.getBalances(
-                  [this.vehicle.trip.checkInMessage.paymentAddress],
-                  100,
-                )).balances[0];
-                const txTrytes = await this.iota.prepareTransfers(
-                  getPaymentSeed(this.vehicle.seed),
-                  [{ value, address }],
-                  // {
-                  //   inputs: [
-                  //     {
-                  //       address: this.vehicle.trip.checkInMessage
-                  //         .paymentAddress,
-                  //       balance,
-                  //       security: 2,
-                  //       keyIndex: this.vehicle.trip.addressIndex,
-                  //     },
-                  //   ],
-                  // },
-                );
-                const txs = await this.iota.sendTrytes(
-                  txTrytes,
-                  this.depth,
-                  this.mwm,
+                // const balance = (await this.iota.getBalances(
+                //   [this.vehicle.trip.checkInMessage.paymentAddress],
+                //   100,
+                // )).balances[0];
+                const txs = await retry((b: Bundle) =>
+                  this.iota
+                    .prepareTransfers(
+                      getPaymentSeed(this.vehicle.seed),
+                      [{ value, address }],
+                      // {
+                      //   inputs: [
+                      //     {
+                      //       address: this.vehicle.trip.checkInMessage
+                      //         .paymentAddress,
+                      //       balance,
+                      //       security: 2,
+                      //       keyIndex: this.vehicle.trip.addressIndex,
+                      //     },
+                      //   ],
+                      // },
+                    )
+                    .then((txTrytes) =>
+                      this.iota.sendTrytes(txTrytes, this.depth, this.mwm),
+                    ),
                 );
                 return txs[0].hash;
               };
@@ -393,7 +395,7 @@ export class VehicleMock {
                 res(stop);
                 // TODO switch this to AUTO_CHECK_IN
                 if (this.vehicle.info.driveStartingPolicy !== 'MANUAL') {
-                  this.checkInAtCurrentStop().catch((reason) => {
+                  retry(() => this.checkInAtCurrentStop()).catch((reason) => {
                     log.error('Check in failed. ' + (reason.message || reason));
                   });
                 }

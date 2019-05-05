@@ -12,7 +12,7 @@ import { EnvironmentInfo, Stop, Connection, User, Trip } from './envInfo';
 import { Users } from './users';
 import { VehicleDescription } from './vehicleImporter';
 import { Trytes, Transfer, Hash } from '@iota/core/typings/types';
-import { API, composeAPI, AccountData } from '@iota/core';
+import { API, composeAPI } from '@iota/core';
 import { VehicleInfo } from './vehicleInfo';
 import {
   createAttachToTangle,
@@ -31,6 +31,7 @@ import {
   ScheduleDescription,
   ScheduleHandler,
 } from 'fzi-iota-showcase-tram-mock';
+import * as retry from 'bluebird-retry';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -166,7 +167,7 @@ export class Controller {
     }
   }
 
-  public async setup() {
+  public setup() {
     this.events.on('Login', (login: Login) => {
       const user = this.users.getById(login.id);
       this.env.users.push(user!.info);
@@ -246,58 +247,62 @@ export class Controller {
       }
     });
 
-    await this.initVehicles();
     return this;
   }
 
-  private destAllowed = (
-    { vehicleInfo }: CheckInMessage,
-    destination: Trytes,
-  ) =>
-    !vehicleInfo ||
-    !vehicleInfo.allowedDestinations ||
-    vehicleInfo.allowedDestinations.length === 0 ||
-    vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
-      undefined
-
-  private async initVehicles(parallelInit = true, fundAmount = 1000000000) {
+  public async initVehicles(parallelInit = true, fundAmount = 1000000000) {
     log.info('Initializing all vehicles...');
     const promises = [];
     for (const { mock: vm, info } of this.vehicles.values()) {
       log.info('Init vehicle %s', info.id);
       const p = Promise.all([
-        vm.syncTangle(),
-        vm
-          .setupPayments()
-          .then((ad: AccountData) => (info.balance = ad.balance)),
-      ]).then(() => {
-        // TODO switch this to AUTO_CHECK_IN
-        if (info.info.driveStartingPolicy !== 'MANUAL') {
-          vm.checkInAtCurrentStop();
-        }
-      });
+        retry(vm.syncTangle, { context: vm }),
+        retry(() => vm.setupPayments().then((ad) => (info.balance = ad.balance))),
+      ])
+        .then(() =>
+          retry(() => {
+            // TODO switch this to AUTO_CHECK_IN
+            if (info.info.driveStartingPolicy !== 'MANUAL') {
+              vm.checkInAtCurrentStop();
+            }
+          }),
+        )
+        .catch((reason) => {
+          log.error(
+            'Init vehicle %s failed. ' +
+              (reason.message || reason) +
+              '. Vehicle will be removed.',
+            info.id,
+          );
+          const i = this.env.vehicles.findIndex((v) => v.id === info.id);
+          this.env.vehicles.splice(i, 1);
+          this.vehicles.delete(info.id);
+        });
       if (!parallelInit) {
         await p;
       }
       promises.push(p);
     }
     await Promise.all(promises);
+
     if (!this.mockPayments && this.masterSeed) {
       log.info('Transfering funds to vehicles...');
-      const transfers: Transfer[] = Array.from(this.vehicles.values())
-        .filter(({ info }) => info.balance === 0) // only include empty accounts -> random generated seed
-        .map(
-          ({ mock: { address } }): Transfer => ({
-            address: address!,
-            value: fundAmount,
-          }),
-        );
-      await this.iota
-        .prepareTransfers(this.masterSeed, transfers)
-        .then((trytes) => this.iota.sendTrytes(trytes, 3, this.mwm));
-      Array.from(this.vehicles.values())
-        .filter(({ info }) => info.balance === 0)
-        .forEach(({ info }) => (info.balance = fundAmount));
+      const toFund = Array.from(this.vehicles.values()).filter(
+        ({ info }) => info.balance === 0, // only include empty accounts -> random generated seed
+      );
+
+      const transfers: Transfer[] = toFund.map(
+        ({ mock: { address } }): Transfer => ({
+          address: address!,
+          value: fundAmount,
+        }),
+      );
+      await retry(() =>
+        this.iota
+          .prepareTransfers(this.masterSeed!, transfers)
+          .then((trytes) => this.iota.sendTrytes(trytes, 3, this.mwm))
+          .then(() => toFund.forEach(({ info }) => (info.balance = fundAmount))),
+      );
     }
 
     log.info('Starting schedules...');
@@ -317,4 +322,14 @@ export class Controller {
     });
     log.info('Vehicles initialized.');
   }
+
+  private destAllowed = (
+    { vehicleInfo }: CheckInMessage,
+    destination: Trytes,
+  ) =>
+    !vehicleInfo ||
+    !vehicleInfo.allowedDestinations ||
+    vehicleInfo.allowedDestinations.length === 0 ||
+    vehicleInfo.allowedDestinations.find((s: Trytes) => s === destination) !==
+      undefined
 }

@@ -50,9 +50,11 @@
     "all": false
   },
   "dependencies": {
+    "bluebird-retry": "^0.11.0",
     "fzi-iota-showcase-client": "alpha"
   },
   "devDependencies": {
+    "@types/bluebird-retry": "^0.11.3",
     "@types/chai": "^4.1.7",
     "@types/chai-things": "0.0.33",
     "@types/extend": "^3.0.1",
