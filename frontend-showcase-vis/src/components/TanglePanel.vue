@@ -3,7 +3,7 @@
 <b-row no-gutters="true">
     <b-col v-for="transaction in transactionData" style="height: 100%">
       <transition appear name="slide-fade" mode="out-in">
-        <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time+transaction.address">
+        <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time+transaction.address+transaction.from">
           <b-row align-h="end" slot="header">
             <b-col>{{transaction.type}}</b-col>
             <b-col><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
@@ -92,12 +92,10 @@ p {
 }
 .slide-fade-enter {
   transform: translateX(12vw);
-  opacity: 0.5;
 }
 
 .slide-fade-leave-to {
   transform: translateX(-12vw);
-  opacity: 0.5;
 }
 </style>
 
