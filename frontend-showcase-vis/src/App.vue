@@ -41,5 +41,6 @@ export default {
 <style>
 html {
   font-size: 1rem;
+  overflow: hidden;
 }
 </style>
