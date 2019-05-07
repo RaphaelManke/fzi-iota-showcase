@@ -57,11 +57,11 @@ export default {
     getTypeVariant(type) {
       switch (type) {
         case "checkIn":
-          return "dark";
+          return "warning";
         case "value":
           return "success";
         case "departed":
-          return "warning";
+          return "danger";
         default:
           return "light";
       }
