@@ -149,9 +149,9 @@ export default {
       return currEvents;
     },
     routes() {
-      return this.$store.getters["routes/getRoutesAvailable"].filter(route => {
-        route.sections.length < 4;
-      });
+      return this.$store.getters["routes/getRoutesAvailable"].filter(
+        route => route.sections.length < 4
+      );
     },
     selectedRouteIndex: {
       get() {
