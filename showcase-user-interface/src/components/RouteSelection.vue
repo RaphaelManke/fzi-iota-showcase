@@ -101,6 +101,7 @@ export default {
     routes() {
       return this.$store.getters["routes/getRoutesAvailable"].filter(route => {
         let res = true;
+        if (route.sections.length > 3) return false;
         route.sections.forEach(section => {
           if (!this.vehicleTypes.includes(section.vehicle.type)) res = false;
         });
