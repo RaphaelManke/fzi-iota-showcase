@@ -1,9 +1,11 @@
-version: '3'
+version: "3"
 services:
   compass:
-    image: 'iotacafe/compass:coordinator-554440c'
+    image: "iotacafe/compass:coordinator-554440c"
+    networks:
+      - web
     depends_on:
-      - 'iri'
+      - "iri"
     volumes:
       - .\state:/state
       - .\layers:/layers
@@ -20,10 +22,12 @@ services:
       -host http://iri:14265
       -statePath /state/statefile
   iri:
-    image: 'iotaledger/iri:latest'
+    image: "iotaledger/iri:latest"
     ports:
       - 14265:14265
       - 5556:5556
+    networks:
+      - web
     volumes:
       - ./snapshot.txt:/snapshot.txt
       - iri-db:/iri/data
@@ -42,3 +46,6 @@ services:
       --remote-limit-api removeNeighbors,addNeighbors,getNeighbors,setApiRateLimit
 volumes:
   iri-db:
+networks:
+  web:
+    external: true
