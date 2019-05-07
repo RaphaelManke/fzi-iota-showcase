@@ -9,10 +9,12 @@
             <b-col><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
           </b-row>
           <b-row>
-          <b-col style="padding: 0">Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
+          <b-col>Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
           </b-row>
           <b-row>
-          <b-col style="padding: 0">Amount: <b-badge :variant="getAmoutVariant(transaction.value)">{{formatIota(transaction.value)}}<img src="assets/images/iota.png"/></b-badge></b-col>
+          <b-col>Amount: <b-badge :variant="getAmoutVariant(transaction.value)">{{formatIota(transaction.value)}}<img src="assets/images/iota.png"/></b-badge></b-col>
+          </b-row>
+          <b-row>
           <b-col v-if="transaction.type === 'checkIn' | transaction.type === 'departed'">Stop: <b-badge>{{getStopById(transaction.stop).name}}</b-badge></b-col>
           <b-col v-if="transaction.type === 'value'"><b-badge>{{getUserById(transaction.from).name}}</b-badge>-><b-badge>{{getVehicleById(transaction.to).name}}</b-badge></b-col>
           </b-row>
@@ -85,12 +87,12 @@ p {
   transition: all 0.5s ease;
 }
 .slide-fade-enter {
-  transform: translateX(20px);
+  transform: translateX(12vw);
   opacity: 0.5;
 }
 
 .slide-fade-leave-to {
-  transform: translateX(-20px);
+  transform: translateX(-12vw);
   opacity: 0.5;
 }
 </style>
