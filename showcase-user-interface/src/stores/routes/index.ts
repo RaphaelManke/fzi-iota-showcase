@@ -62,6 +62,9 @@ export const routes: Module<RouteStore, RootState> = {
           });
       }
     },
+    changeRouteState(state: any, newState: string) {
+      state.routeState = newState;
+    },
     TripStarted(state: any, trip: any) {
       state.trip = trip;
       state.nextTrip = undefined;
@@ -71,7 +74,7 @@ export const routes: Module<RouteStore, RootState> = {
     },
     setNextTrip(state: any, nextTrip: any) {
       state.nextTrip = nextTrip;
-      state.routeState = ' Await arrival of ';
+      state.routeState = ' Await arrival ';
     },
   },
   actions: {
@@ -83,6 +86,11 @@ export const routes: Module<RouteStore, RootState> = {
     SOCKET_TripFinished({ state, commit, rootGetters }, trip: any) {
       if (trip.userId === rootGetters['user/getUserInfo'].id) {
         commit('TripFinished');
+      }
+    },
+    SOCKET_BoardingStarted({ state, commit, rootGetters }, info: any) {
+      if (info.userId === rootGetters['user/getUserInfo'].id) {
+        commit('changeRouteState', ' Boarding started ');
       }
     },
   },

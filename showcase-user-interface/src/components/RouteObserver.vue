@@ -23,7 +23,7 @@
         <div style="text-align: center;"><b-button variant="primary" @click="resumeRoute">Resume</b-button></div>
       </b-popover>
       <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Waiting for next step">
-        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="RouteState"></b-spinner>{{routeState}}{{getVehicleById(section.vehicle.id).name}}
+        <b-spinner style="height: 18px; width: 18px;" variant="primary" label="RouteState"></b-spinner>{{routeState}}
       </b-popover>
       <b-popover v-if="destination===section.to" :show.sync="!userInfo.trip&&currentStopId===destination" :target="section.to" placement="top" title="Route ended">
         <b-button variant="primary" @click="finishRoute">Finish route</b-button>
