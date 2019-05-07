@@ -19,7 +19,7 @@
                                 <b-col v-if="section.to===destination" :id="section.to" class="mt-2">
                                 {{getStop(section.to).name}}
                                 </b-col>
-                                <b-popover :show.sync="!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
+                                <b-popover :show.sync="showResume&&!nextTrip&&!userInfo.trip&&currentStopId===section.from" :target="section.from" placement="top" title="Resume Route?">
         <div style="text-align: center;"><b-button variant="primary" @click="resumeRoute">Resume</b-button></div>
       </b-popover>
       <b-popover :show.sync="nextTrip&&currentStopId===section.from" :target="section.from" placement="top" title="Waiting for next step">
@@ -124,7 +124,8 @@ export default {
       mouseOnEvents: false,
       locallySelectedRouteIndex: 0,
       haltAtNextStopShow: false,
-      internTrue: true
+      internTrue: true,
+      showResume: true
     };
   },
   created() {
@@ -239,12 +240,14 @@ export default {
       };
     },
     resumeRoute() {
+      this.showResume = false;
       var trip = this.getNextTrip();
       if (trip !== undefined) {
         this.$http
           .post(this.$hostname + "/trip", trip)
           .then(function(response) {
             this.$store.commit("routes/setNextTrip", trip);
+            this.showResume = true;
           })
           .catch(function(response) {
             this.refreshRoutes();
@@ -256,6 +259,7 @@ export default {
       } else {
         this.refreshRoutes();
         alert("Trip not definded. \n Please select another route!");
+        this.showResume = true;
       }
     },
     getStop(id) {
