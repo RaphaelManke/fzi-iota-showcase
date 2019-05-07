@@ -64,6 +64,43 @@ describe('Router', () => {
     log.info('%o', routes);
     expect(routes.length).equals(2);
   });
+
+  it('should process routes with multiple section choices', () => {
+    const vehicles: VehicleInfo[] = [
+      vehicle('Karlstor', 'tram'),
+      ...['Karlstor', 'Rüppurer Tor', 'Kronenplatz'].map((s) =>
+        vehicle(s, 'car'),
+      ),
+      ...['Karlstor', 'Marktplatz', 'ECE Center', 'Kronenplatz'].map((s) =>
+        vehicle(s, 'bike'),
+      ),
+    ];
+    const r = new Router(connections, vehicles);
+    const routes = r.getRoutes(
+      getStop('Karlstor')!.id,
+      getStop('Rüppurer Tor')!.id,
+      ['car', 'tram', 'bike'],
+    );
+    log.info('%o', routes);
+  });
+
+  it('should process routes with multiple vehicle choices', () => {
+    const vehicles: VehicleInfo[] = [
+      vehicle('Karlstor', 'tram'),
+      ...['Karlstor', 'Rüppurer Tor', 'Kronenplatz'].map((s) =>
+        vehicle(s, 'car'),
+      ),
+      vehicle('Europaplatz', 'bike'),
+      vehicle('Europaplatz', 'bike'),
+    ];
+    const r = new Router(connections, vehicles);
+    const routes = r.getRoutes(
+      getStop('Karlstor')!.id,
+      getStop('Rüppurer Tor')!.id,
+      ['car', 'tram', 'bike'],
+    );
+    log.info('%o', routes);
+  });
 });
 
 function generateNonce(length = 81) {
