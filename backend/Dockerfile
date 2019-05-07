@@ -19,6 +19,7 @@ RUN npm install && \
 
 # production stage
 FROM node:lts-alpine as production-stage
+RUN apk add --no-cache curl
 COPY --from=build-stage /app/out ./out
 COPY --from=build-stage /app/node_modules ./out/node_modules
 COPY ./config/ ./out/config/
