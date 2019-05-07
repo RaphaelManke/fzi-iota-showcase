@@ -3,7 +3,7 @@ services:
   backend:
     container_name: backend
     image: ${REGISTRY}/backend:${BACKEND_TAG}
-    restart: always
+    restart: unless-stopped
     networks:
       - web
 
