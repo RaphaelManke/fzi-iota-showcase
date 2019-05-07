@@ -6,13 +6,27 @@ services:
     restart: unless-stopped
     networks:
       - web
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/env"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     ports:
       - "${BACKEND_PORT:-3000}:3000"
 
     volumes:
       - ./config:/out/config
-    entrypoint: ["node", "main.js", "--provider", "${TANGLE_NODE}"]
+    entrypoint:
+      [
+        "node",
+        "main.js",
+        "--provider",
+        "${TANGLE_NODE}",
+        "--mwm",
+        "${TANGLE_MWM}",
+        "--masterSeed",
+        "${TANGLE_MASTER_SEED}",
+      ]
 
   showcase-user-interface:
     container_name: showcase-user-interface
