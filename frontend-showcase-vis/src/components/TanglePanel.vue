@@ -3,7 +3,7 @@
 <b-row no-gutters="true">
     <b-col v-for="transaction in transactionData" style="height: 100%">
       <transition appear name="slide-fade" mode="out-in">
-        <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time+transaction.address">
+        <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time+transaction.address+transaction.from">
           <b-row align-h="end" slot="header">
             <b-col>{{transaction.type}}</b-col>
             <b-col><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
@@ -16,7 +16,7 @@
           </b-row>
           <b-row>
           <b-col v-if="transaction.type === 'checkIn' | transaction.type === 'departed'">Stop: <b-badge>{{getStopById(transaction.stop).name}}</b-badge></b-col>
-          <b-col v-if="transaction.type === 'value'"><b-badge>{{getUserById(transaction.from).name}}</b-badge>-><b-badge>{{getVehicleById(transaction.to).name}}</b-badge></b-col>
+          <b-col v-if="transaction.type === 'value'"><b-badge>{{getNameById(transaction.from)}}</b-badge>-><b-badge>{{getNameById(transaction.to)}}</b-badge></b-col>
           </b-row>
 
             </b-card>
@@ -38,8 +38,12 @@ export default {
     formatAddress(address) {
       return address.slice(0, 12) + "..";
     },
-    getVehicleById(id) {
-      return this.$store.getters["mapObjects/getVehicleById"](id);
+    getNameById(id) {
+      let vehicle = this.$store.getters["mapObjects/getVehicleById"](id);
+      let user = this.$store.getters["mapObjects/getUserById"](id);
+      if (vehicle) return vehicle.name;
+      if (user) return user.name;
+      return id;
     },
     getUserById(id) {
       return this.$store.getters["mapObjects/getUserById"](id);
@@ -88,12 +92,10 @@ p {
 }
 .slide-fade-enter {
   transform: translateX(12vw);
-  opacity: 0.5;
 }
 
 .slide-fade-leave-to {
   transform: translateX(-12vw);
-  opacity: 0.5;
 }
 </style>
 
