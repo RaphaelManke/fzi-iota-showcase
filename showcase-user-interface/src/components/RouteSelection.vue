@@ -73,7 +73,6 @@
     <b-row class="text-center">
       <b-col>
     <b-button id="go_button" block variant='primary' @click='submitRoute'>GO!</b-button>
-    <b-popover target="go_button" placement="top" title="Submitting..."><div style="text-align: center;"><b-spinner style="height: 18px; width: 18px;" variant="primary" label="Waiting.."></b-spinner></div></b-popover>
        </b-col>
         </b-row>
         </div>
@@ -190,18 +189,13 @@ export default {
       if (trip !== undefined) {
         this.$http
           .post(this.$hostname + "/trip", trip)
-          .then(function(response) {
-            if (response.status === 200) {
-              this.$router.push("route-observer");
-            }
-          })
           .catch(function(response) {
-            if (response.status === 400) {
-              // wait for vehicle
-              this.$store.commit("routes/setNextTrip", trip);
-              this.$router.push("route-observer");
-            } else window.console.log(response);
+            if (response.status !== 400) {
+              window.console.log(response);
+            }
           });
+        this.$store.commit("routes/setNextTrip", trip);
+        this.$router.push("route-observer");
       } else {
         this.showNoRouteAlert();
       }

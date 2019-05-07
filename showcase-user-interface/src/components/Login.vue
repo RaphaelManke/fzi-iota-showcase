@@ -87,7 +87,9 @@ export default {
             this.$refs["login_modal"].show();
           } else {
             window.console.error(response);
-            alert("Server error. Look console!");
+            this.$store.commit("user/userLogout");
+            this.$store.commit("routes/routeFinished");
+            this.$store.commit("events/routeFinished");
           }
         });
     }
