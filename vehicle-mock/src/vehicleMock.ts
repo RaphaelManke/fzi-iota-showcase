@@ -212,7 +212,7 @@ export class VehicleMock {
       if (this.vehicle.stop === path.connections[0].from) {
         // TODO adjust if reservations are implemented
         if (
-          this.vehicle.trip.boarders.length < this.vehicle.info.maxReservations
+          this.vehicle.trip.boarding.length < this.vehicle.info.maxReservations
         ) {
           if (
             this.isDestinationAllowed(
