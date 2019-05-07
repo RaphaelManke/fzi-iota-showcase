@@ -2,14 +2,14 @@
 
 <b-row no-gutters="true">
     <b-col v-for="transaction in transactionData" style="height: 100%">
-        <b-card style="height: 100%">
+      <transition appear name="slide-fade" mode="out-in">
+        <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time">
           <b-row align-h="end" slot="header">
-            <b-col>Transaction</b-col>
-            <b-col cols="3"><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
+            <b-col>{{transaction.type}}</b-col>
+            <b-col><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
           </b-row>
           <b-row>
           <b-col style="padding: 0">Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
-           <b-col style="padding: 0">Type: <b-badge :variant="getTypeVariant(transaction.type)">{{transaction.type}}</b-badge></b-col>
           </b-row>
           <b-row>
           <b-col style="padding: 0">Amount: <b-badge :variant="getAmoutVariant(transaction.value)">{{formatIota(transaction.value)}}<img src="assets/images/iota.png"/></b-badge></b-col>
@@ -18,6 +18,7 @@
           </b-row>
 
             </b-card>
+      </transition>
     </b-col>
 </b-row>
     
@@ -33,7 +34,7 @@ export default {
   },
   methods: {
     formatAddress(address) {
-      return address.slice(0, 7) + "..";
+      return address.slice(0, 12) + "..";
     },
     getVehicleById(id) {
       return this.$store.getters["mapObjects/getVehicleById"](id);
@@ -76,6 +77,17 @@ img {
 }
 p {
   margin-bottom: 0;
+}
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(20px);
+  opacity: 0.5;
 }
 </style>
 
