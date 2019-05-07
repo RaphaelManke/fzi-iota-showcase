@@ -68,12 +68,11 @@ export class MockConstructor {
       reachedStop(stop) {
         info.stop = stop;
         const checkIn = info.checkIns.find((c) => c.stop === stop);
-        const allowedDestinations = [];
+        let allowedDestinations = [];
         if (checkIn) {
           if (checkIn.message.vehicleInfo) {
-            allowedDestinations.push(
-              ...checkIn.message.vehicleInfo.allowedDestinations,
-            );
+            allowedDestinations =
+              checkIn.message.vehicleInfo.allowedDestinations;
             log.silly('Allowed destinations: %O', allowedDestinations);
           }
         }
