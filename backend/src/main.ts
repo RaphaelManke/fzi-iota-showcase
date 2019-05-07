@@ -49,7 +49,7 @@ import { ScheduleDescription } from 'fzi-iota-showcase-tram-mock';
       attachToTangle: createAttachToTangle(args.provider),
     });
     if (!(args.mockMessages && args.mockPayments)) {
-      log.info('%O', await iota.getNodeInfo());
+      log.info('IOTA node: %O', await iota.getNodeInfo());
     }
 
     const users = Users.fromFile(args.users, {
