@@ -97,7 +97,7 @@ export class Router {
 
     const remain = remainingConnections.slice(1);
     if (remain.length === 0) {
-      return [sections];
+      return sections.map((s) => [s]);
     } else {
       const result: Section[][] = [];
       for (const head of sections) {
