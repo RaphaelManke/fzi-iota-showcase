@@ -3,7 +3,7 @@ import { User, Position } from './envInfo';
 import * as fs from 'fs';
 import { getNextId } from './idSupplier';
 import { log, createAttachToTangle } from 'fzi-iota-showcase-client';
-import { UserState } from 'fzi-iota-showcase-user-client';
+import { UserMock } from './userMock';
 import { API, composeAPI } from '@iota/core';
 import * as retry from 'bluebird-retry';
 
@@ -37,8 +37,8 @@ export class Users {
     return new Users(users, mwm, provider, iota, mockPayments);
   }
 
-  private byId = new Map<Trytes, { info: User; state: UserState }>();
-  private bySeed = new Map<Hash, { info: User; state: UserState }>();
+  private byId = new Map<Trytes, { info: User; state: UserMock }>();
+  private bySeed = new Map<Hash, { info: User; state: UserMock }>();
 
   constructor(
     users: Map<Hash, User>,
@@ -56,7 +56,7 @@ export class Users {
       throw new Error('IOTA client must be set');
     }
     Array.from(users.entries()).forEach(([seed, user]) => {
-      const state = new UserState(seed, user.id, { iota, mwm, mockPayments });
+      const state = new UserMock(seed, user.id, { iota, mwm, mockPayments });
       this.byId.set(user.id, { info: user, state });
       this.bySeed.set(seed, { info: user, state });
     });
