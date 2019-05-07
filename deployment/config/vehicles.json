@@ -146,18 +146,6 @@
   },
   {
     "seed": "",
-    "name": "Fächerrad-9",
-    "channelCapacity": 10,
-    "stop": "RUPPURERTORMGORYBXIDPXHNYAKDHGJTIICTPPCNGPKC9JHNBSQLM9EQGPKOAWSAVXQPUHJCEYFDFXCXM",
-    "price": 750,
-    "reservationRate": 1000000,
-    "type": "bike",
-    "co2emission": 0,
-    "speed": 25,
-    "maxReservations": 1
-  },
-  {
-    "seed": "",
     "name": "eBike-1",
     "channelCapacity": 10,
     "stop": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
