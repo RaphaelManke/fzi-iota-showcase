@@ -31,8 +31,6 @@ services:
   showcase-user-interface:
     container_name: showcase-user-interface
     image: ${REGISTRY}/showcase-user-interface:${SHOWCASE_USER_INTERFACE_TAG}
-    networks:
-      - web
     ports:
       - "${SHOWCASE_USER_INTERFACE_PORT:-8080}:80"
 

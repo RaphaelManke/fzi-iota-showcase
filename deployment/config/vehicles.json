@@ -14,18 +14,6 @@
   },
   {
     "seed": "",
-    "name": "Audi",
-    "channelCapacity": 10,
-    "stop": "MARKTPLATZEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
-    "price": 1200,
-    "reservationRate": 10000000,
-    "type": "car",
-    "co2emission": 100000,
-    "speed": 60,
-    "maxReservations": 1
-  },
-  {
-    "seed": "",
     "name": "BMW",
     "channelCapacity": 10,
     "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
@@ -58,30 +46,6 @@
     "type": "car",
     "co2emission": 70000,
     "speed": 45,
-    "maxReservations": 1
-  },
-  {
-    "seed": "",
-    "name": "VW",
-    "channelCapacity": 10,
-    "stop": "ECECENTER9NNUZXGGLYDJREWW9ZZAAZO9QHZKVINEASTVTDCPRRLNMBPFXBXQJTISHHVXFBGPYWGX9WVP",
-    "price": 1500,
-    "reservationRate": 10000000,
-    "type": "car",
-    "co2emission": 90000,
-    "speed": 50,
-    "maxReservations": 1
-  },
-  {
-    "seed": "",
-    "name": "Ford",
-    "channelCapacity": 10,
-    "stop": "EUROPAPLATZJSKNZCINLHIUQLQBAARETBQTONTCNUNIS9VDPPTBVHBARDIABITBOMWBNCGHFMDDGJORNF",
-    "price": 1500,
-    "reservationRate": 10000000,
-    "type": "car",
-    "co2emission": 90000,
-    "speed": 50,
     "maxReservations": 1
   },
   {
