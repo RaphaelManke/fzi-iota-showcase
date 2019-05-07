@@ -11,6 +11,5 @@ jobs:
     inputs:
       versionSpec: '10.x'
     displayName: 'Install Node.js'
-  - template: ../steps/npm.yml
   
   - template: ../steps/docker.yml
