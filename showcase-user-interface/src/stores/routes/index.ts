@@ -14,6 +14,13 @@ export const routes: Module<RouteStore, RootState> = {
   mutations: {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
+      state.routesAvailable.forEach((element: any) => {
+        element.sections.forEach((el: any) => {
+          el.duration = Math.round(
+            (Date.parse(el.arrival) - Date.parse(el.departure)) / 1000,
+          );
+        });
+      });
     },
     updateRouteSelected(state: any, selected: any) {
       state.routeSelected = selected;

@@ -76,15 +76,28 @@
               <b-col>
               <b-list-group>
       <b-list-group-item v-for="(route, index) in routes" :active="index===selectedRouteIndex" @click="selectedRouteIndex=index" :button="internTrue" class="d-flex justify-content-between align-items-center">
+          <b-container>
           <b-row>
             <template v-for=" section in route.sections">
-                <b-col  style="padding: 0 5px" class="no-space-break">{{getStop(section.from).name}}</b-col><b-col  style="padding: 0 5px"><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col  style="padding: 0 5px" class="no-space-break" v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
+                <b-col md="auto" style="padding: 0 5px" class="no-space-break">{{getStop(section.from).name}}</b-col><b-col md="auto" style="padding: 0 5px"><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col md="auto" style="padding: 0 5px" class="no-space-break" v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
             </template>
           </b-row>
+          <b-row class="mt-1">
+            <b-col>
+              Price: 
           <b-badge variant="primary" pill>
             {{formatIota(routePrice(route.sections))}} 
             <img src="assets/images/iota.png"/>
           </b-badge>
+          </b-col>
+          <b-col>
+            Duration: 
+          <b-badge variant="light" pill>
+            {{routeDuration(route.sections)}} s
+          </b-badge>
+          </b-col>
+          </b-row>
+          </b-container>
       </b-list-group-item>
     </b-list-group>
     </b-col>
@@ -245,6 +258,7 @@ export default {
             this.refreshRoutes();
             if (response.status === 400) {
               // wait for vehicle
+              this.showResume = true;
               this.$store.commit("routes/setNextTrip", trip);
             } else window.console.log(response);
           });
@@ -288,6 +302,13 @@ export default {
         summedPrice += element.price;
       });
       return summedPrice;
+    },
+    routeDuration(sections) {
+      let duration = 0;
+      sections.forEach(element => {
+        duration += element.duration;
+      });
+      return duration;
     },
     getVehicleById(id) {
       return this.$store.getters["mapObjects/getVehicleById"](id);
