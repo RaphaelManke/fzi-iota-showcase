@@ -8,7 +8,10 @@
       <route-list />
       </b-col>
     </b-row>
-    <tangle-panel style="height: 25vh"/>
+    <b-row>
+      <tangle-panel style="height: 25vh"/>
+    </b-row>
+    
   </div>
 </template>
 
@@ -40,7 +43,7 @@ export default {
 
 <style>
 html {
-  font-size: 1rem;
+  font-size: 1.5rem;
   overflow: hidden;
 }
 </style>
