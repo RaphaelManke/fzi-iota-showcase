@@ -7,6 +7,7 @@ import {
   PosUpdated,
   PaymentIssued,
   Departed,
+  BoardingCancelled,
 } from './events';
 import { EnvironmentInfo, Stop, Connection, User, Trip } from './envInfo';
 import { Users } from './users';
@@ -23,7 +24,6 @@ import { VehicleMock } from 'fzi-iota-showcase-vehicle-mock';
 import { MockConstructor } from './mockConstructor';
 import { RouteInfo } from './routeInfo';
 import { Router } from './router';
-import { UserState } from 'fzi-iota-showcase-user-client';
 import { TripStarter } from './tripStarter';
 import { getNextId } from './idSupplier';
 import { enableLogging } from './logger';
@@ -32,6 +32,7 @@ import {
   ScheduleHandler,
 } from 'fzi-iota-showcase-tram-mock';
 import * as retry from 'bluebird-retry';
+import { UserMock } from './userMock';
 
 export class Controller {
   public readonly env: EnvironmentInfo;
@@ -108,7 +109,7 @@ export class Controller {
 
   public startTrip(
     vehicleInfo: VehicleInfo,
-    u: { info: User; state: UserState },
+    u: { info: User; state: UserMock },
     start: Trytes,
     intermediateStops: Trytes[],
     destination: Trytes,
@@ -123,25 +124,31 @@ export class Controller {
       ) {
         if (v.info.stop === start) {
           if (u.info.stop === start) {
-            return this.tripStarter
-              .startTrip(v, u, start, destination, intermediateStops)
-              .catch((reason) => {
-                const prefix = 'Starting trip failed. Boarding cancelled. ';
-                let reasonMessage: string = reason.message || reason;
-                const index = reasonMessage.indexOf(prefix);
-                if (index !== -1) {
-                  reasonMessage = reasonMessage.substring(
-                    index + prefix.length,
-                  );
-                }
+            if (!u.state.isOnTrip) {
+              return this.tripStarter
+                .startTrip(v, u, start, destination, intermediateStops)
+                .catch((reason) => {
+                  const prefix = 'Starting trip failed. Boarding cancelled. ';
+                  let reasonMessage: string = reason.message || reason;
+                  const index = reasonMessage.indexOf(prefix);
+                  if (index !== -1) {
+                    reasonMessage = reasonMessage.substring(
+                      index + prefix.length,
+                    );
+                  }
 
-                this.events.emit('BoardingCancelled', {
-                  userId: u.info.id,
-                  vehicleId: v.info.id,
-                  reason: reasonMessage,
+                  this.events.emit('BoardingCancelled', {
+                    userId: u.info.id,
+                    vehicleId: v.info.id,
+                    reason: reasonMessage,
+                  });
+                  return Promise.reject(reason);
                 });
-                return Promise.reject(reason);
-              });
+            } else {
+              return Promise.reject(
+                new Error('User has requested another trip.'),
+              );
+            }
           } else {
             return Promise.reject(new Error('User isn\'t at start stop.'));
           }
@@ -222,6 +229,14 @@ export class Controller {
       if (u) {
         u.info.stop = event.destination;
         u.info.trip = undefined;
+        u.state.isOnTrip = false;
+      }
+    });
+
+    this.events.on('BoardingCancelled', (event: BoardingCancelled) => {
+      const u = this.users.getById(event.userId);
+      if (u) {
+        u.state.isOnTrip = false;
       }
     });
 
