@@ -58,7 +58,7 @@
       @click="selectedRouteIndex=index" button=true class="d-flex justify-content-between align-items-center">
           <b-row>
             <template v-for=" section in route.sections">
-                <b-col class="no-space-break">{{getStop(section.from).name}}</b-col><b-col><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col class="no-space-break" v-if="section.to===selectedDestination">{{getStop(section.to).name}}</b-col>
+                <b-col  style="padding: 0 5px" class="no-space-break">{{getStop(section.from).name}}</b-col><b-col style="padding: 0 5px"><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col  style="padding: 0 5px" class="no-space-break" v-if="section.to===selectedDestination">{{getStop(section.to).name}}</b-col>
             </template>
           </b-row>
           <b-badge variant="primary" pill>
