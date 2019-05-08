@@ -6,7 +6,7 @@
         <b-card :header-bg-variant="getTypeVariant(transaction.type)" style="height: 100%" :key="transaction.time+transaction.address+transaction.from">
           <b-row align-h="end" slot="header">
             <b-col>{{transaction.type}}</b-col>
-            <b-col><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
+            <b-col align="right"><b-badge variant="light">{{transaction.time}}</b-badge></b-col>
           </b-row>
           <b-row>
           <b-col>Address: <b-badge>{{formatAddress(transaction.address)}}</b-badge></b-col>
@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     formatAddress(address) {
-      return address.slice(0, 12) + "..";
+      return address.slice(0, 18) + "...";
     },
     getNameById(id) {
       let vehicle = this.$store.getters["mapObjects/getVehicleById"](id);
