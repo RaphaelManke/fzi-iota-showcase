@@ -94,7 +94,8 @@ export default {
     return {
       dismissSecs: 5,
       dismissCountDown: 0,
-      vehicleTypes: ["car", "tram", "bike"]
+      vehicleTypes: ["car", "tram", "bike"],
+      selectedRouteIndex: -1
     };
   },
   computed: {
@@ -144,14 +145,6 @@ export default {
             window.console.log(response);
           });
       }
-    },
-    selectedRouteIndex: {
-      get() {
-        return this.$store.getters["routes/getRouteSelectedIndex"];
-      },
-      set(value) {
-        this.$store.commit("routes/updateRouteSelected", value);
-      }
     }
   },
   methods: {
@@ -186,6 +179,10 @@ export default {
       this.dismissCountDown = this.dismissSecs;
     },
     submitRoute() {
+      this.$store.commit(
+        "routes/updateRouteSelected",
+        this.routes[this.selectedRouteIndex]
+      );
       var trip = this.getNextTrip();
       if (trip !== undefined) {
         this.$http

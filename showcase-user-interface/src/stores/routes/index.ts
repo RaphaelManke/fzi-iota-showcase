@@ -6,7 +6,6 @@ export const routes: Module<RouteStore, RootState> = {
   namespaced: true,
   state: {
     routesAvailable: [],
-    routeSelectedIndex: -1,
     routeSelected: undefined,
     trip: undefined,
     nextTrip: undefined,
@@ -16,11 +15,8 @@ export const routes: Module<RouteStore, RootState> = {
     updateRoutesAvailable(state: any, route: any) {
       state.routesAvailable = route;
     },
-    updateRouteSelected(state: any, selected: string) {
-      state.routeSelectedIndex = selected;
-      state.routeSelected = JSON.parse(
-        JSON.stringify(state.routesAvailable[state.routeSelectedIndex]),
-      );
+    updateRouteSelected(state: any, selected: any) {
+      state.routeSelected = selected;
       state.routeSelected.sections.forEach((el: any) => {
         el.duration = Math.round(
           (Date.parse(el.arrival) - Date.parse(el.departure)) / 500 - 1,
@@ -30,7 +26,6 @@ export const routes: Module<RouteStore, RootState> = {
     },
     routeFinished(state: any) {
       state.routeSelected = undefined;
-      state.routeSelectedIndex = -1;
       state.routesAvailable = [];
     },
     SOCKET_PosUpdated(state: any, data: any) {
@@ -97,9 +92,6 @@ export const routes: Module<RouteStore, RootState> = {
   getters: {
     getRoutesAvailable: (state: any) => {
       return state.routesAvailable;
-    },
-    getRouteSelectedIndex: (state: any) => {
-      return state.routeSelectedIndex;
     },
     getRouteById: (state: any) => (id: string) => {
       return state.routesAvailable.find((el: any) => el.id === id);

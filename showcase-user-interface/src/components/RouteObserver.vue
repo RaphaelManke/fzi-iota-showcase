@@ -75,7 +75,7 @@
             <b-row>
               <b-col>
               <b-list-group>
-      <b-list-group-item v-for="(route, index) in routes" :active="index===locallySelectedRouteIndex" @click="locallySelectedRouteIndex=index" :button="internTrue" class="d-flex justify-content-between align-items-center">
+      <b-list-group-item v-for="(route, index) in routes" :active="index===selectedRouteIndex" @click="selectedRouteIndex=index" :button="internTrue" class="d-flex justify-content-between align-items-center">
           <b-row>
             <template v-for=" section in route.sections">
                 <b-col  style="padding: 0 5px" class="no-space-break">{{getStop(section.from).name}}</b-col><b-col  style="padding: 0 5px"><img :src="getImageSrc(section.vehicle.type)"/></b-col> <b-col  style="padding: 0 5px" class="no-space-break" v-if="section.to===destination">{{getStop(section.to).name}}</b-col>
@@ -122,14 +122,11 @@ export default {
   data() {
     return {
       mouseOnEvents: false,
-      locallySelectedRouteIndex: 0,
+      selectedRouteIndex: -1,
       haltAtNextStopShow: false,
       internTrue: true,
       showResume: true
     };
-  },
-  created() {
-    this.locallySelectedRouteIndex = this.selectedRouteIndex;
   },
   computed: {
     routeState() {
@@ -152,14 +149,6 @@ export default {
       return this.$store.getters["routes/getRoutesAvailable"].filter(
         route => route.sections.length < 4
       );
-    },
-    selectedRouteIndex: {
-      get() {
-        return this.$store.getters["routes/getRouteSelectedIndex"];
-      },
-      set(value) {
-        this.$store.commit("routes/updateRouteSelected", value);
-      }
     },
     selectedRoute() {
       return this.$store.getters["routes/getRouteSelected"];
@@ -206,7 +195,10 @@ export default {
     },
     changeRoute() {
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {
-        this.selectedRouteIndex = this.locallySelectedRouteIndex;
+        this.$store.commit(
+          "routes/updateRouteSelected",
+          this.routes[this.selectedRouteIndex]
+        );
         this.resumeRoute();
         this.haltAtNextStopShow = false;
       } else {
