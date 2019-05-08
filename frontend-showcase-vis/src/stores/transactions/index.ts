@@ -4,7 +4,7 @@ import { RootState } from "../types";
 import moment from "moment";
 
 function timestampTransaction(transaction: any) {
-  transaction.time = moment(new Date()).format("hh:mm:ss");
+  transaction.time = moment(new Date()).format("HH:mm:ss");
   return transaction;
 }
 export const transactions: Module<TransactionStore, RootState> = {
