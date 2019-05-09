@@ -251,7 +251,6 @@ export default {
         this.$http
           .post(this.$hostname + "/trip", trip)
           .then(function(response) {
-            this.$store.commit("routes/setNextTrip", trip);
             this.showResume = true;
           })
           .catch(function(response) {
@@ -261,6 +260,7 @@ export default {
               this.showResume = true;
               this.$store.commit("routes/setNextTrip", trip);
             } else window.console.log(response);
+            vm.$forceUpdate();
           });
       } else {
         this.refreshRoutes();
