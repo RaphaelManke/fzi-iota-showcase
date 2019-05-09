@@ -8,9 +8,9 @@
       <route-list />
       </b-col>
     </b-row>
-    <b-row>
+    
       <tangle-panel style="height: 25vh"/>
-    </b-row>
+    
     
   </div>
 </template>
