@@ -108,7 +108,7 @@
     <b-button block variant='primary' @click="refreshRoutes">Refresh</b-button>
     </b-col>
     <b-col>
-    <b-button block variant='warning' @click="changeRoute">Change</b-button>
+    <b-button :disabled="userInfo.trip||currentStopId===destination" block variant='warning' @click="changeRoute">Change</b-button>
     </b-col>
     <b-col id="haltNextStopButton">
     <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish</b-button>
