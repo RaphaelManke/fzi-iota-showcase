@@ -2,7 +2,7 @@
   {
     "seed": "",
     "name": "S1",
-    "channelCapacity": 128,
+    "channelCapacity": 256,
     "stop": "MARKTPLATZEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
     "price": 2467,
     "reservationRate": 0,
@@ -15,7 +15,7 @@
   {
     "seed": "",
     "name": "BMW",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
     "price": 1700,
     "reservationRate": 10000000,
@@ -27,7 +27,7 @@
   {
     "seed": "",
     "name": "Mercedes",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "RUPPURERTORMGORYBXIDPXHNYAKDHGJTIICTPPCNGPKC9JHNBSQLM9EQGPKOAWSAVXQPUHJCEYFDFXCXM",
     "price": 2000,
     "reservationRate": 10000000,
@@ -39,7 +39,7 @@
   {
     "seed": "",
     "name": "Opel",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
     "price": 1100,
     "reservationRate": 10000000,
@@ -51,7 +51,7 @@
   {
     "seed": "",
     "name": "Fächerrad-1",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "MARKTPLATZEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
     "price": 750,
     "reservationRate": 1000000,
@@ -63,7 +63,7 @@
   {
     "seed": "",
     "name": "Fächerrad-2",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
     "price": 750,
     "reservationRate": 1000000,
@@ -75,7 +75,7 @@
   {
     "seed": "",
     "name": "Fächerrad-4",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
     "price": 750,
     "reservationRate": 1000000,
@@ -87,7 +87,7 @@
   {
     "seed": "",
     "name": "Fächerrad-5",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "ECECENTER9NNUZXGGLYDJREWW9ZZAAZO9QHZKVINEASTVTDCPRRLNMBPFXBXQJTISHHVXFBGPYWGX9WVP",
     "price": 750,
     "reservationRate": 1000000,
@@ -99,7 +99,7 @@
   {
     "seed": "",
     "name": "Fächerrad-6",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "EUROPAPLATZJSKNZCINLHIUQLQBAARETBQTONTCNUNIS9VDPPTBVHBARDIABITBOMWBNCGHFMDDGJORNF",
     "price": 750,
     "reservationRate": 1000000,
@@ -111,7 +111,7 @@
   {
     "seed": "",
     "name": "Fächerrad-7",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "MARKTPLATZEWL9EIOSR9MSGEEHQTFOUROZQPXNBIQAUZOCNCLYFFGTJSNRQOTTAYMJQUNYFAJGTKHXBHE",
     "price": 750,
     "reservationRate": 1000000,
@@ -123,7 +123,7 @@
   {
     "seed": "",
     "name": "Fächerrad-8",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
     "price": 750,
     "reservationRate": 1000000,
@@ -135,7 +135,7 @@
   {
     "seed": "",
     "name": "eBike-1",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KARLSTORVJCLRNOZMCOLOSWIBAIELQPIYFCJVZUILLATCZWEAP9HIHYXJUWYMJSENQIMXUXXJUQEQGJGL",
     "price": 1000,
     "reservationRate": 1000000,
@@ -147,7 +147,7 @@
   {
     "seed": "",
     "name": "eBike-2",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "ECECENTER9NNUZXGGLYDJREWW9ZZAAZO9QHZKVINEASTVTDCPRRLNMBPFXBXQJTISHHVXFBGPYWGX9WVP",
     "price": 1000,
     "reservationRate": 1000000,
@@ -159,7 +159,7 @@
   {
     "seed": "",
     "name": "Nextbike-1",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "EUROPAPLATZJSKNZCINLHIUQLQBAARETBQTONTCNUNIS9VDPPTBVHBARDIABITBOMWBNCGHFMDDGJORNF",
     "price": 600,
     "reservationRate": 1000000,
@@ -171,7 +171,7 @@
   {
     "seed": "",
     "name": "Nextbike-2",
-    "channelCapacity": 10,
+    "channelCapacity": 32,
     "stop": "KRONENPLATZVWKVW9FOMYATABPQYFHAHFXGEVEOESIHOFIAGYFKTIMIBKA9GURMKXUGPFNIWGFGFYXQLI",
     "price": 600,
     "reservationRate": 1000000,
