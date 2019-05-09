@@ -108,7 +108,7 @@
     <b-button block variant='primary' @click="refreshRoutes">Refresh</b-button>
     </b-col>
     <b-col>
-    <b-button :disabled="userInfo.trip||currentStopId===destination" block variant='warning' @click="changeRoute">Change</b-button>
+    <b-button :disabled="userInfo.trip||currentStopId===destination||disableChange" block variant='warning' @click="changeRoute">Change</b-button>
     </b-col>
     <b-col id="haltNextStopButton">
     <b-button v-if="haltAtNextStopShow" block variant='primary' @click="finishRoute">Finish</b-button>
@@ -138,7 +138,8 @@ export default {
       selectedRouteIndex: -1,
       haltAtNextStopShow: false,
       internTrue: true,
-      showResume: true
+      showResume: true,
+      disableChange: false
     };
   },
   computed: {
@@ -208,6 +209,7 @@ export default {
     },
     changeRoute() {
       if (this.$store.getters["user/getUserInfo"].trip === undefined) {
+        this.disableChange = true;
         this.$store.commit(
           "routes/updateRouteSelected",
           this.routes[this.selectedRouteIndex]
@@ -252,12 +254,14 @@ export default {
           .post(this.$hostname + "/trip", trip)
           .then(function(response) {
             this.showResume = true;
+            this.disableChange = false;
           })
           .catch(function(response) {
             this.refreshRoutes();
             if (response.status === 400) {
               // wait for vehicle
               this.showResume = true;
+              this.disableChange = false;
               this.$store.commit("routes/setNextTrip", trip);
             } else window.console.log(response);
             vm.$forceUpdate();
@@ -266,6 +270,7 @@ export default {
         this.refreshRoutes();
         alert("Trip not definded. \n Please select another route!");
         this.showResume = true;
+        this.disableChange = false;
       }
     },
     getStop(id) {
