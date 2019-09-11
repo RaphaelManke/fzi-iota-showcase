@@ -102,7 +102,13 @@ describe('CheckInPublisher', () => {
       expireDate: new Date(),
       hashedNonce: '9',
     };
-    await publishReservation(reservationChannel, message);
+    await publishReservation(reservationChannel, message, {
+      catchUp: true,
+      depth: 3,
+      mwm: 9,
+    });
+
+    await new Promise((res) => setTimeout(() => res(), 2000));
 
     const a = expect(checkInMessage.reservationRoot).to.exist;
     if (checkInMessage.reservationRoot) {
@@ -119,7 +125,9 @@ describe('CheckInPublisher', () => {
 
     const { tripChannel, welcomeMessage } = await checkIn();
 
-    await publishCheckOutMessage(tripChannel);
+    await publishCheckOutMessage(tripChannel, { depth: 3, mwm: 9 });
+
+    await new Promise((res) => setTimeout(() => res(), 2000));
 
     const departed = await readDeparted(welcomeMessage, iota);
     let a = expect(departed).to.exist;
@@ -154,7 +162,9 @@ describe('CheckInPublisher', () => {
       message,
       address,
       raam,
-      ...(await publishCheckIn(provider, seed, raam, address, message)),
+      ...(await publishCheckIn(provider, seed, raam, address, message, {
+        mwm: 9,
+      })),
     };
   }
 });

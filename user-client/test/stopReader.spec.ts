@@ -76,7 +76,7 @@ describe('StopReader', () => {
       tripChannel,
     } = await doCheckIn();
 
-    await publishCheckOutMessage(tripChannel);
+    await publishCheckOutMessage(tripChannel, { depth: 3, mwm: 9 });
     log.info('Published CheckOutMessage');
 
     let calledBack = false;
@@ -116,7 +116,11 @@ describe('StopReader', () => {
       expireDate: new Date(Date.now() + 1000 * 60 * 60),
       hashedNonce: '9'.repeat(81),
     };
-    await publishReservation(reservationChannel, reservation);
+    await publishReservation(reservationChannel, reservation, {
+      catchUp: false,
+      depth: 3,
+      mwm: 9,
+    });
     log.info('Published reservation');
 
     let calledBack = false;
@@ -158,7 +162,11 @@ describe('StopReader', () => {
       expireDate: new Date(Date.now() + 1000 * 60 * 60),
       hashedNonce: '9'.repeat(81),
     };
-    await publishReservation(reservationChannel, reservation);
+    await publishReservation(reservationChannel, reservation, {
+      catchUp: false,
+      depth: 3,
+      mwm: 9,
+    });
     log.info('Published reservation');
 
     let calledBack = false;
@@ -258,7 +266,11 @@ describe('StopReader', () => {
 
     // reservation that's expired
     const reservation = { expireDate: new Date(), hashedNonce: '9'.repeat(81) };
-    await publishReservation(reservationChannel, reservation);
+    await publishReservation(reservationChannel, reservation, {
+      catchUp: false,
+      depth: 3,
+      mwm: 9,
+    });
     log.info('Published reservation');
 
     let calledBack = false;
@@ -361,6 +373,12 @@ describe('StopReader', () => {
     log.info('Publishing forged checkIn message...');
     await publishCheckInMessage(address, forged);
 
+    await new Promise((resolve) =>
+      setTimeout(() => {
+        resolve();
+      }, 2000),
+    );
+
     const offers = await queryStop(provider, iota, address);
 
     expect(offers.length).to.be.gte(2);
@@ -405,7 +423,7 @@ describe('StopReader', () => {
       },
     ];
     const t = await iota.prepareTransfers('9'.repeat(81), transfers);
-    const result = await iota.sendTrytes(t, 3, 14);
+    const result = await iota.sendTrytes(t, 3, 9);
     log.debug('Published CheckInMessage');
     return result;
   }
@@ -437,6 +455,7 @@ describe('StopReader', () => {
       4,
       info,
       iota,
+      { depth: 3, mwm: 9 },
     );
     log.info('MasterChannel id: %s', trytes(masterChannel.channelRoot));
     log.info('Stop address: %s', address);
@@ -453,7 +472,7 @@ describe('StopReader', () => {
         masterChannel,
         address,
         message,
-        { date },
+        { date, mwm: 9 },
       )),
     };
   }

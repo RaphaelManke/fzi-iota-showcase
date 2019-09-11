@@ -1,5 +1,5 @@
 import { trytes } from '@iota/converter';
-import {publishVehicle } from '../src/vehiclePublisher';
+import { publishVehicle } from '../src/vehiclePublisher';
 import { API } from '@iota/core';
 import { log, readVehicle, readVehicleInfo } from 'fzi-iota-showcase-client';
 import { composeAPIOrSkip } from './iota';
@@ -11,8 +11,11 @@ describe('VehiclePublisher', () => {
   let provider: string;
 
   before(async function() {
-    ({iota, provider} = await composeAPIOrSkip(this, 'https://nodes.devnet.iota.org',
-      'https://nodes.thetangle.org'));
+    ({ iota, provider } = await composeAPIOrSkip(
+      this,
+      'https://nodes.devnet.iota.org',
+      'https://nodes.thetangle.org',
+    ));
   });
 
   it('should publish vehicleData and read it from the tangle', async function() {
@@ -21,11 +24,21 @@ describe('VehiclePublisher', () => {
 
     const seed = generateSeed();
     log.info('Seed: %s', seed);
-    const {masterChannel, metaInfoChannelRoot} = await publishVehicle(provider, seed, 4, {type: 'car'}, iota);
+    const { masterChannel, metaInfoChannelRoot } = await publishVehicle(
+      provider,
+      seed,
+      4,
+      { type: 'car' },
+      iota,
+      { depth: 3, mwm: 9 },
+    );
     a = expect(masterChannel).to.exist;
     a = expect(metaInfoChannelRoot).to.exist;
     log.info('Channel id: %s', trytes(masterChannel.channelRoot));
     log.info('MetaInfo channel root: %s', metaInfoChannelRoot);
+
+    await new Promise((res) => setTimeout(() => res(), 2000));
+
     const vehicle = await readVehicle(provider, masterChannel.channelRoot);
     log.info('Vehicle\n%O', {
       ...vehicle,
@@ -44,7 +57,7 @@ function generateSeed(length = 81) {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
   const retVal = [];
   for (let i = 0, n = charset.length; i < length; ++i) {
-      retVal[i] = charset.charAt(Math.floor(Math.random() * n));
+    retVal[i] = charset.charAt(Math.floor(Math.random() * n));
   }
   const result = retVal.join('');
   return result;
